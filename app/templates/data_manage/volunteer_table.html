@@ -1,0 +1,252 @@
+{% extends "template/index_all.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>义工信息表</title>
+
+{% endblock %}
+
+{% block app-content %}
+        <!-- begin::main-content -->
+        <div class="main-content">
+
+            <!-- begin::container -->
+            <div class="container">
+
+                <!-- begin::page-header -->
+                <div class="page-header">
+                    <h4>老人信息表</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">数据管理</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">老人信息表</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- end::page-header -->
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table table-striped table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>列名</th>
+                                            <th>类型</th>
+                                            <th>大小</th>
+                                            <th>约束</th>
+                                            <th>说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>ID</td>
+                                            <td>int</td>
+                                            <td>11</td>
+                                            <td>非空；主键；自增</td>
+                                            <td>老人id</td>
+                                        </tr>
+                                        <tr>
+                                            <td>username</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>老人姓名</td>
+                                        </tr>
+                                        <tr>
+                                            <td>gender</td>
+                                            <td>char</td>
+                                            <td>5</td>
+                                            <td>无</td>
+                                            <td>性别</td>
+                                        </tr>
+                                        <tr>
+                                            <td>phone</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>电话</td>
+                                        </tr>
+                                        <tr>
+                                            <td>id_card</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>身份证号</td>
+                                        </tr>
+                                        <tr>
+                                            <td>birthday</td>
+                                            <td>datetime</td>
+                                            <td></td>
+                                            <td>无</td>
+                                            <td>出生日期</td>
+                                        </tr>
+                                        <tr>
+                                            <td>checkin_date</td>
+                                            <td>datetime</td>
+                                            <td></td>
+                                            <td>无</td>
+                                            <td>入养老院日期</td>
+                                        </tr>
+                                        <tr>
+                                            <td>checkout_date</td>
+                                            <td>datetime</td>
+                                            <td></td>
+                                            <td>无</td>
+                                            <td>离开养老院日期</td>
+                                        </tr>
+                                        <tr>
+                                            <td>imgset_dir</td>
+                                            <td>varchar</td>
+                                            <td>200</td>
+                                            <td>无</td>
+                                            <td>图像目录</td>
+                                        </tr>
+                                        <tr>
+                                            <td>profile_photo</td>
+                                            <td>varchar</td>
+                                            <td>200</td>
+                                            <td>无</td>
+                                            <td>头像路径</td>
+                                        </tr>
+                                        <tr>
+                                            <td>room_number</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>房间号</td>
+                                        </tr>
+                                        <tr>
+                                            <td>firstguardian_name</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第一监护人姓名</td>
+                                        </tr>
+                                        <tr>
+                                            <td>firstguardian_relationship</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>与第一监护人关系</td>
+                                        </tr>
+                                        <tr>
+                                            <td>firstguardian_phone</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第一监护人电话</td>
+                                        </tr>
+                                        <tr>
+                                            <td>firstguardian_wechat</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第一监护人微信</td>
+                                        </tr>
+                                        <tr>
+                                            <td>secondguardian_name</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第二监护人姓名</td>
+                                        </tr>
+                                        <tr>
+                                            <td>secondguardian_relationship</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>与第二监护人关系</td>
+                                        </tr>
+                                        <tr>
+                                            <td>secondguardian_phone</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第二监护人电话</td>
+                                        </tr>
+                                        <tr>
+                                            <td>secondguardian_wechat</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>第二监护人微信</td>
+                                        </tr>
+                                        <tr>
+                                            <td>health_state</td>
+                                            <td>varchar</td>
+                                            <td>50</td>
+                                            <td>无</td>
+                                            <td>健康状况</td>
+                                        </tr>
+                                        <tr>
+                                            <td>DESCRIPTION</td>
+                                            <td>varchar</td>
+                                            <td>200</td>
+                                            <td>无</td>
+                                            <td>描述</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ISACTIVE</td>
+                                            <td>char</td>
+                                            <td>10</td>
+                                            <td>无</td>
+                                            <td>是否有效</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CREATED</td>
+                                            <td>datetime</td>
+                                            <td></td>
+                                            <td>无</td>
+                                            <td>创建时间</td>
+                                        </tr>
+                                        <tr>
+                                            <td>CREATEBY</td>
+                                            <td>int</td>
+                                            <td>11</td>
+                                            <td>无</td>
+                                            <td>创建人</td>
+                                        </tr>
+                                        <tr>
+                                            <td>UPDATED</td>
+                                            <td>datetime</td>
+                                            <td></td>
+                                            <td>无</td>
+                                            <td>更新时间</td>
+                                        </tr>
+                                        <tr>
+                                            <td>UPDATEBY</td>
+                                            <td>int</td>
+                                            <td>11</td>
+                                            <td>无</td>
+                                            <td>更新人</td>
+                                        </tr>
+                                        <tr>
+                                            <td>REMOVE</td>
+                                            <td>char</td>
+                                            <td>1</td>
+                                            <td>无</td>
+                                            <td>删除标志</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- end::container -->
+
+        </div>
+        <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}
