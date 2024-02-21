@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from .models import User
+from .models import User,SystemAdministrator
 import hashlib
 
 def login(request):
