@@ -61,7 +61,7 @@
             </div>
             <a href="/modify-password">修改密码</a>
         </div>
-        <button class="btn btn-primary btn-block">登录</button>
+        <button type="submit" class="btn btn-primary btn-block">登录</button>
         <hr>
         <p class="text-muted">没有账号？</p>
         <a href="/register" class="btn btn-outline-light btn-sm">注册</a>
@@ -75,5 +75,69 @@
 
 <!-- App scripts -->
 <script src="{% static "assets/js/app.min.js" %}"></script>
+
+<script>
+    $('.login-button').click(function () {
+        var btn = $(this);
+        var form = $(this).closest('form');
+        $.ajax({
+            type: "POST",
+            url: "/login/",
+            dataType: "json",
+            headers: {
+                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),  // 根据Django的要求，通常使用这个头部名称
+            },
+            data: {
+                email: $("#email").val(),
+                passwd: $("#password").val(),
+                code: $("#2fa-code").val(), remember_me: $("#remember-me:checked").val(),
+            },
+            success: function (data) {
+                if (data.ret === 1) {
+                    $.notify({
+                        title: '<strong>' + data.msg + '</strong>',
+                        message: '正在转入用户中心'
+                    }, {type: 'success', placement: {from: "top", align: "center"},});
+                    window.setTimeout("location.href='/index'", 1000);
+
+                } else if (data.ret === 2) {
+                    $(".login-button").text('登录').attr('disabled', false);
+                    $('#2fa-form').show('fast');
+                    $.notify({
+                        message: '<strong>' + data.msg + '</strong>'
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 500,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
+                } else {
+                    $(".login-button").text('登录').attr('disabled', false);
+                    $.notify({
+                        title: '<strong>登录失败</strong>',
+                        message: data.msg
+                    }, {
+                        type: 'danger',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 500,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>

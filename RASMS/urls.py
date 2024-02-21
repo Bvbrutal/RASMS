@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.urls import path
 from django.views.generic import TemplateView
-
+from app import account
 from app import views
 
 urlpatterns = [
@@ -28,9 +28,10 @@ urlpatterns = [
     # 404页面
     path('404/', TemplateView.as_view(template_name='page/404.html'), name='404'),
 
-    #注册登录
-    path("login/", views.login),
-    path("register/", views.register),
+    # 注册登录
+    path("login/", account.login),
+    path("register/", account.register),
+    path("logout/", account.logout),
 
     # 个人信息
     path("profile/", views.profile),
@@ -50,14 +51,12 @@ urlpatterns = [
     path("modify_worker/", views.modify_worker),
     path("analyze_worker/", views.analyze_worker),
 
-
     # 义工信息管理
     path("add_volunteer/", views.add_volunteer),
     path("select_volunteer/", views.select_volunteer),
     path("modify_volunteer/", views.modify_volunteer),
     path("analyze_volunteer/", views.analyze_volunteer),
     path("volunteer_info/", views.volunteer_info),
-
 
     # 数据管理
     path("old_table/", views.old_table),

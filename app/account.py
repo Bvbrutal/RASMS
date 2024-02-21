@@ -41,11 +41,7 @@ def logout(request):
     return redirect('/login/')
 
 
-def user_proflie(request):
-    return render(request, 'account/profile.html')
-
-
-def user_register(request):
+def register(request):
     if request.method == 'GET':
         info_dic = request.session.get('info')
         if info_dic:

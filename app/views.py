@@ -1,15 +1,6 @@
 from django.shortcuts import render
 
 
-# 注册登录
-def login(request):
-    return render(request, "account/login.html")
-
-
-def register(request):
-    return render(request, "account/register.html")
-
-
 # pages
 def index(request):
     return render(request, "page/index.html")
