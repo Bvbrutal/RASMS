@@ -7,11 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <!-- Plugin styles -->
-    <link rel="stylesheet" href="{% static "vendors/bundle.css" %}" type="text/css">
+    <link rel="stylesheet" href="{% static "vendors/css/bundle.css" %}" type="text/css">
 
     <!-- App styles -->
     <link rel="stylesheet" href="{% static "assets/css/app.min.css" %}" type="text/css">
-
 
     {% block app-head %}{% endblock %}
 </head>
@@ -62,7 +61,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/login" class="btn nav-link bg-danger-bright" title="注销" data-toggle="tooltip">
+                    <a href="/logout" class="btn nav-link bg-danger-bright" title="注销" data-toggle="tooltip">
                         <i data-feather="log-out"></i>
                     </a>
                 </li>
@@ -297,7 +296,7 @@
 <!-- end::main -->
 
 <!-- Plugin scripts -->
-<script src="{% static "vendors/bundle.js" %}"></script>
+<script src="{% static "vendors/js/bundle.js" %}"></script>
 
 <!-- App scripts -->
 <script src="{% static "assets/js/app.min.js" %}"></script>

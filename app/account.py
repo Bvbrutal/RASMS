@@ -12,17 +12,28 @@ def login(request):
         return render(request, 'account/login.html')
     email = request.POST.get('email')
     passwd = request.POST.get('passwd')
-    print(email,passwd)
     # code = request.POST.get('code')
     encrypted_passwd = hashlib.md5(passwd.encode()).hexdigest()
     user_object = Test.objects.filter(email=email, password=encrypted_passwd).first()
-    print(user_object)
-    context = {
-        'ret': 1,
-        'msg': "登陆成功"
-    }
-    return JsonResponse(context, safe=False)
-
+    if user_object:
+        request.session['info'] = {'id': user_object.id, 'email': user_object.email}
+        context = {
+            'ret': 1,
+            'msg': "登陆成功"
+        }
+        return JsonResponse(context, safe=False)
+    elif Test.objects.filter(email=email).first() or Test.objects.filter(password=passwd).first():
+        context = {
+            'ret': 2,
+            'msg': "账号或密码错误!"
+        }
+        return JsonResponse(context, safe=False)
+    else:
+        context = {
+            'ret': 3,
+            'msg': "邮箱不存在"
+        }
+        return JsonResponse(context, safe=False)
 
 
 def logout(request):
@@ -57,7 +68,7 @@ def register(request):
             Test.objects.create(email=email, name=name, password=encrypted_passwd)
             context = {
                 'ret': 1,
-                'msg': "注册"
+                'msg': "注册成功"
             }
             return JsonResponse(context, safe=False)
         else:

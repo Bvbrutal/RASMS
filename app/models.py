@@ -4,7 +4,7 @@ from django.db import models
 #测试
 class Test(models.Model):
     id=models.AutoField(primary_key=True)
-    user_name = models.CharField(max_length=50, verbose_name="用户名")
+    name = models.CharField(max_length=50, verbose_name="用户名")
     password = models.CharField(max_length=50, verbose_name="密码")
     email = models.EmailField(max_length=50, blank=True, default="", verbose_name="邮箱")
 
