@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>登录界面</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-extended.css' %}">
+
+    <!-- 引入Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static "assets/media/image/favicon.png" %}"/>
@@ -49,10 +54,10 @@
     <!-- form -->
     <form>
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="管理员用户名" required autofocus>
+            <input type="text" id="email" class="form-control" placeholder="管理员用户名" required autofocus>
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" placeholder="密码" required>
+            <input type="password" id="password" class="form-control" placeholder="密码" required>
         </div>
         <div class="form-group d-flex justify-content-between">
             <div class="custom-control custom-checkbox">
@@ -61,7 +66,7 @@
             </div>
             <a href="/modify-password">修改密码</a>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">登录</button>
+        <button type="button" id="sub" class="btn btn-primary btn-block login-button">登录</button>
         <hr>
         <p class="text-muted">没有账号？</p>
         <a href="/register" class="btn btn-outline-light btn-sm">注册</a>
@@ -69,15 +74,27 @@
     <!-- ./ form -->
 
 </div>
-
 <!-- Plugin scripts -->
 <script src="{% static "vendors/bundle.js" %}"></script>
 
 <!-- App scripts -->
 <script src="{% static "assets/js/app.min.js" %}"></script>
 
+<!-- jQuery -->
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery.validate.min.js' %}"></script>
+
+
+<script src="{% static 'js/notify.js' %}"></script>
+
 <script>
-    $('.login-button').click(function () {
+    function getCsrfToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+    }
+
+    $('#sub').click(function () {
         var btn = $(this);
         var form = $(this).closest('form');
         $.ajax({
@@ -85,7 +102,8 @@
             url: "/login/",
             dataType: "json",
             headers: {
-                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),  // 根据Django的要求，通常使用这个头部名称
+                {#"X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(), #}
+                "X-CSRFToken": getCsrfToken()// 根据Django的要求，通常使用这个头部名称
             },
             data: {
                 email: $("#email").val(),
