@@ -5,7 +5,6 @@ import hashlib
 
 def login(request):
     if request.method == 'GET':
-        print("get")
         info_dic = request.session.get('info')
         if info_dic:
             return redirect('/index/')
