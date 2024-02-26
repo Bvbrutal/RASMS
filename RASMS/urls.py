@@ -16,14 +16,16 @@ Including another URLconf
 """
 from django.urls import path
 from django.views.generic import TemplateView
-from app import account
-from app import views
+
+from app import account, user_views
+from app import manager_views
 
 urlpatterns = [
     # path("admin/", admin.site.urls),
     # 主页
-    path("", views.index),
-    path("index/", views.index),
+    path("", manager_views.index),
+    path("index/", user_views.index),
+    path("manager/index/", manager_views.index),
 
     # 404页面
     path('404/', TemplateView.as_view(template_name='page/404.html'), name='404'),
@@ -32,36 +34,46 @@ urlpatterns = [
     path("login/", account.login),
     path("register/", account.register),
     path("logout/", account.logout),
-
-    # 个人信息
-    path("profile/", views.profile),
+    path("modify_password/", account.modify_password),
 
     # 事件记录
-    path("select_event/", views.select_event),
+    path("management/select_event/", manager_views.select_event),
 
     # 老年人信息管理
-    path("add_old/", views.add_old),
-    path("select_old/", views.select_old),
-    path("modify_old/", views.modify_old),
-    path("analyze_old/", views.analyze_old),
+    path("management/add_old/", manager_views.add_old),
+    path("management/select_old/", manager_views.select_old),
+    path("management/modify_old/", manager_views.modify_old),
+    path("management/analyze_old/", manager_views.analyze_old),
 
     # 工作人员信息管理
-    path("add_worker/", views.add_worker),
-    path("select_worker/", views.select_worker),
-    path("modify_worker/", views.modify_worker),
-    path("analyze_worker/", views.analyze_worker),
+    path("management/add_worker/", manager_views.add_worker),
+    path("management/select_worker/", manager_views.select_worker),
+    path("management/modify_worker/", manager_views.modify_worker),
+    path("management/analyze_worker/", manager_views.analyze_worker),
 
     # 义工信息管理
-    path("add_volunteer/", views.add_volunteer),
-    path("select_volunteer/", views.select_volunteer),
-    path("modify_volunteer/", views.modify_volunteer),
-    path("analyze_volunteer/", views.analyze_volunteer),
-    path("volunteer_info/", views.volunteer_info),
+    path("management/add_volunteer/", manager_views.add_volunteer),
+    path("management/select_volunteer/", manager_views.select_volunteer),
+    path("management/modify_volunteer/", manager_views.modify_volunteer),
+    path("management/analyze_volunteer/", manager_views.analyze_volunteer),
+    path("management/volunteer_info/", manager_views.volunteer_info),
 
     # 数据管理
-    path("old_table/", views.old_table),
-    path("worker_table/", views.worker_table),
-    path("volunteer_table/", views.volunteer_table),
-    path("event_table/", views.event_table),
-    path("manager_table/", views.manager_table),
+    path("management/old_table/", manager_views.old_table),
+    path("management/worker_table/", manager_views.worker_table),
+    path("management/volunteer_table/", manager_views.volunteer_table),
+    path("management/event_table/", manager_views.event_table),
+    path("management/manager_table/", manager_views.manager_table),
+
+    path("manager_views/profile/", manager_views.profile),
+
+    # 用户界面
+    path("profile/", user_views.profile),
+    path("user/modify_profile/", user_views.modify_profile),
+    path("user/community_activity/", user_views.community_activity),
+
+    # api
+    path("user/accont_api/", user_views.accont_api),
+    path("user/update_profile", user_views.update_profile),
+
 ]

@@ -1,7 +1,11 @@
+import time
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .models import Elder,Admin,Test
 import hashlib
+from datetime import datetime
+
 
 def login(request):
     if request.method == 'GET':
@@ -9,19 +13,21 @@ def login(request):
         if info_dic:
             return redirect('/index/')
         return render(request, 'account/login.html')
-    email = request.POST.get('email')
+    mobile_phone = request.POST.get('mobile_phone')
     passwd = request.POST.get('passwd')
     # code = request.POST.get('code')
     encrypted_passwd = hashlib.md5(passwd.encode()).hexdigest()
-    user_object = Test.objects.filter(email=email, password=encrypted_passwd).first()
+    user_object = Test.objects.filter(mobile_phone=mobile_phone, password=encrypted_passwd).first()
     if user_object:
-        request.session['info'] = {'id': user_object.id, 'email': user_object.email}
+        current_datetime = datetime.now()
+        formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        request.session['info'] = {'user_id': user_object.user_id, 'mobile_phone': user_object.mobile_phone}
         context = {
             'ret': 1,
             'msg': "登陆成功"
         }
         return JsonResponse(context, safe=False)
-    elif Test.objects.filter(email=email).first() or Test.objects.filter(password=passwd).first():
+    elif Test.objects.filter(mobile_phone=mobile_phone).first() or Test.objects.filter(password=passwd).first():
         context = {
             'ret': 2,
             'msg': "账号或密码错误!"
@@ -30,7 +36,7 @@ def login(request):
     else:
         context = {
             'ret': 3,
-            'msg': "邮箱不存在"
+            'msg': "手机号未注册"
         }
         return JsonResponse(context, safe=False)
 
@@ -47,13 +53,11 @@ def register(request):
             return redirect('/index/')
         return render(request, 'account/register.html')
     if request.method == 'POST':
-        email=request.POST.get('email')
-        name=request.POST.get('name')
+        mobile_phone=request.POST.get('mobile_phone')
+        username=request.POST.get('username')
         passwd=request.POST.get('passwd')
         repasswd=request.POST.get('repasswd')
-        print(email,name,passwd,repasswd)
-        user_object = Test.objects.filter(email=email).first()
-        print(user_object)
+        user_object = Test.objects.filter(mobile_phone=mobile_phone).first()
         if user_object:
             context = {
                 'ret': 3,
@@ -64,7 +68,7 @@ def register(request):
             # 对密码进行MD5加密
             encrypted_passwd = hashlib.md5(passwd.encode()).hexdigest()
             # 将加密后的密码存储到数据库中
-            Test.objects.create(email=email, name=name, password=encrypted_passwd)
+            Test.objects.create(mobile_phone=mobile_phone, username=username, password=encrypted_passwd)
             context = {
                 'ret': 1,
                 'msg': "注册成功"
@@ -77,3 +81,7 @@ def register(request):
             }
             return JsonResponse(context, safe=False)
     return render(request, 'account/register.html')
+
+
+def modify_password(request):
+    return render(request, 'account/modify_password.html')

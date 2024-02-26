@@ -1,0 +1,91 @@
+{% extends "template/index_user_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>编辑个人信息</title>
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>社区活动</h4>
+            </div>
+            <!-- end::page-header -->
+
+
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+    <script>
+function editAll() {
+    // 选择所有包含信息的div
+    document.querySelectorAll('.row.mb-2').forEach(function(row) {
+        const infoDiv = row.children[1]; // 获取每行的第二个div（包含信息的部分）
+
+        if (!infoDiv.querySelector('input')) { // 避免重复添加输入框
+            const currentValue = infoDiv.textContent.trim(); // 获取当前文本内容
+            const input = document.createElement('input'); // 创建新的输入框
+            input.type = 'text';
+            input.value = currentValue; // 设置输入框的值为当前文本内容
+            input.className = 'form-control'; // 添加Bootstrap类以匹配样式
+
+            // 清空当前div并添加新创建的输入框
+            infoDiv.textContent = '';
+            infoDiv.appendChild(input);
+        }
+    });
+}
+</script>
+    <script>
+        function editField(fieldId) {
+            // 获取当前字段的文本内容
+            var fieldValue = document.getElementById(fieldId + "-text").innerHTML;
+
+            // 创建一个新的输入框元素
+            var input = document.createElement("input");
+            input.type = "text";
+            input.id = fieldId + "-input";
+            input.value = fieldValue;
+
+            // 替换原有的文本显示为输入框
+            var div = document.getElementById(fieldId + "-text");
+            div.innerHTML = "";
+            div.appendChild(input);
+
+            // 更改按钮文本为“保存”并绑定新的点击事件
+            var btn = div.nextElementSibling;
+            btn.innerHTML = "保存";
+            btn.onclick = function () {
+                saveField(fieldId);
+            };
+        }
+
+        function saveField(fieldId) {
+            // 获取输入框的新值
+            var newValue = document.getElementById(fieldId + "-input").value;
+
+            // 将输入框替换回文本显示
+            var div = document.getElementById(fieldId + "-text");
+            div.innerHTML = newValue;
+
+            // 更改按钮文本为“编辑”并恢复原点击事件
+            var btn = div.nextElementSibling;
+            btn.innerHTML = "编辑";
+            btn.onclick = function () {
+                editField(fieldId);
+            };
+        }
+    </script>
+{% endblock %}

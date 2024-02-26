@@ -5,7 +5,7 @@ from django.utils.deprecation import MiddlewareMixin
 class authmiddleware(MiddlewareMixin):
     def process_request(self,request):
 
-        if request.path_info =='/login/' or request.path_info=='/register/':
+        if request.path_info =='/login/' or request.path_info=='/register/' or request.path_info=='/modify_password/':
             return
 
         info_dic=request.session.get('info')

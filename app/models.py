@@ -1,13 +1,40 @@
+from django.contrib.auth.models import Permission
 from django.db import models
+from django.utils import timezone
 
 
-#测试
+# 测试
 class Test(models.Model):
-    id=models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, verbose_name="用户名")
+    GENDER_CHOICES = (
+        ('M', '男'),
+        ('F', '女'),
+        ('O', '其他'),
+    )
+    GRADE_CHOICES=(
+        ('0', '管理员'),
+        ('1', '工作人员'),
+        ('2', '老年用户'),
+        ('3', '子女用户'),
+        ('4', '义工用户'),
+        ('5', '其他'),
+    )
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50, verbose_name='用户名',default='匿名用户')
     password = models.CharField(max_length=50, verbose_name="密码")
-    email = models.EmailField(max_length=50, blank=True, default="", verbose_name="邮箱")
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O', verbose_name='性别')
+    mobile_phone = models.CharField(max_length=50, blank=True, verbose_name="电话", unique=True)
+    creation_time = models.DateTimeField(verbose_name='创建时间',default=timezone.now)
+    phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='电话')
+    email = models.EmailField(verbose_name='邮箱',null=True,blank=True)
+    grade = models.IntegerField(choices=GRADE_CHOICES, default='5', verbose_name='类别')
+    bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
 
+    class Meta:
+        verbose_name = '用户'
+        verbose_name_plural = '用户'
+
+    def __str__(self):
+        return self.username
 
 
 # 管理员
@@ -177,3 +204,42 @@ class Volunteer(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# 访问信息
+
+# 访问网站的 ip 地址、端点和次数
+class UserIP(models.Model):
+    ip = models.CharField(verbose_name='IP 地址', max_length=30)
+    ip_addr = models.CharField(verbose_name='IP 地理位置', max_length=30)
+    end_point = models.CharField(verbose_name='访问端点', default='/', max_length=30)
+    count = models.IntegerField(verbose_name='访问次数', default=0)
+
+    class Meta:
+        verbose_name = '访问用户信息'
+        verbose_name_plural = verbose_name
+
+
+# 网站总访问次数
+class VisitNumber(models.Model):
+    count = models.IntegerField(verbose_name='网站访问总次数', default=0)  # 网站访问总次数
+
+    class Meta:
+        verbose_name = '网站访问总次数'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return str(self.count)
+
+
+# 单日访问量统计
+class DayNumber(models.Model):
+    day = models.DateField(verbose_name='日期', default=timezone.now)
+    count = models.IntegerField(verbose_name='网站访问次数', default=0)  # 网站访问总次数
+
+    class Meta:
+        verbose_name = '网站日访问量统计'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return str(self.day)

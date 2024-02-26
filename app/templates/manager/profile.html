@@ -1,0 +1,117 @@
+{% extends 'template/index_manager_tem.html' %}
+{% load static %}
+{% block app-head %}
+    <title>个人信息</title>
+{% endblock %}
+
+
+{% block app-content %}
+        <!-- begin::main-content -->
+        <div class="main-content">
+
+            <!-- begin::container -->
+            <div class="container">
+
+                <!-- begin::page-header -->
+                <div class="page-header">
+                    <h4>个人信息</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">个人信息管理</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">个人信息</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- end::page-header -->
+
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <figure class="avatar avatar-lg m-b-20">
+                                    <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="...">
+                                </figure>
+                                <h5 class="mb-1">CODING加油站</h5>
+                                <p class="text-muted small">管理员</p>
+                                <p>小程序员一枚。现就读于北京交通大学软件学院。</p>
+                                <a href="modify_profile.html" class="btn btn-outline-primary">
+                                    <i data-feather="edit-2" class="mr-2"></i>编辑个人信息
+                                </a>
+                            </div>
+                            <hr class="m-0">
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-12 text-success">
+                                        <h4 class="font-weight-bold">17301053</h4>
+                                        <span>用户名</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-8">
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex justify-content-between align-items-center">
+                                    信息
+                                    <a href="modify_profile.html" class="btn btn-outline-light btn-sm">
+                                        <i data-feather="edit-2" class="mr-2"></i> 编辑
+                                    </a>
+                                </h6>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">系统管理员ID：</div>
+                                    <div class="col-6">777</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">性别：</div>
+                                    <div class="col-6">男</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">邮箱：</div>
+                                    <div class="col-6">xxx@163.com</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">电话:</div>
+                                    <div class="col-6">111</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">移动电话:</div>
+                                    <div class="col-6">7777777</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">创建时间：</div>
+                                    <div class="col-6">2020/6/30</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">创建人：</div>
+                                    <div class="col-6">xxx</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">更新时间：</div>
+                                    <div class="col-6">2020/6/30</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">更新人：</div>
+                                    <div class="col-6">xxx</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- end::container -->
+
+        </div>
+        <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

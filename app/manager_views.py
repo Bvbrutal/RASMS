@@ -1,0 +1,87 @@
+from django.shortcuts import render
+
+
+# pages
+def index(request):
+    return render(request, "page/index_manager.html")
+
+def profile(request):
+    return render(request, "manager/profile.html")
+
+def select_event(request):
+    return render(request, "manager/select_event.html")
+
+
+# 老年人信息管理
+def add_old(request):
+    return render(request, "manager/elder_management/add_old.html")
+
+
+def select_old(request):
+    return render(request, "manager/elder_management/select_old.html")
+
+
+def modify_old(request):
+    return render(request, "manager/elder_management/modify_old.html")
+
+
+def analyze_old(request):
+    return render(request, "manager/elder_management/analyze_old.html")
+
+
+# 工作人员信息管理
+def add_worker(request):
+    return render(request, "manager/worker_management/add_worker.html")
+
+
+def select_worker(request):
+    return render(request, "manager/worker_management/select_worker.html")
+
+
+def modify_worker(request):
+    return render(request, "manager/worker_management/modify_worker.html")
+
+
+def analyze_worker(request):
+    return render(request, "manager/worker_management/analyze_worker.html")
+
+
+# 义工信息管理
+def add_volunteer(request):
+    return render(request, "manager/volunteer_management/add_volunteer.html")
+
+
+def select_volunteer(request):
+    return render(request, "manager/volunteer_management/select_volunteer.html")
+
+
+def modify_volunteer(request):
+    return render(request, "manager/volunteer_management/modify_volunteer.html")
+
+
+def analyze_volunteer(request):
+    return render(request, "manager/volunteer_management/analyze_volunteer.html")
+
+
+def volunteer_info(request):
+    return render(request, "manager/volunteer_management/volunteer_info.html")
+
+
+def old_table(request):
+    return render(request, "manager/data_manage/old_table.html")
+
+
+def worker_table(request):
+    return render(request, "manager/data_manage/worker_table.html")
+
+
+def volunteer_table(request):
+    return render(request, "manager/data_manage/volunteer_table.html")
+
+
+def event_table(request):
+    return render(request, "manager/data_manage/event_table.html")
+
+
+def manager_table(request):
+    return render(request, "manager/data_manage/manager_table.html")
