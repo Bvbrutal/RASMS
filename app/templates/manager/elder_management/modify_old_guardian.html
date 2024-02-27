@@ -1,0 +1,154 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>编辑老年人信息-监护人信息</title>
+{% endblock %}
+
+{% block app-content %}
+            <!-- begin::main-content -->
+        <div class="main-content">
+
+            <!-- begin::container -->
+            <div class="container">
+
+                <!-- begin::page-header -->
+                <div class="page-header">
+                    <h4>老年人监护人信息编辑</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">老年人信息管理</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="modify_old.html">信息删改</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">老年人监护人信息编辑</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- end::page-header -->
+
+                <div class="row">
+                    <div class="col-md-10">
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex justify-content-between align-items-center">
+                                    原信息
+                                </h6>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第一监护人姓名：</div>
+                                    <div class="col-6">小李</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">与第一监护人关系：</div>
+                                    <div class="col-6">父子</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第一监护人电话:</div>
+                                    <div class="col-6">1233444</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第一监护人微信:</div>
+                                    <div class="col-6">xxx</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第二监护人姓名:</div>
+                                    <div class="col-6">小小李</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">与第二监护人关系:</div>
+                                    <div class="col-6">爷孙</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第二监护人电话:</div>
+                                    <div class="col-6">1223243444</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4 text-muted">第二监护人微信:</div>
+                                    <div class="col-6">xxxxxx</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h6 class="card-title">老年人监护人信息修改</h6>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <form>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第一监护人姓名</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第一监护人姓名">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">与第一监护人关系</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入与第一监护人的关系">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第一监护人电话</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第一监护人的电话号码">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第一监护人微信</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第一监护人的微信号">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第二监护人姓名</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第二监护人姓名">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">与第二监护人关系</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入与第二监护人的关系">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第二监护人电话</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第二监护人的电话号码">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">第二监护人微信</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" placeholder="请输入第二监护人的微信号">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">修改信息</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- end::container -->
+
+        </div>
+        <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

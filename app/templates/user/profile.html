@@ -31,7 +31,7 @@
                             <p class="text-muted small">{{ grade }}</p>
                             <p id="bio-display">{{ bio|default:"这个人很懒什么都没留下" }}</p>
                             <a id="edit-info-btn" onclick="editInfo()" class="btn btn-outline-primary">
-                                <i data-feather="edit-2" class="mr-2"></i>编辑个人信息
+                                <i data-feather="edit-2" class="mr-2"></i>编辑个人简介
                             </a>
                         </div>
                         <hr class="m-0">
@@ -77,11 +77,11 @@
                                 <div id="email-input" class="col-4">{{ email|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-6 text-muted">电话:</div>
+                                <div class="col-6 text-muted">手机:</div>
                                 <div id="mobile_phone-input" class="col-4">{{ mobile_phone|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-6 text-muted">移动电话:</div>
+                                <div class="col-6 text-muted">电话:</div>
                                 <div id="phone-input" class="col-4">{{ phone|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
@@ -226,11 +226,33 @@
         }
 
         function saveInfo() {
-            var bio = document.getElementById('bio-input').value;
-
-
-            document.getElementById('bio-display').innerText = bio;
-
+            document.getElementById('bio-display').innerText = document.getElementById('bio-input').value;
+            data={
+                bio: document.getElementById('bio-display').textContent,
+            }
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "/user/update_profile", // 路径
+                async: true, // 是否异步
+                beforeSend: function (xhr) {
+                    // 将CSRF令牌设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                data: JSON.stringify(data), // 将数据转换为JSON字符串
+                contentType: "application/json; charset=utf-8", // 设置发送信息至服务器时内容编码类型
+                dataType: "json", // 预期服务器返回的数据类型
+                // 成功的回调函数
+                success: function (response) {
+                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                },
+                // 请求超时设置（可选）
+                timeout: 20000,
+                // 失败的回调函数
+                error: function (xhr, status, error) {
+                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                }
+            });
             // 获取编辑/保存按钮
             var editButton = document.getElementById('edit-info-btn');
 

@@ -1,0 +1,101 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>老年人数据列表</title>
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>信息查询</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">老年人信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">信息查询</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="table-old">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">老人id</th>
+                                        <th scope="col">老人姓名</th>
+                                        <th scope="col">性别</th>
+                                        <th scope="col">房间号</th>
+                                        <th scope="col">头像</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                            <td>1</td>
+                                            <td>李老头</td>
+                                            <td>男</td>
+                                            <td>111</td>
+                                            <td>
+                                                <figure class="avatar avatar-sm">
+                                                    <img src="" class="rounded-circle" alt="image">
+                                                </figure>
+                                            </td>
+                                            <td>
+                                                <a href="/old_info">
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary">详细信息
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% for Elder in Elders %}
+                                        <tr>
+                                            <td>{{ Elder.id }}</td>
+                                            <td>{{ Elder.username }}</td>
+                                            <td>{{ Elder.gender }}</td>
+                                            <td>{{ Elder.room_number }}</td>
+                                            <td>
+                                                <figure class="avatar avatar-sm">
+                                                    <img src="" class="rounded-circle" alt="image">
+                                                </figure>
+                                            </td>
+                                            <td>
+                                                <a href="/management/old_info?id={{ Elder.id }}">
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary">详细信息
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

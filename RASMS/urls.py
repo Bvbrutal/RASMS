@@ -28,7 +28,7 @@ urlpatterns = [
     path("manager/index/", manager_views.index),
 
     # 404页面
-    path('404/', TemplateView.as_view(template_name='page/404.html'), name='404'),
+    path('404/', TemplateView.as_view(template_name='account/404.html'), name='404'),
 
     # 注册登录
     path("login/", account.login),
@@ -38,18 +38,25 @@ urlpatterns = [
 
     # 事件记录
     path("management/select_event/", manager_views.select_event),
+    path("management/profile/", manager_views.profile),
 
     # 老年人信息管理
+    path("management/list_old/", manager_views.list_old),
     path("management/add_old/", manager_views.add_old),
     path("management/select_old/", manager_views.select_old),
     path("management/modify_old/", manager_views.modify_old),
     path("management/analyze_old/", manager_views.analyze_old),
+    path("management/old_info/", manager_views.old_info),
+    path("management/modify_old_basic/", manager_views.modify_old_basic),
+    path("management/modify_old_guardian/", manager_views.modify_old_guardian),
 
     # 工作人员信息管理
     path("management/add_worker/", manager_views.add_worker),
     path("management/select_worker/", manager_views.select_worker),
     path("management/modify_worker/", manager_views.modify_worker),
     path("management/analyze_worker/", manager_views.analyze_worker),
+    path("management/worker_info/", manager_views.worker_info),
+    path("management/modify_worker_basic/", manager_views.modify_worker_basic),
 
     # 义工信息管理
     path("management/add_volunteer/", manager_views.add_volunteer),
@@ -57,6 +64,7 @@ urlpatterns = [
     path("management/modify_volunteer/", manager_views.modify_volunteer),
     path("management/analyze_volunteer/", manager_views.analyze_volunteer),
     path("management/volunteer_info/", manager_views.volunteer_info),
+    path("management/modify_volunteer_basic/", manager_views.modify_volunteer_basic),
 
     # 数据管理
     path("management/old_table/", manager_views.old_table),
@@ -64,8 +72,6 @@ urlpatterns = [
     path("management/volunteer_table/", manager_views.volunteer_table),
     path("management/event_table/", manager_views.event_table),
     path("management/manager_table/", manager_views.manager_table),
-
-    path("manager_views/profile/", manager_views.profile),
 
     # 用户界面
     path("profile/", user_views.profile),

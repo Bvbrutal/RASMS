@@ -265,9 +265,12 @@
     function show_id(data) {
         const container1 = document.getElementById('user_name');
         const container2 = document.getElementById('user_grade');
-        // 创建一个列表来展示所有用户
+        const container3 = document.getElementById('user_name_2');
         container1.innerHTML = `<ul>${data.username}</ul>`;
         container2.innerHTML = `<ul>${data.grade}</ul>`;
+        if (container3) {
+            container3.innerHTML = `${data.username}`;
+        }
     }
 
     function fetchData() {

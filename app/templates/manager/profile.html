@@ -1,117 +1,266 @@
-{% extends 'template/index_manager_tem.html' %}
+{% extends "template/index_manager_tem.html" %}
 {% load static %}
+
 {% block app-head %}
     <title>个人信息</title>
 {% endblock %}
 
-
 {% block app-content %}
-        <!-- begin::main-content -->
-        <div class="main-content">
+    <!-- begin::main-content -->
+    <div class="main-content">
 
-            <!-- begin::container -->
-            <div class="container">
+        <!-- begin::container -->
+        <div class="container">
 
-                <!-- begin::page-header -->
-                <div class="page-header">
-                    <h4>个人信息</h4>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="#">个人信息管理</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">个人信息</li>
-                        </ol>
-                    </nav>
-                </div>
-                <!-- end::page-header -->
-
-                <div class="row">
-                    <div class="col-md-4">
-
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <figure class="avatar avatar-lg m-b-20">
-                                    <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="...">
-                                </figure>
-                                <h5 class="mb-1">CODING加油站</h5>
-                                <p class="text-muted small">管理员</p>
-                                <p>小程序员一枚。现就读于北京交通大学软件学院。</p>
-                                <a href="modify_profile.html" class="btn btn-outline-primary">
-                                    <i data-feather="edit-2" class="mr-2"></i>编辑个人信息
-                                </a>
-                            </div>
-                            <hr class="m-0">
-                            <div class="card-body">
-                                <div class="row text-center">
-                                    <div class="col-12 text-success">
-                                        <h4 class="font-weight-bold">17301053</h4>
-                                        <span>用户名</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-md-8">
-
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title d-flex justify-content-between align-items-center">
-                                    信息
-                                    <a href="modify_profile.html" class="btn btn-outline-light btn-sm">
-                                        <i data-feather="edit-2" class="mr-2"></i> 编辑
-                                    </a>
-                                </h6>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">系统管理员ID：</div>
-                                    <div class="col-6">777</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">性别：</div>
-                                    <div class="col-6">男</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">邮箱：</div>
-                                    <div class="col-6">xxx@163.com</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">电话:</div>
-                                    <div class="col-6">111</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">移动电话:</div>
-                                    <div class="col-6">7777777</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">创建时间：</div>
-                                    <div class="col-6">2020/6/30</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">创建人：</div>
-                                    <div class="col-6">xxx</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">更新时间：</div>
-                                    <div class="col-6">2020/6/30</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6 text-muted">更新人：</div>
-                                    <div class="col-6">xxx</div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>个人信息</h4>
             </div>
-            <!-- end::container -->
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <figure class="avatar avatar-lg m-b-20">
+                                <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle"
+                                     alt="...">
+                            </figure>
+                            <h5 class="mb-1">{{ username }}</h5>
+                            <p class="text-muted small">{{ grade }}</p>
+                            <p id="bio-display">{{ bio|default:"这个人很懒什么都没留下" }}</p>
+                            <a id="edit-info-btn" onclick="editInfo()" class="btn btn-outline-primary">
+                                <i data-feather="edit-2" class="mr-2"></i>编辑个人简介
+                            </a>
+                        </div>
+                        <hr class="m-0">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-12 text-success">
+                                    <h4 class="font-weight-bold">17301053</h4>
+                                    <span>用户名</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-8">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-between align-items-center">
+                                信息
+                                <a id=editButton onclick="editAll()" class="btn btn-outline-light btn-sm">
+                                    <i data-feather="edit-2" class="mr-2"></i> 编辑
+                                </a>
+                            </h6>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">账户ID：</div>
+                                <div class="col-4">{{ user_id|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">用户名字：</div>
+                                <div id="username-input" class="col-4">{{ username|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">用户类型：</div>
+                                <div id="grade-input" class="col-4">{{ grade|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">性别：</div>
+                                <div id="gender-input" class="col-4">{{ gender|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">邮箱：</div>
+                                <div id="email-input" class="col-4">{{ email|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">手机:</div>
+                                <div id="mobile_phone-input" class="col-4">{{ mobile_phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">电话:</div>
+                                <div id="phone-input" class="col-4">{{ phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">创建时间：</div>
+                                <div id="creation_time-input" class="col-4">{{ creation_time|default:"暂无" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
 
         </div>
-        <!-- end::main-content -->
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        function getCsrfToken() {
+            // 从cookie中获取CSRF令牌
+            let csrfToken = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        csrfToken = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return csrfToken;
+        }
+
+        function editAll() {
+            // 直接使用forEach并通过index判断是否跳过第一个元素
+            document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
+                // 如果是第一个元素，则跳过
+                if (index === 0 || index === 7) return;
+
+                const infoDiv = row.children[1];
+
+                if (!infoDiv.querySelector('input')) {
+                    const infoDivId = infoDiv.id;
+                    const currentValue = infoDiv.textContent.trim();
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentValue;
+                    input.className = 'form-control';
+                    input.style.height = '1.5rem';
+                    infoDiv.textContent = '';
+                    infoDiv.appendChild(input);
+                }
+            });
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('editButton');
+
+            // 检查当前是编辑模式还是保存模式
+            if (editButton.textContent.includes('编辑')) {
+                // 更改按钮文本为"保存"并更改其onclick事件为调用saveAll()函数
+                editButton.innerHTML = '<i id="editIcon" data-feather="save" class="mr-2"></i> 保存';
+                editButton.setAttribute('onclick', 'saveAll()');
+                feather.replace(); // 重新初始化feather icons
+            }
+        }
+
+        function saveAll() {
+            document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
+                // 如果是第一个元素或特定的跳过元素，则返回
+                if (index === 0 || index === 7) return;
+
+                const infoInput = row.children[1].querySelector('input');
+
+                if (infoInput) {
+                    const newValue = infoInput.value.trim();
+                    const infoDiv = row.children[1];
+                    infoDiv.innerHTML = newValue; // 将新值设置回div
+                }
+            });
+            var data = {
+                creation_time: document.getElementById('creation_time-input').textContent,
+                email: document.getElementById('email-input').textContent,
+                username: document.getElementById('username-input').textContent,
+                grade: document.getElementById('grade-input').textContent,
+                gender: document.getElementById('gender-input').textContent,
+                mobile_phone: document.getElementById('mobile_phone-input').textContent,
+                phone: document.getElementById('phone-input').textContent,
+            };
+
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "/user/update_profile", // 路径
+                async: true, // 是否异步
+                beforeSend: function (xhr) {
+                    // 将CSRF令牌设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                data: JSON.stringify(data), // 将数据转换为JSON字符串
+                contentType: "application/json; charset=utf-8", // 设置发送信息至服务器时内容编码类型
+                dataType: "json", // 预期服务器返回的数据类型
+                // 成功的回调函数
+                success: function (response) {
+                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                },
+                // 请求超时设置（可选）
+                timeout: 20000,
+                // 失败的回调函数
+                error: function (xhr, status, error) {
+                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                }
+            });
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('editButton');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i id="editIcon" data-feather="edit-2" class="mr-2"></i> 编辑';
+            editButton.setAttribute('onclick', 'editAll()');
+            feather.replace(); // 重新初始化feather icons
+        }
+    </script>
+    <script>
+
+        function editInfo() {
+            // 将自我介绍转换为<textarea>
+            var bio = document.getElementById('bio-display').innerText;
+            document.getElementById('bio-display').innerHTML = `<textarea id="bio-input">${bio}</textarea>`;
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('edit-info-btn');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i data-feather="save" class="mr-2"></i>保存自我介绍';
+            editButton.setAttribute('onclick', 'saveInfo()');
+            feather.replace(); // 重新初始化feather icons
+        }
+
+        function saveInfo() {
+            document.getElementById('bio-display').innerText = document.getElementById('bio-input').value;
+            data={
+                bio: document.getElementById('bio-display').textContent,
+            }
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "/user/update_profile", // 路径
+                async: true, // 是否异步
+                beforeSend: function (xhr) {
+                    // 将CSRF令牌设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                data: JSON.stringify(data), // 将数据转换为JSON字符串
+                contentType: "application/json; charset=utf-8", // 设置发送信息至服务器时内容编码类型
+                dataType: "json", // 预期服务器返回的数据类型
+                // 成功的回调函数
+                success: function (response) {
+                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                },
+                // 请求超时设置（可选）
+                timeout: 20000,
+                // 失败的回调函数
+                error: function (xhr, status, error) {
+                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                }
+            });
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('edit-info-btn');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i data-feather="edit-2" class="mr-2"></i>编辑自我介绍';
+            editButton.setAttribute('onclick', 'editInfo()');
+            feather.replace(); // 重新初始化feather icons
+        }
+    </script>
 
 {% endblock %}
