@@ -1,31 +1,22 @@
+from datetime import datetime
+
 from django.contrib.auth.models import Permission
 from django.db import models
 from django.utils import timezone
 
+from app.configuration import GENDER_CHOICES, GRADE_CHOICES, EVENT_TYPES
+
 
 # 测试
 class Test(models.Model):
-    GENDER_CHOICES = (
-        ('M', '男'),
-        ('F', '女'),
-        ('O', '其他'),
-    )
-    GRADE_CHOICES=(
-        ('0', '管理员'),
-        ('1', '工作人员'),
-        ('2', '老年用户'),
-        ('3', '子女用户'),
-        ('4', '义工用户'),
-        ('5', '其他'),
-    )
     user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50, verbose_name='用户名',default='匿名用户')
+    username = models.CharField(max_length=50, verbose_name='用户名', default='匿名用户')
     password = models.CharField(max_length=50, verbose_name="密码")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O', verbose_name='性别')
-    mobile_phone = models.CharField(max_length=50, blank=True, verbose_name="电话", unique=True)
-    creation_time = models.DateTimeField(verbose_name='创建时间',default=timezone.now)
+    mobile_phone = models.CharField(max_length=50, verbose_name="移动电话", unique=True)
+    creation_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
     phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='电话')
-    email = models.EmailField(verbose_name='邮箱',null=True,blank=True)
+    email = models.EmailField(verbose_name='邮箱', null=True, blank=True)
     grade = models.IntegerField(choices=GRADE_CHOICES, default='5', verbose_name='类别')
     bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
 
@@ -37,56 +28,19 @@ class Test(models.Model):
         return self.username
 
 
-# 管理员
-class Admin(models.Model):
-    user_name = models.CharField(max_length=50, verbose_name="用户名")
-    password = models.CharField(max_length=50, verbose_name="密码")
-    real_name = models.CharField(max_length=50, blank=True, default="", verbose_name="用户真实姓名")
-    sex = models.CharField(max_length=20, blank=True, default="", verbose_name="性别")
-    email = models.EmailField(max_length=50, blank=True, default="", verbose_name="邮箱")
-    phone = models.CharField(max_length=50, blank=True, default="", verbose_name="电话")
-    mobile = models.CharField(max_length=50, blank=True, default="", verbose_name="移动电话")
-    description = models.TextField(max_length=200, blank=True, default="", verbose_name="描述")
-    is_active = models.BooleanField(default=True, verbose_name="是否有效")
-    created = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    created_by = models.IntegerField(blank=True, null=True, verbose_name="创建人")
-    updated = models.DateTimeField(auto_now=True, verbose_name="更新时间")
-    updated_by = models.IntegerField(blank=True, null=True, verbose_name="更新人")
-    remove = models.BooleanField(default=False, verbose_name="删除标志")
-    data_filter = models.TextField(max_length=200, blank=True, default="", verbose_name="数据过滤")
-    theme = models.CharField(max_length=45, blank=True, default="", verbose_name="主题")
-    default_page = models.CharField(max_length=45, blank=True, default="", verbose_name="缺省页面")
-    logo_image = models.CharField(max_length=45, blank=True, default="", verbose_name="Logo")
-    qq_openid = models.CharField(max_length=100, blank=True, default="", verbose_name="用于第三方登录的凭证")
-    app_version = models.CharField(max_length=10, blank=True, default="1.0", verbose_name="检测app的版本号")
-    json_auth = models.TextField(max_length=1000, blank=True, default="{}",
-                                 verbose_name="用于app的权限控制（json串里有权限点的配置）")
-
-    class Meta:
-        verbose_name = "系统管理员"
-        verbose_name_plural = "系统管理员"
-        db_table = 'system_administrator'
-
-    def __str__(self):
-        return self.user_name
 
 
 # 老人
 class Elder(models.Model):
-    GENDER_CHOICES = (
-        ('M', '男'),
-        ('F', '女'),
-        ('U', '未知'),
-    )
     username = models.CharField(max_length=50, verbose_name='老人姓名')
     gender = models.CharField(max_length=5, choices=GENDER_CHOICES, default='U', verbose_name='性别')
-    phone = models.CharField(max_length=50, blank=True, null=True, verbose_name='电话')
+    mobile_phone = models.CharField(max_length=50, verbose_name="移动电话", unique=True)
+    phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='座机电话')
     id_card = models.CharField(max_length=50, unique=True, verbose_name='身份证号')
     birthday = models.DateField(null=True, blank=True, verbose_name='出生日期')  # 允许为空，有可能未知
     checkin_date = models.DateField(null=True, blank=True, verbose_name='入养老院日期')  # 允许为空，初始状态可能未入住
     checkout_date = models.DateField(null=True, blank=True, verbose_name='离开养老院日期')  # 允许为空，初始状态肯定为空
-    imgset_dir = models.CharField(max_length=200, blank=True, null=True, verbose_name='图像目录')
-    profile_photo = models.CharField(max_length=200, blank=True, null=True, verbose_name='头像路径')
+    avatar_photo = models.ImageField(upload_to='avatar_photo/', null=True, blank=True)
     room_number = models.CharField(max_length=50, blank=True, null=True, verbose_name='房间号')  # 允许为空，可能未分配房间
     firstguardian_name = models.CharField(max_length=50, blank=True, null=True, verbose_name='第一监护人姓名')
     firstguardian_relationship = models.CharField(max_length=50, blank=True, null=True, verbose_name='与第一监护人关系')
@@ -100,12 +54,16 @@ class Elder(models.Model):
     health_state = models.CharField(max_length=50, blank=True, null=True, default='良好',
                                     verbose_name='健康状况')  # 设置默认健康状况为“良好”
     description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
-    is_active = models.BooleanField(default=True, verbose_name='是否有效')  # 使用BooleanField，默认为True
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
     updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
-    remove = models.BooleanField(default=False, verbose_name='删除标志')  # 使用BooleanField，默认为False
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+
+    def calculate_age(self):
+        today = datetime.today()
+        age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
+        return age
 
     class Meta:
         verbose_name = '老人信息'
@@ -116,29 +74,28 @@ class Elder(models.Model):
         return self.username
 
 
-# 员工
+# 工作人员
 class Staff(models.Model):
-    GENDER_CHOICES = (
-        ('M', '男'),
-        ('F', '女'),
-        ('U', '未知'),
-    )
     username = models.CharField(max_length=50, verbose_name='工作人员姓名')
     gender = models.CharField(max_length=5, choices=GENDER_CHOICES, default='U', verbose_name='性别')
-    phone = models.CharField(max_length=50, blank=True, default='', verbose_name='电话')
-    id_card = models.CharField(max_length=50, blank=True, default='', verbose_name='身份证号')
+    mobile_phone = models.CharField(max_length=50, verbose_name="移动电话", unique=True)
+    phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='座机电话')
+    id_card = models.CharField(max_length=50, unique=True, verbose_name='身份证号')
     birthday = models.DateField(null=True, blank=True, verbose_name='出生日期')
     hire_date = models.DateField(null=True, blank=True, verbose_name='入职日期')
     resign_date = models.DateField(null=True, blank=True, verbose_name='离职日期')
-    imgset_dir = models.CharField(max_length=200, blank=True, default='', verbose_name='图像目录')
-    profile_photo = models.CharField(max_length=200, blank=True, default='', verbose_name='头像路径')
-    description = models.TextField(max_length=200, blank=True, default='', verbose_name='描述')
-    is_active = models.BooleanField(default=True, verbose_name='是否有效')
+    staff_photo = models.ImageField(upload_to='staff_photo/', null=True, blank=True)
+    description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
     updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
-    remove = models.BooleanField(default=False, verbose_name='删除标志')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+
+    def calculate_age(self):
+        today = datetime.today()
+        age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
+        return age
 
     class Meta:
         verbose_name = '工作人员'
@@ -149,15 +106,40 @@ class Staff(models.Model):
         return self.username
 
 
+# 义工
+class Volunteer(models.Model):
+    username = models.CharField(max_length=50, verbose_name='义工姓名')
+    gender = models.CharField(max_length=5, choices=GENDER_CHOICES, default='U', verbose_name='性别')
+    mobile_phone = models.CharField(max_length=50, verbose_name="移动电话", unique=True)
+    phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='座机电话')
+    id_card = models.CharField(max_length=50, unique=True, verbose_name='身份证号')
+    birthday = models.DateField(null=True, blank=True, verbose_name='出生日期')
+    hire_date = models.DateField(null=True, blank=True, verbose_name='入职日期')
+    resign_date = models.DateField(null=True, blank=True, verbose_name='离职日期')
+    volunteer_photo = models.ImageField(upload_to='volunteer_photo/', null=True, blank=True)
+    description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+
+    def calculate_age(self):
+        today = datetime.today()
+        age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
+        return age
+
+    class Meta:
+        verbose_name = "义工"
+        verbose_name_plural = "义工"
+        db_table = 'volunteer_info'
+
+    def __str__(self):
+        return self.username
+
+
 # 事件
 class Event(models.Model):
-    EVENT_TYPES = (
-        (0, '情感检测'),
-        (1, '义工交互检测'),
-        (2, '陌生人检测'),
-        (3, '摔倒检测'),
-        (4, '禁止区域入侵检测'),
-    )
     event_id = models.IntegerField(default=0, choices=EVENT_TYPES, verbose_name='事件id')
     event_date = models.DateTimeField(verbose_name='事件发生时间')
     event_location = models.CharField(max_length=200, blank=True, default='', verbose_name='事件发生地点')
@@ -173,37 +155,80 @@ class Event(models.Model):
         return f"{self.get_event_id_display()} - {self.event_date.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
-# 义工
-class Volunteer(models.Model):
-    GENDER_CHOICES = (
-        ('M', '男'),
-        ('F', '女'),
-        ('U', '未知'),
-    )
-    name = models.CharField(max_length=50, verbose_name="义工姓名")
-    gender = models.CharField(max_length=5, choices=GENDER_CHOICES, default='U', verbose_name="性别")
-    phone = models.CharField(max_length=50, blank=True, default="", verbose_name="电话")
-    id_card = models.CharField(max_length=50, blank=True, default="", verbose_name="身份证号")
-    birthday = models.DateField(null=True, blank=True, verbose_name="出生日期")
-    checkin_date = models.DateField(null=True, blank=True, verbose_name="访问日期")
-    checkout_date = models.DateField(null=True, blank=True, verbose_name="离开日期")
-    imgset_dir = models.CharField(max_length=200, blank=True, default="", verbose_name="图像目录")
-    profile_photo = models.CharField(max_length=200, blank=True, default="", verbose_name="头像路径")
-    description = models.TextField(max_length=200, blank=True, default="", verbose_name="描述")
-    is_active = models.BooleanField(default=True, verbose_name="是否有效")
-    created = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    created_by = models.IntegerField(blank=True, null=True, verbose_name="创建人")
-    updated = models.DateTimeField(auto_now=True, verbose_name="更新时间")
-    updated_by = models.IntegerField(blank=True, null=True, verbose_name="更新人")
-    remove = models.BooleanField(default=False, verbose_name="删除标志")
+# 日志记录
+class Logging(models.Model):
+    operation_time = models.DateTimeField(default=timezone.now)
+    operator = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='Logging', verbose_name='日志')
+    operation_content = models.TextField(blank=True, null=True, verbose_name='操作信息')
 
-    class Meta:
-        verbose_name = "义工"
-        verbose_name_plural = "义工"
-        db_table = 'volunteer_info'
+    def __str__(self):
+        return f"{self.operation_time} - {self.operator}"
+
+
+# 社区活动管理
+class CommunityEvent(models.Model):
+    STATUS_CHOICES = (
+        ('not_started', '未开始'),
+        ('ongoing', '进行中'),
+        ('finished', '已结束'),
+    )
+    name = models.CharField(max_length=255, verbose_name= "活动名称")
+    description = models.TextField(verbose_name="描述", null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
+    start_time = models.DateTimeField(verbose_name="开始时间", null=True, blank=True)
+    end_time = models.DateTimeField(verbose_name="结束时间", null=True, blank=True)
+    location = models.CharField(max_length=255, verbose_name="地点", null=True, blank=True)
+    organizer = models.CharField(max_length=255, verbose_name="主办方", null=True, blank=True)
+    participant_limit = models.IntegerField(verbose_name="参与人数限制", null=True, blank=True)
+    registration_status = models.BooleanField(default=True, verbose_name="报名状态")
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES,default='not_started',verbose_name="活动状态")
+    contact_info = models.CharField(max_length=255, verbose_name="联系信息", null=True, blank=True)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="费用", null=True, blank=True)
+    image = models.ImageField(upload_to='communityevents/', verbose_name="图片/海报", null=True, blank=True)
+    category = models.CharField(max_length=255, verbose_name="分类", null=True, blank=True)
+    registration_link = models.URLField(verbose_name="注册/报名链接", max_length=1024, null=True, blank=True)
+
+    def registration_count(self):
+        return self.registrations.count()
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "社区活动"
+        verbose_name_plural = "社区活动"
+
+
+# 社区活动报名人数统计
+class Registration(models.Model):
+    user = models.ForeignKey(Elder, on_delete=models.CASCADE, related_name="registrations")
+    event = models.ForeignKey(CommunityEvent, on_delete=models.CASCADE, related_name="registrations")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+# 社区公告管理
+class CommunityAnnouncement(models.Model):
+    title = models.CharField(max_length=255, verbose_name="标题")
+    content = models.TextField(verbose_name="内容")
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创键日期')
+    published_date = models.DateTimeField(null=True, blank=True, verbose_name="发布日期")
+    expiry_date = models.DateTimeField(null=True, blank=True, verbose_name="过期日期")
+    author = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, verbose_name="发布者")
+    publisher=models.CharField(max_length=255,null=True, blank=True, verbose_name="发布方")
+    announcement_photo = models.ImageField(upload_to='announcement_photo/', null=True, blank=True)
+    STATUS_CHOICES = (
+        ('active', '有效'),
+        ('inactive', '暂时无效'),
+        ('expired', '过期'),
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active', verbose_name="状态")
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "社区公告"
+        verbose_name_plural = "社区公告"
 
 
 # 访问信息

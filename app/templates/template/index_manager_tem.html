@@ -12,6 +12,9 @@
     <!-- App styles -->
     <link rel="stylesheet" href="{% static "assets/css/app.min.css" %}" type="text/css">
 
+    <!-- My styles -->
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}" type="text/css">
+
     {% block app-head %}{% endblock %}
 </head>
 
@@ -52,11 +55,12 @@
             <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image">
         </figure>
         <div>
-            <h5>CODING加油站</h5>
-            <p class="text-muted">管理员</p>
+            <h5 id="user_name">匿名用户</h5>
+            <p id="user_grade" class="text-muted">管理员</p>
             <ul class="nav">
                 <li class="nav-item">
-                    <a href="/profile" class="btn nav-link bg-info-bright" title="个人信息" data-toggle="tooltip">
+                    <a href="/management/profile" class="btn nav-link bg-info-bright" title="个人信息"
+                       data-toggle="tooltip">
                         <i data-feather="user"></i>
                     </a>
                 </li>
@@ -73,7 +77,6 @@
     <!-- begin::navigation menu -->
     <div class="navigation-menu-body">
         <ul>
-            <li class="navigation-divider">信息管理</li>
             <li>
                 <a href="/manager/index">
                     <i class="nav-link-icon" data-feather="airplay"></i>
@@ -89,15 +92,25 @@
                 </a>
             </li>
             <li>
+                <a href="/management/library">
+                    <i class="nav-link-icon" data-feather="monitor"></i>
+                    <span>监控管理</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li class="navigation-divider">信息管理</li>
+            <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <i class="nav-link-icon" data-feather="tag"></i>
                     <span>老年人信息管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/add_old">信息录入</a></li>
-                    <li><a href="/management/select_old">信息查询</a></li>
-                    <li><a href="/management/modify_old">信息删改</a></li>
-                    <li><a href="/management/analyze_old">统计分析</a></li>
+                    {#                    <li><a href="/management/list_old">老人数据列表</a></li>#}
+                    {#                    <li><a href="/management/select_old">老人信息查询</a></li>#}
+                    <li><a href="/management/modify_old">老人信息列表</a></li>
+                    <li><a href="/management/add_old">老人信息录入</a></li>
+                    {#                    <li><a href="/management/modify_old">老人信息控制</a></li>#}
+                    <li><a href="/management/analyze_old">老人统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -106,10 +119,12 @@
                     <span>工作人员信息管理</span>
                 </a>
                 <ul>
-                    <li><a href="/add_worker">信息录入</a></li>
-                    <li><a href="/select_worker">信息查询</a></li>
-                    <li><a href="/modify_worker">信息删改</a></li>
-                    <li><a href="/analyze_worker">统计分析</a></li>
+                    <li><a href="/management/modify_worker">工作人员信息列表</a></li>
+                    {#                    <li><a href="/management/list_worker">工作人员数据列表</a></li>#}
+                    {#                    <li><a href="/management/select_worker">工作人员信息查询</a></li>#}
+                    <li><a href="/management/add_worker">工作人员信息录入</a></li>
+                    {#                    <li><a href="/management/modify_worker">工作人员信息控制</a></li>#}
+                    <li><a href="/management/analyze_worker">工作人员统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -118,63 +133,56 @@
                     <span>义工信息管理</span>
                 </a>
                 <ul>
-                    <li><a href="/add_volunteer">信息录入</a></li>
-                    <li><a href="/select_volunteer">信息查询</a></li>
-                    <li><a href="/modify_volunteer">信息删改</a></li>
-                    <li><a href="/analyze_volunteer">统计分析</a></li>
+                    <li><a href="/management/modify_volunteer">义工信息列表</a></li>
+                    {#                    <li><a href="/management/list_volunteer">义工数据列表</a></li>#}
+                    {#                    <li><a href="/management/select_volunteer">义工信息查询</a></li>#}
+                    <li><a href="/management/add_volunteer">义工信息录入</a></li>
+                    {#                    <li><a href="/management/modify_volunteer">义工信息控制</a></li>#}
+                    <li><a href="/management/analyze_volunteer">义工统计分析</a></li>
                 </ul>
             </li>
-            <li class="navigation-divider">系统管理</li>
+            <li class="navigation-divider">功能管理</li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <span>公告信息管理</span>
+                </a>
+                <ul>
+                    <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <span>服务订单管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/modify_old">老人信息列表</a></li>
+                    <li><a href="/management/add_old">老人信息录入</a></li>
+                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <span>区域分配管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/modify_old">老人信息列表</a></li>
+                    <li><a href="/management/add_old">老人信息录入</a></li>
+                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                </ul>
+            </li>
+            <li class="navigation-divider">社区管理</li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="database"></i>
-                    <span>数据管理</span>
+                    <span>社区活动管理</span>
                 </a>
                 <ul>
-                    <li><a href="/old_table">老人信息表</a></li>
-                    <li><a href="/worker_table">工作人员信息表</a></li>
-                    <li><a href="/volunteer_table">义工信息表</a></li>
-                    <li><a href="/event_table">事件信息表</a></li>
-                    <li><a href="/manager_table">系统管理员信息表</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
-                    <span>数据管理</span>
-                </a>
-                <ul>
-                    <li><a href="/old_table">老人信息表</a></li>
-                    <li><a href="/worker_table">工作人员信息表</a></li>
-                    <li><a href="/volunteer_table">义工信息表</a></li>
-                    <li><a href="/event_table">事件信息表</a></li>
-                    <li><a href="/manager_table">系统管理员信息表</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
-                    <span>数据管理</span>
-                </a>
-                <ul>
-                    <li><a href="/old_table">老人信息表</a></li>
-                    <li><a href="/worker_table">工作人员信息表</a></li>
-                    <li><a href="/volunteer_table">义工信息表</a></li>
-                    <li><a href="/event_table">事件信息表</a></li>
-                    <li><a href="/manager_table">系统管理员信息表</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="monitor"></i>
-                    <span>摄像头管理</span>
-                </a>
-                <ul>
-                    <li><a href="/monitor1">摄像头1</a></li>
-                    <li><a href="/monitor2">摄像头2</a></li>
-                    <li><a href="/monitor3">摄像头3</a></li>
-                    <li><a href="/monitor4">摄像头4</a></li>
-                    <li><a href="/monitor5">摄像头5</a></li>
+                    <li><a href="/management/activity_list">社区活动列表</a></li>
+                    <li><a href="/management/activity_add">社区活动发布</a></li>
+                    <li><a href="/management/activity_modify">社区活动管理</a></li>
                 </ul>
             </li>
         </ul>
@@ -246,47 +254,7 @@
                             <h6 class="mb-1">通知</h6>
                         </div>
                         <div>
-                            <ul class="list-group list-group-flush">
-                                <li>
-                                    <a class="list-group-item d-flex align-items-center hide-show-toggler">
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                老年人信息录入成功
-                                            </p>
-                                            <span class="text-muted small">1分钟前</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="list-group-item d-flex align-items-center hide-show-toggler">
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                工作人员信息录入成功
-                                            </p>
-                                            <span class="text-muted small">5分钟前</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="list-group-item d-flex align-items-center hide-show-toggler">
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                老年人信息删除成功
-                                            </p>
-                                            <span class="text-muted small">1小时前</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="list-group-item d-flex align-items-center hide-show-toggler">
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                义工信息删除成功
-                                            </p>
-                                            <span class="text-muted small">2小时前</span>
-                                        </div>
-                                    </a>
-                                </li>
+                            <ul class="list-group list-group-flush" id="log-list">
                             </ul>
                         </div>
                     </div>
@@ -329,7 +297,62 @@
 
 <!-- Chartjs -->
 <script src="{% static "vendors/charts/chartjs/chart.min.js" %}"></script>
+<script>
+    function show_id(data) {
+        const container1 = document.getElementById('user_name');
+        const container2 = document.getElementById('user_grade');
+        const container3 = document.getElementById('user_name_2');
+        container1.innerHTML = `<ul>${data.username}</ul>`;
+        container2.innerHTML = `<ul>${data.grade}</ul>`;
+        if (container3) {
+            container3.innerHTML = `${data.username}`;
+        }
+    }
 
+    function show_log(datas) {
+        var logList = $("#log-list");
+        if (datas.loggings[0]) {
+            console.log("Operation Time:", datas.loggings[0].operation_time);
+            console.log("Operator ID:", datas.loggings[0].operator);
+            console.log("Operation Content:", datas.loggings[0].operation_content);
+            console.log("----------");
+            datas.loggings.forEach(function (item) {
+                var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
+                var contentDiv = $("<div>").addClass("flex-grow-1");
+                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_content);
+                var timeSpan = $("<span>").addClass("text-muted small").text(item.operation_time);
+                // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
+                contentDiv.append(messagePara).append(timeSpan);
+                listItem.append(contentDiv);
+                // 将 LI 元素添加到 UL 列表中
+                logList.append(listItem);
+            })
+        } else {
+            var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
+            var contentDiv = $("<div>").addClass("flex-grow-1");
+            var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text("暂无消息...");
+            // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
+            contentDiv.append(messagePara);
+            listItem.append(contentDiv);
+            // 将 LI 元素添加到 UL 列表中
+            logList.append(listItem);
+        }
+    }
+
+    function fetchData() {
+        fetch("/api/accont_api/")
+            .then(response => response.json())
+            .then(data => show_id(data))
+            .catch(error => console.error('Error fetching data:', error));
+
+        fetch("/api/logging/")
+            .then(response => response.json())
+            .then(data => show_log(data))
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    fetchData();
+</script>
 {% block app-foot %}{% endblock %}
 </body>
 

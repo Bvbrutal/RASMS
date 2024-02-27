@@ -1,4 +1,4 @@
-{% extends 'template/index_user_tem.html' %}
+{% extends 'template/index_manager_tem.html' %}
 {% block app-head %}
     <title>主界面</title>
 {% endblock %}
@@ -10,9 +10,8 @@
 
         <!-- begin::container -->
         <div class="container">
-
             <div class="page-header">
-                <h4>欢迎， <span class="text-primary">CODING加油站</span></h4>
+                <h4>欢迎， <span class="text-primary" id="user_name_2">匿名用户</span></h4>
             </div>
 
             <div class="row">
@@ -37,7 +36,7 @@
                                                         <div>
                                                             <h6 class="text-uppercase font-size-11">
                                                                 目前养老院的老年人数量</h6>
-                                                            <h4 class="mb-0">133</h4>
+                                                            <h4 class="mb-0">{{ item_count.0 }}</h4>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -50,9 +49,9 @@
                                                             <i class="fa fa-users"></i>
                                                         </div>
                                                         <div>
-                                                            <h6 class="text-uppercase font-size-11">目前养老院的工作人员数量
-                                                            </h6>
-                                                            <h4 class="mb-0">26</h4>
+                                                            <h6 class="text-uppercase font-size-11">
+                                                                目前养老院的工作人员数量</h6>
+                                                            <h4 class="mb-0">{{ item_count.1 }}</h4>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -67,7 +66,7 @@
                                                         <div>
                                                             <h6 class="text-uppercase font-size-11">
                                                                 目前养老院的义工数量</h6>
-                                                            <h4 class="mb-0">11</h4>
+                                                            <h4 class="mb-0">{{ item_count.2 }}</h4>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -82,52 +81,21 @@
                                                         <th>进入养老院老人人数</th>
                                                         <th>离开养老院老人人数</th>
                                                         <th>入职工作人员人数</th>
+                                                        <th>离职工作人员人数</th>
                                                         <th>访问义工人数</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr>
-                                                        <td>07/2020</td>
-                                                        <td class="text-success">+ 3</td>
-                                                        <td class="text-danger">- 2</td>
-                                                        <td class="text-success">+ 3</td>
-                                                        <td class="text-success">+ 3</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>06/2020</td>
-                                                        <td class="text-success">+ 1</td>
-                                                        <td class="text-danger">- 4</td>
-                                                        <td class="text-success">+ 5</td>
-                                                        <td class="text-success">+ 1</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>05/2020</td>
-                                                        <td class="text-success">+ 9</td>
-                                                        <td class="text-danger">- 0</td>
-                                                        <td class="text-success">+ 11</td>
-                                                        <td class="text-success">+ 32</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>04/2020</td>
-                                                        <td class="text-success">+ 13</td>
-                                                        <td class="text-danger">- 20</td>
-                                                        <td class="text-success">+ 30</td>
-                                                        <td class="text-success">+ 31</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>03/2020</td>
-                                                        <td class="text-success">+ 13</td>
-                                                        <td class="text-danger">- 21</td>
-                                                        <td class="text-success">+ 32</td>
-                                                        <td class="text-success">+ 37</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>02/2020</td>
-                                                        <td class="text-success">+ 0</td>
-                                                        <td class="text-danger">- 20</td>
-                                                        <td class="text-success">+ 0</td>
-                                                        <td class="text-success">+ 1</td>
-                                                    </tr>
+                                                    {% for item in item_change %}
+                                                        <tr>
+                                                            <td>{{ item.0 }}</td>
+                                                            <td class="text-success">+{{ item.1 }}</td>
+                                                            <td class="text-danger">-{{ item.2 }}</td>
+                                                            <td class="text-success">+{{ item.3 }}</td>
+                                                            <td class="text-danger">-{{ item.4 }}</td>
+                                                            <td class="text-success">+{{ item.5 }}</td>
+                                                        </tr>
+                                                    {% endfor %}
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -158,7 +126,6 @@
 {% block app-foot %}
     <script>
         $(document).ready(function () {
-
             var colors = {
                 primary: $('.colors .bg-primary').css('background-color'),
                 primaryLight: $('.colors .bg-primary-bright').css('background-color'),
@@ -180,30 +147,30 @@
                 new Chart(element, {
                     type: 'bar',
                     data: {
-                        labels: ["7月", "8月", "9月", "10月", "11月", "12月"],
+                        labels: {{ data_in_key|safe }},
                         datasets: [{
                             label: "入院",
                             type: "line",
                             borderColor: colors.warning,
-                            data: [4, 44, 22, 111, 22, 1],
+                            data: {{ data_in_value|safe }},
                             fill: false
                         }, {
                             label: "出院",
                             type: "line",
                             borderColor: colors.success,
-                            data: [0, 43, 21, 12, 91, 4],
+                            data: {{ data_out_value|safe }},
                             fill: false
                         }, {
                             label: "入院",
                             type: "bar",
                             backgroundColor: colors.secondary,
-                            data: [4, 44, 22, 111, 22, 1],
+                            data: {{ data_in_value|safe }},
                         }, {
                             label: "出院",
                             type: "bar",
                             backgroundColor: colors.primary,
                             backgroundColorHover: "#3e95cd",
-                            data: [0, 43, 21, 12, 91, 4]
+                            data: {{ data_out_value|safe }}
                         }
                         ]
                     },
@@ -212,7 +179,7 @@
                             display: true,
                             text: '2019年下半年养老院每月老年人数量变化图'
                         },
-                        legend: { display: false }
+                        legend: {display: false}
                     }
                 });
             }

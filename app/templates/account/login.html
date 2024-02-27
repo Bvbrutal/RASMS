@@ -39,10 +39,10 @@
     <form  action="javascript:void(0); " novalidate="">
         {% csrf_token %}
         <div class="form-group">
-            <input type="text" id="mobile_phone" class="form-control" name="mobile_phone" placeholder="管理员用户名" autofocus>
+            <input type="text" id="mobile_phone" class="form-control" name="mobile_phone" placeholder="账号" autocomplete="username" tautofocus>
         </div>
         <div class="form-group">
-            <input type="password" id="password" name="password" class="form-control" placeholder="密码">
+            <input type="password" id="password" name="password" class="form-control" placeholder="密码" autocomplete="current-password">
         </div>
         <div class="form-group d-flex justify-content-between">
             <div class="custom-control custom-checkbox">
@@ -67,7 +67,7 @@
 
 <!-- jQuery -->
 <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-<script src="{% static 'js/jquery.validate.min.js' %}"></script>
+
 
 <!-- notify -->
 <script src="{% static 'js/notify.js' %}"></script>
@@ -136,7 +136,7 @@
                     window.setTimeout("location.href='/index'", 1000);
 
                 } else if (data.ret === 2) {
-                    $(".login-button").text('登录').attr('disabled', false);
+                    $("#submit").text('登录').attr('disabled', false);
                     $('#2fa-form').show('fast');
                     $.notify({
                         message: '<strong>' + data.msg + '</strong>'
@@ -149,12 +149,11 @@
                         timer: 500,
                         animate: {
                             enter: 'animated zoomIn',
-                            enter: 'animated zoomIn',
                             exit: 'animated zoomOut'
                         }
                     });
                 } else {
-                    $(".login-button").text('登录').attr('disabled', false);
+                    $("#submit").text('登录').attr('disabled', false);
                     $.notify({
                         title: '<strong>登录失败</strong>-',
                         message: data.msg

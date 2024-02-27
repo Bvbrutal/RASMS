@@ -1,0 +1,94 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>监控管理</title>
+{% endblock %}
+
+{% block app-content %}
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>监控管理</h4>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <video id="myVideo1" autoplay loop muted style="width: 100%"
+                                   poster="{% static 'media/image/library.png' %}">
+                                <source src="{% static 'media/video/1.mp4' %}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <video id="myVideo2" autoplay loop muted style="width: 100%"
+                                   poster="{% static 'media/image/library.png' %}">
+                                <source src="#" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <video id="myVideo3" autoplay loop muted style="width: 100%"
+                                   poster="{% static 'media/image/library.png' %}">
+                                <source src="#" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <video id="myVideo4" autoplay loop muted style="width: 100%"
+                                   poster="{% static 'media/image/library.png' %}">
+                                <source src="#" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block app-foot %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var myVideo = document.getElementById("myVideo1");
+
+            if (myVideo) {
+                myVideo.addEventListener('click', function () {
+                    if (myVideo.requestFullscreen) {
+                        myVideo.requestFullscreen();  // 标准方法
+                    } else if (myVideo.mozRequestFullScreen) { /* Firefox */
+                        myVideo.mozRequestFullScreen(); // Firefox
+                    } else if (myVideo.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                        myVideo.webkitRequestFullscreen(); // Chrome, Safari 和 Opera
+                    } else if (myVideo.msRequestFullscreen) { /* IE/Edge */
+                        myVideo.msRequestFullscreen(); // IE/Edge
+                    }
+                });
+            } else {
+                console.log('The element #myVideo was not found in the DOM');
+            }
+            // 在全屏模式下播放视频
+                    video.play();
+        });
+    </script>
+{% endblock %}

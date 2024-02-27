@@ -1,0 +1,109 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>社区公告发布</title>
+    <!-- 引入 flatpickr CSS -->
+    <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
+    <script>
+        YUI({
+            modules: {
+                'trip-calendar': {
+                    fullpath: "{% static 'vendors/datepicker/trip-calendar.js' %}",
+                    type: 'js',
+                    requires: ['trip-calendar-css']
+                },
+                'trip-calendar-css': {
+                    fullpath: "{% static 'vendors/datepicker/trip-calendar.css' %}",
+                    type: 'css'
+                }
+            }
+        }).use('trip-calendar', function (Y) {
+
+            /**
+             * 弹出式日历实例
+             * 将日历与指定的触发元素绑定
+             * 日历可根据浏览器窗口大小，自动调整显示位置
+             */
+            var oCal = new Y.TripCalendar({
+                //绑定日历的节点，支持选择器模式，可批量设置（必选）
+                triggerNode: '.J_Item, #J_Item-1, #J_Item-2, .J_Link'
+            });
+
+            oCal.on('dateclick', function (e) {
+                this.getCurrentNode().setAttribute('data-date', e.date);
+            });
+
+            //显示日历时自定义事件
+            oCal.on('show', function () {
+                var v = this.getCurrentNode().getAttribute('data-date');
+                this.set('date', v || new Date);
+                this.set('selectedDate', v).render();
+            });
+
+            //解决chrome的foucs事件bug
+            Y.on('click', function (e) {
+                e.currentTarget.focus();
+            }, 'button, .J_Link');
+        });
+    </script>
+{% endblock %}
+
+{% block app-content %}
+    <div class="container mt-5">
+        <div class="card">
+
+            <div class="card-body">
+                <h2 class="mb-4">发布社区公告</h2>
+                <form id="formId" action="javascript:void(0);" method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">标题</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="请输入公告标题">
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">内容</label>
+                        <textarea class="form-control" id="content" name="content" rows="15"
+                                  placeholder="请输入公告内容" style="min-height: 200px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">发布方</label>
+                        <input type="text" class="form-control" id="publisher" name="publisher"
+                               placeholder="请输入公告发布方">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <div class="mb-3">
+                                <label for="published_date" class="form-label">发布日期</label>
+                                <input class="J_Item" id="published_date" name="published_date">
+                                <small class="form-text text-muted">请选择或输入公告的发布日期和时间。</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <div class="mb-3">
+                                <label for="expiry_date" class="form-label">过期日期</label>
+                                <input class="J_Item" id="expiry_date" name="expiry_date" placeholder="请输入公告内容">
+                                <small class="form-text text-muted ">请选择或输入公告的过期日期和时间。</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                            <div class="mb-3">
+                        <label for="status" class="form- p-b-50">状态</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="active">有效</option>
+                            <option value="inactive">暂时无效</option>
+                            <option value="expired">过期</option>
+                        </select>
+                    </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="button1">发布公告</button>
+                    <button type="button" class="btn btn-secondary">保存草稿</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

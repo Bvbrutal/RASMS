@@ -2,7 +2,7 @@ import time
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from .models import Elder,Admin,Test
+from .models import Test
 import hashlib
 from datetime import datetime
 
