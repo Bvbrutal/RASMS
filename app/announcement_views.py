@@ -12,8 +12,16 @@ def announcement_list(request):
 
 
 def announcement_info(request):
+    id=request.GET.get("id")
+    item=CommunityAnnouncement.objects.filter(id=id).first()
+    context={
+        'item':item
+    }
+    return render(request, "manager/announcement/announcement_info.html",context)
+
+
+def announcement_add(request):
     context={
 
     }
-
-    return render(request, "manager/announcement/announcement_info.html",context)
+    return render(request, "manager/announcement/announcement_add.html",context)

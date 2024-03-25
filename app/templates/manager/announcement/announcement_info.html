@@ -2,11 +2,58 @@
 {% load static %}
 
 {% block app-head %}
+    <title>社区公告详情</title>
+    <style>
+        .announcement-title {
+            color: #333;
+            text-align: center;
+        }
 
+        .announcement-date {
+            text-align: center;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .announcement-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .announcement-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .announcement-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .announcement-content li {
+            background-color: #eee;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 5px solid #333;
+        }
+    </style>
 {% endblock %}
 
 {% block app-content %}
-
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="announcement-title">{{ item.title }}</h1>
+                <p class="announcement-date">发布日期: {{ item.published_date|date:"Y-m-d" }}</p>
+                <img src="{{ item.announcement_photo.url }}" alt="Community Cleaning" class="announcement-image">
+                <div class="announcement-content">
+                    {{ item.content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block app-foot %}

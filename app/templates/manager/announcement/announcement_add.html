@@ -2,7 +2,16 @@
 {% load static %}
 
 {% block app-head %}
-    <title>社区活动发布</title>
+    <title>社区公告发布</title>
+    <script src="https://cdn.tiny.cloud/1/xq7n2ppu04vhzi78j2q8jiqcb7ut2uh4h5oyfvutyxqsq8kb/tinymce/6/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
+            language: 'zh_CN',
+        });
+    </script>
     <!-- 引入 flatpickr CSS -->
     <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
     <script>
@@ -54,21 +63,21 @@
         <div class="card">
 
             <div class="card-body">
-                <h2 class="mb-4">发布社区活动</h2>
+                <h2 class="mb-4">发布社区公告</h2>
                 <form id="formId" action="javascript:void(0);" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="title" class="form-label">标题</label>
-                        <input type="text" class="form-control" id="title" name="title" placeholder="请输入社区活动标题">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="请输入公告标题">
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">内容</label>
-                        <textarea class="form-control" id="content" name="content" rows="15"
-                                  placeholder="请输入社区活动描述..." style="min-height: 200px;"></textarea>
+                        <textarea class="form-control" id="mytextarea" name="content"
+                                  placeholder="请输入公告内容..."></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="publisher" class="form-label">发布方</label>
                         <input type="text" class="form-control" id="publisher" name="publisher"
-                               placeholder="请输入社区活动发布方">
+                               placeholder="请输入公告发布方">
                     </div>
                     <div class="row">
                         <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
@@ -87,16 +96,16 @@
                         </div>
                         <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                        <label for="status" class="form- p-b-50">状态</label>
-                        <select class="form-select" id="status" name="status">
-                               <option value="not_started">未开始</option>
-                <option value="ongoing">进行中</option>
-                <option value="finished">已结束</option>
-                        </select>
-                    </div>
+                                <label for="status" class="form- p-b-50">状态</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="active">有效</option>
+                                    <option value="inactive">暂时无效</option>
+                                    <option value="expired">过期</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="button1">发布活动</button>
+                    <button type="submit" class="btn btn-primary" id="button1">发布公告</button>
                     <button type="button" class="btn btn-secondary">保存草稿</button>
                 </form>
             </div>
@@ -104,6 +113,6 @@
     </div>
 {% endblock %}
 
-{% block app-foot %}`
+{% block app-foot %}
 
 {% endblock %}
