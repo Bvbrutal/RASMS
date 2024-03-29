@@ -3,7 +3,7 @@
 
 {% block app-head %}
     <title>社区公告发布</title>
-    <script src="https://cdn.tiny.cloud/1/xq7n2ppu04vhzi78j2q8jiqcb7ut2uh4h5oyfvutyxqsq8kb/tinymce/6/tinymce.min.js"
+    <script src="{% static 'plugin/tinymce/js/tinymce/tinymce.min.js' %}"
             referrerpolicy="origin"></script>
     <script>
         tinymce.init({
@@ -11,7 +11,21 @@
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
             language: 'zh_CN',
         });
+
     </script>
+    <style>
+        .tox .tox-promotion {
+            display: none !important;
+        }
+
+        .tox-statusbar__right-container {
+            display: none !important;
+        }
+
+        body {
+            background-color: #0b0b0b;
+        }
+    </style>
     <!-- 引入 flatpickr CSS -->
     <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
     <script>
@@ -56,6 +70,8 @@
             }, 'button, .J_Link');
         });
     </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block app-content %}
@@ -65,6 +81,7 @@
             <div class="card-body">
                 <h2 class="mb-4">发布社区公告</h2>
                 <form id="formId" action="javascript:void(0);" method="POST" novalidate>
+                    {% csrf_token %}
                     <div class="mb-3">
                         <label for="title" class="form-label">标题</label>
                         <input type="text" class="form-control" id="title" name="title" placeholder="请输入公告标题">
@@ -105,8 +122,10 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="button1">发布公告</button>
-                    <button type="button" class="btn btn-secondary">保存草稿</button>
+                    <button type="submit" class="btn btn-primary" id="save-button1" onclick="publishInfo()">发布公告
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="save-button2" onclick="saveInfo()">保存草稿
+                    </button>
                 </form>
             </div>
         </div>
@@ -114,5 +133,112 @@
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        function publishInfo() {
+            tinymce.triggerSave();
+            var editorContent = tinymce.get("mytextarea").getContent();
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            formData.append('editorContent', editorContent)
+            form.validate({
+                rules: {
+                    title: {
+                        required: true
+                    },
+                    content: {
+                        required: true
+                    },
 
+                },
+                messages: {
+                    title: "请填写标题",
+                    content: "请填写内容",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()($("#mytextarea").val()==='')) {
+                $.notify({
+                    message: '<strong>请填写完整公告信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#publishInfo").text('公告发布中');
+            $('#publishInfo').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'announcement_add_api' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '录入成功',
+                            confirmButtonText: '查看列表信息',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '/management/list_old/';
+                            }
+                        });
+                    } else if (data.ret === 2) {
+                        $("#publishInfo").text('发布公告');
+                        $('#publishInfo').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('更新失败: ' + error);
+                }
+            });
+        }
+    </script>
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
 {% endblock %}

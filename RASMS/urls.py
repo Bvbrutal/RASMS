@@ -96,6 +96,7 @@ urlpatterns = [
                   path("api/accont_api/", api_views.accont_api, name="accont_api"),
                   path("api/update_profile/", api_views.update_profile, name="update_profile"),
                   path("api/logging/", api_views.logging, name="logging"),
+                  path("announcement_add_api/", api_views.announcement_add_api, name="announcement_add_api"),
 
                   # 公告信息管理
                   path("management/announcement_list/", announcement_views.announcement_list,

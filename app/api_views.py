@@ -5,6 +5,9 @@ from django.http import JsonResponse
 from app.configuration import  GENDER_CHOICES
 from app.models import Test
 from app.user_views import USER_TYPES
+from django.core import serializers
+from django.utils import timezone
+from django.utils.timesince import timesince
 
 
 def accont_api(request):
@@ -40,9 +43,6 @@ def update_profile(request):
         return JsonResponse(context, status=200)  # 成功响应
 
 
-from django.core import serializers
-from django.utils import timezone
-from django.utils.timesince import timesince
 
 def logging(request):
     mobile_phone = request.session["info"]["mobile_phone"]
@@ -74,3 +74,16 @@ def logging(request):
             break
     context = {'message': '处理成功', 'loggings': updated_loggings}
     return JsonResponse(context,safe=False, status=200)
+
+
+def announcement_add_api(request):
+    # 从请求数据中获取字段值
+    title = request.POST.get('title')
+    content = request.POST.get('content')
+    publisher = request.POST.get('publisher')
+    published_date = request.POST.get('published_date')
+    expiry_date = request.POST.get('expiry_date')
+    status = request.POST.get('status')
+    print(title, content,publisher, published_date)
+    context={'message': '处理成功'}
+    return JsonResponse(context, safe=False, status=200)
