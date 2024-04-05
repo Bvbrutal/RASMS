@@ -4,20 +4,19 @@ from django.contrib.auth.models import Permission
 from django.db import models
 from django.utils import timezone
 
-from app.configuration import GENDER_CHOICES, GRADE_CHOICES, EVENT_TYPES
-
+from app.management_views.configuration import GENDER_CHOICES, GRADE_CHOICES, EVENT_TYPES
 
 # 测试
-class Test(models.Model):
+class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, verbose_name='用户名', default='匿名用户')
     password = models.CharField(max_length=50, verbose_name="密码")
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O', verbose_name='性别')
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U', verbose_name='性别')
     mobile_phone = models.CharField(max_length=50, verbose_name="移动电话", unique=True)
     creation_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
     phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='电话')
     email = models.EmailField(verbose_name='邮箱', null=True, blank=True)
-    grade = models.IntegerField(choices=GRADE_CHOICES, default='5', verbose_name='类别')
+    grade = models.IntegerField(choices=GRADE_CHOICES, default='4', verbose_name='类别')
     bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
 
     class Meta:
@@ -26,8 +25,6 @@ class Test(models.Model):
 
     def __str__(self):
         return self.username
-
-
 
 
 # 老人
@@ -55,9 +52,11 @@ class Elder(models.Model):
                                     verbose_name='健康状况')  # 设置默认健康状况为“良好”
     description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
-    updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
+    created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     def calculate_age(self):
@@ -87,9 +86,11 @@ class Staff(models.Model):
     staff_photo = models.ImageField(upload_to='staff_photo/', null=True, blank=True)
     description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
-    updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
+    created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     def calculate_age(self):
@@ -119,9 +120,11 @@ class Volunteer(models.Model):
     volunteer_photo = models.ImageField(upload_to='volunteer_photo/', null=True, blank=True)
     description = models.TextField(max_length=200, blank=True, null=True, verbose_name='描述')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    created_by = models.IntegerField(blank=True, null=True, verbose_name='创建人')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
-    updated_by = models.IntegerField(blank=True, null=True, verbose_name='更新人')
+    created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     def calculate_age(self):
@@ -129,10 +132,12 @@ class Volunteer(models.Model):
         age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
         return age
 
+
     class Meta:
         verbose_name = "义工"
         verbose_name_plural = "义工"
         db_table = 'volunteer_info'
+
 
     def __str__(self):
         return self.username
@@ -158,7 +163,7 @@ class Event(models.Model):
 # 日志记录
 class Logging(models.Model):
     operation_time = models.DateTimeField(default=timezone.now)
-    operator = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='Logging', verbose_name='日志')
+    operator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Logging', verbose_name='日志')
     operation_content = models.TextField(blank=True, null=True, verbose_name='操作信息')
 
     def __str__(self):
@@ -172,7 +177,7 @@ class CommunityEvent(models.Model):
         ('ongoing', '进行中'),
         ('finished', '已结束'),
     )
-    name = models.CharField(max_length=255, verbose_name= "活动名称")
+    name = models.CharField(max_length=255, verbose_name="活动名称")
     description = models.TextField(verbose_name="描述", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
     start_time = models.DateTimeField(verbose_name="开始时间", null=True, blank=True)
@@ -181,7 +186,7 @@ class CommunityEvent(models.Model):
     organizer = models.CharField(max_length=255, verbose_name="主办方", null=True, blank=True)
     participant_limit = models.IntegerField(verbose_name="参与人数限制", null=True, blank=True)
     registration_status = models.BooleanField(default=True, verbose_name="报名状态")
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES,default='not_started',verbose_name="活动状态")
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='not_started', verbose_name="活动状态")
     contact_info = models.CharField(max_length=255, verbose_name="联系信息", null=True, blank=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="费用", null=True, blank=True)
     image = models.ImageField(upload_to='communityevents/', verbose_name="图片/海报", null=True, blank=True)
@@ -209,13 +214,15 @@ class Registration(models.Model):
 # 社区公告管理
 class CommunityAnnouncement(models.Model):
     title = models.CharField(max_length=255, verbose_name="标题")
+    introduction=models.CharField(max_length=255, null=True, blank=True,verbose_name="简介")
     content = models.TextField(verbose_name="内容")
     created = models.DateTimeField(auto_now_add=True, verbose_name='创键日期')
     published_date = models.DateTimeField(null=True, blank=True, verbose_name="发布日期")
     expiry_date = models.DateTimeField(null=True, blank=True, verbose_name="过期日期")
-    author = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, verbose_name="发布者")
-    publisher=models.CharField(max_length=255,null=True, blank=True, verbose_name="发布方")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="发布者")
+    publisher = models.CharField(max_length=255, null=True, blank=True, verbose_name="发布方")
     announcement_photo = models.ImageField(upload_to='announcement_photo/', null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
     STATUS_CHOICES = (
         ('active', '有效'),
         ('inactive', '暂时无效'),
@@ -225,6 +232,12 @@ class CommunityAnnouncement(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # 如果没有设置发布日期，则默认使用创建时间
+        if not self.published_date:
+            self.published_date = self.created or timezone.now()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "社区公告"

@@ -1,24 +1,27 @@
+# 义工信息管理
 import os
 
-from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 
 from app.components.Pagination import Pagination
-from app.configuration import items_per_page
-from app.models import Staff, Test
+from app.management_views.configuration import items_per_page
+from app.models import Volunteer, User
+
+from django.db.models import Q
 
 GENDER_CHOICES = {
     'M': '男',
     'F': '女',
     'U': '未知',}
-# 工作人员信息管理
-def add_worker(request):
+def add_volunteer(request):
     if request.method == "GET":
-        return render(request, "manager/worker_management/add_worker.html")
+        return render(request, "manager/volunteer_management/add_volunteer.html")
 
     # 获取表单数据
+    created_by_id = request.session["info"]["user_id"]
+    created_by=User.objects.filter(user_id=created_by_id).first()
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
     mobile_phone = request.POST.get('input2')
@@ -30,21 +33,22 @@ def add_worker(request):
     description = request.POST.get('input8') or None
 
     # 获取上传的文件
-    staff_photo = request.FILES.get('pic1') or None
-    if staff_photo:
-        _, ext = os.path.splitext(staff_photo.name)
+    volunteer_photo = request.FILES.get('pic1') or None
+    if volunteer_photo:
+        _, ext = os.path.splitext(volunteer_photo.name)
         # 使用用户的电话号码作为文件名，保留原始文件的扩展名
-        staff_photo.name = f"{mobile_phone}_{now().strftime('%Y%m%d%H%M%S')}{ext}"
+        volunteer_photo.name = f"{mobile_phone}_{now().strftime('%Y%m%d%H%M%S')}{ext}"
 
-    if Staff.objects.filter(id_card=id_card).exists() or Staff.objects.filter(mobile_phone=mobile_phone).exists():
+    if Volunteer.objects.filter(id_card=id_card).exists() or Volunteer.objects.filter(
+            mobile_phone=mobile_phone).exists():
         context = {
             'ret': 2,
-            'msg': "该员工信息已经录入过了"
+            'msg': "该义工信息已经录入过了"
         }
         return JsonResponse(context, safe=False)
 
     # 创建Elder实例并保存
-    staff = Staff(
+    volunteer = Volunteer(
         username=username,
         gender=gender if gender in ['M', 'F'] else 'U',
         mobile_phone=mobile_phone,
@@ -53,11 +57,12 @@ def add_worker(request):
         birthday=birthday,
         hire_date=hire_date,
         resign_date=resign_date,
-        staff_photo=staff_photo,
+        volunteer_photo=volunteer_photo,
         description=description,
+        created_by=created_by,
         is_active=True
     )
-    staff.save()
+    volunteer.save()
 
     context = {
         'ret': 1,
@@ -66,22 +71,26 @@ def add_worker(request):
     return JsonResponse(context, safe=False)
 
 
-def list_worker(request):
-    staff = Staff.objects.filter(is_active=True)
-    page_obj = Pagination(request, staff, items_per_page)
+def list_volunteer(request):
+    volunteer = Volunteer.objects.filter(is_active=True)
+    page_obj = Pagination(request, volunteer, items_per_page)
     context = {
         "page_obj": page_obj,
     }
-    return render(request, "manager/worker_management/list_worker.html", context)
+    return render(request, "manager/volunteer_management/list_volunteer.html", context)
 
 
-def modify_worker(request):
+def select_volunteer(request):
+    return render(request, "manager/volunteer_management/select_volunteer.html")
+
+
+def modify_volunteer(request):
     if request.method == "GET":
         # 获取所有激活的Elder对象
         key = request.GET.get('key', '')
         if key:
             # 搜索 address, name, 或 email 字段包含关键词的用户
-            staff = Staff.objects.filter(
+            volunteer = Volunteer.objects.filter(
                 (Q(id__icontains=key) |
                  Q(username__icontains=key) |
                  Q(mobile_phone__icontains=key)) &
@@ -89,19 +98,22 @@ def modify_worker(request):
             ).order_by('id')
         else:
             # 如果没有提供关键词，则返回所有用户
-            staff = Staff.objects.filter(is_active=True).order_by('id')
+            volunteer = Volunteer.objects.filter(is_active=True).order_by('id')
 
-        page_obj = Pagination(request, staff, items_per_page)
+        page_obj = Pagination(request, volunteer, items_per_page)
         context = {
             "page_obj": page_obj,
             "key": key
         }
-        return render(request, "manager/worker_management/modify_worker.html", context)
+        return render(request, "manager/volunteer_management/modify_volunteer.html",context)
 
-    staff_id = request.POST.get("id")
-    staff = Staff.objects.filter(id=staff_id).first()
-    staff.is_active = False
-    staff.save()
+    updated_by_id=request.session["info"]["user_id"]
+    updated_by=User.objects.filter(user_id=updated_by_id).first()
+    volunteer_id = request.POST.get("id")
+    volunteer = Volunteer.objects.filter(id=volunteer_id).first()
+    volunteer.is_active = False
+    volunteer.updated_by=updated_by
+    volunteer.save()
     context = {
         'ret': 1,
         'msg': "删除成功"
@@ -109,27 +121,41 @@ def modify_worker(request):
     return JsonResponse(context, safe=False)
 
 
-def analyze_worker(request):
-    return render(request, "manager/worker_management/analyze_worker.html")
+def analyze_volunteer(request):
+    return render(request, "manager/volunteer_management/analyze_volunteer.html")
 
 
-def modify_worker_basic(request):
+def volunteer_info(request):
+    volunteer_id = request.GET.get('id')
+    volunteer = Volunteer.objects.filter(id=volunteer_id).first()
+    if volunteer.birthday:
+        age = volunteer.calculate_age()
+    else:
+        age = None
+    volunteer.gender = GENDER_CHOICES[volunteer.gender]
+    context = {
+        'item': volunteer,
+        'age': age
+    }
+    return render(request, "manager/volunteer_management/volunteer_info.html", context)
+
+
+def modify_volunteer_basic(request):
     if request.method == 'GET':
-        staff_id = request.GET.get('id')
-        staff =get_object_or_404(Staff, id=staff_id)
-        if staff.birthday:
-            age = staff.calculate_age()
+        volunteer_id = request.GET.get('id')
+        volunteer =get_object_or_404(Volunteer, id=volunteer_id)
+        if volunteer.birthday:
+            age = volunteer.calculate_age()
         else:
             age = None
-        staff.gender = GENDER_CHOICES[staff.gender]
+        volunteer.gender = GENDER_CHOICES[volunteer.gender]
         context = {
-            'item': staff,
+            'item': volunteer,
             'age': age
         }
-        return render(request, "manager/worker_management/modify_worker_basic.html",context)
-
-    updated_by_mobile_phone = request.session["info"]["mobile_phone"]
-    updated_by=Test.objects.filter(mobile_phone=updated_by_mobile_phone).first().username
+        return render(request, "manager/volunteer_management/modify_volunteer_basic.html",context)
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by=User.objects.filter(mobile_phone=updated_by_id).first()
     id = request.POST.get('id')
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
@@ -142,7 +168,7 @@ def modify_worker_basic(request):
     description = request.POST.get('input18') or None
     # 获取上传的文件
     uploaded_file = request.FILES.get('pic1') or None
-    is_exists = Staff.objects.filter(id=id)
+    is_exists = Volunteer.objects.filter(id=id)
     if is_exists.exists():
         item = is_exists.first()
         if uploaded_file:
@@ -150,7 +176,7 @@ def modify_worker_basic(request):
 
             # 使用用户的电话号码作为文件名，保留原始文件的扩展名
             uploaded_file.name = f"{mobile_phone}_{now().strftime('%Y%m%d%H%M%S')}{ext}"
-            item.staff_photo.save(uploaded_file.name, uploaded_file, save=True)
+            item.volunteer_photo.save(uploaded_file.name, uploaded_file, save=True)
         item.username = username
         item.gender = gender if gender in ['M', 'F'] else 'U'
         item.mobile_phone = mobile_phone
@@ -172,23 +198,4 @@ def modify_worker_basic(request):
         'msg': "修改失败"
     }
     return JsonResponse(context, safe=False)
-
-
-def worker_info(request):
-    old_id = request.GET.get('id')
-    staff = Staff.objects.filter(id=old_id).first()
-    if staff.birthday:
-        age = staff.calculate_age()
-    else:
-        age = None
-    staff.gender = GENDER_CHOICES[staff.gender]
-    context = {
-        'item': staff,
-        'age': age
-    }
-    return render(request, "manager/worker_management/worker_info.html", context)
-
-
-def select_worker(request):
-    return render(request, "manager/worker_management/select_worker.html")
 

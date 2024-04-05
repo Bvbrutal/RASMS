@@ -47,7 +47,10 @@
             <div class="card-body">
                 <h1 class="announcement-title">{{ item.title }}</h1>
                 <p class="announcement-date">发布日期: {{ item.published_date|date:"Y-m-d" }}</p>
-                <img src="{{ item.announcement_photo.url }}" alt="Community Cleaning" class="announcement-image">
+                {% if item.announcement_photo %}
+                    <img src="{{ item.announcement_photo.url }}" alt="Community Cleaning" class="announcement-image">
+                {% else %}
+                {% endif %}
                 <div class="announcement-content">
                     {{ item.content|safe }}
                 </div>

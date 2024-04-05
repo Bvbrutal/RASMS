@@ -8,8 +8,8 @@ from django.db.models.functions import TruncYear, TruncMonth
 from django.shortcuts import render
 
 from app.components.Pagination import Pagination
-from app.configuration import items_per_page
-from app.models import Elder, Test
+from app.management_views.configuration import items_per_page
+from app.models import Elder, User
 from django.db.models import Q, Count
 from django.http import JsonResponse, HttpResponse
 from django.utils.timezone import now
@@ -26,6 +26,8 @@ def add_old(request):
         return render(request, "manager/elder_management/add_old.html")
 
     # 获取表单数据
+    created_by_id=request.session["info"]["user_id"]
+    created_by=User.objects.filter(user_id=created_by_id).first()
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
     mobile_phone = request.POST.get('input2')
@@ -81,6 +83,7 @@ def add_old(request):
         secondguardian_wechat=secondguardian_wechat,
         health_state=health_state,
         description=description,
+        created_by=created_by,
     )
     elder.save()
     context = {
@@ -135,9 +138,12 @@ def modify_old(request):
         }
         return render(request, "manager/elder_management/modify_old.html", context=context)
 
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
     old_id = request.POST.get("id")
     elder = Elder.objects.filter(id=old_id).first()
     elder.is_active = False
+    elder.updated_by=updated_by
     elder.save()
     context = {
         'ret': 1,
@@ -235,6 +241,7 @@ def old_info(request):
         'item': elder,
         'age': age
     }
+    print(elder.updated_by.user_id)
     return render(request, "manager/elder_management/old_info.html", context=context)
 
 
@@ -263,8 +270,8 @@ def modify_old_basic(request):
         }
         return render(request, "manager/elder_management/modify_old_basic.html", context)
         # 获取表单数据
-    updated_by_mobile_phone = request.session["info"]["mobile_phone"]
-    updated_by=Test.objects.filter(mobile_phone=updated_by_mobile_phone).first().username
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
     id = request.POST.get('id')
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'

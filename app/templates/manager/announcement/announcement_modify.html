@@ -1,0 +1,153 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>公告展示列表</title>
+    <link rel="stylesheet" type="text/css" href="{% static "css/mystyle.css" %}">
+{% endblock %}
+
+{% block app-content %}
+    <div class="container">
+        <div class="page-header">
+            <h4>公告信息管理列表</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#">公告信息管理</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">公告信息管理列表</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table" id="table-old">
+                                <thead>
+                                <tr>
+                                    <th scope="col">公告id</th>
+                                    <th scope="col">公告标题</th>
+                                    <th scope="col">公告简介</th>
+                                    <th scope="col">发布时间</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in page_obj %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.title }}</td>
+                                        <td>{{ item.introduction }}</td>
+                                        <td>{{ item.published_date }}</td>
+                                        <td>
+                                            <figure class="avatar avatar-sm">
+                                                {% if item.announcement_photo %}
+                                                    <a href="{% url 'announcement_info' %}?id={{ item.id }}">
+                                                        <img src="{{ item.announcement_photo.url }}">
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'announcement_info' %}?id={{ item.id }}">
+                                                        <img src="{% static 'assets/media/image/image1.png' %}">
+                                                    </a>
+                                                {% endif %}
+                                            </figure>
+                                        </td>
+                                        <td>
+                                            <a href="/management/announcement_info?id={{ item.id }}">
+                                                <button type="button"
+                                                        class="btn btn-outline-primary">详细信息
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=1">首页</a>
+                                                </li>
+                                                {% if page_obj.number > 1 %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.previous_page_number }}">&laquo;
+                                                            上一页</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page=1">&laquo;
+                                                            上一页</a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% for num in page_obj.paginator.page_range %}
+                                                    {% if page_obj.number == num %}
+                                                        <li class="page-item active"><a class="page-link"
+                                                                                        href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                        <li class="page-item"><a class="page-link"
+                                                                                 href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                {% if page_obj.has_next %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.next_page_number }}">下一页
+                                                            &raquo;</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.number }}">下一页
+                                                            &raquo;</a>
+                                                    </li>
+                                                {% endif %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="?page={{ page_obj.paginator.num_pages }}">尾页</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <label for="page-number">跳转到页码:</label>
+                                                <input type="number" class="form-control mx-2" id="page-number"
+                                                       min="1" max="{{ page_obj.paginator.num_pages }}"
+                                                       value="{{ page_obj.number }}">
+                                                <button type="submit" class="btn btn-primary"
+                                                        onclick="event.preventDefault(); window.location.href='?page=' + document.getElementById('page-number').value;">
+                                                    跳转
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

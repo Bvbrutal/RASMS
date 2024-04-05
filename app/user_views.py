@@ -3,7 +3,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from app.models import Test
+from app.models import User
 
 
 
@@ -28,8 +28,13 @@ def index(request):
         print(f'{key}: {value}')
     info_dic=request.session.get('info')
     mobile_phone = info_dic['mobile_phone']
-    if Test.objects.filter(mobile_phone=mobile_phone).first().grade == 0:
+    grade=User.objects.filter(mobile_phone=mobile_phone).first().grade
+    if grade == 0:
         return redirect('/manager/index/')
+    if grade == 1:
+        return redirect('/staff/index/')
+    if grade == 2:
+        return redirect('/volunteer/index/')
     return render(request, "user/index_user.html")
 
 
@@ -37,7 +42,7 @@ def profile(request):
     for key, value in request.session.items():
         print(f'{key}: {value}')
     mobile_phone = request.session["info"]["mobile_phone"]
-    search_result = Test.objects.filter(mobile_phone=mobile_phone).first()
+    search_result = User.objects.filter(mobile_phone=mobile_phone).first()
     user_id = search_result.user_id
     username = search_result.username
     phone = search_result.phone

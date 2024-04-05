@@ -14,15 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
-from django.views.generic import TemplateView
-
-from app import account, user_views, old_management_views, worker_management_views, volunteer_management_views, \
-    table_views, api_views, activity_views, announcement_views
-from app import manager_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import path
+from django.views.generic import TemplateView
+
+from app import account_views, user_views, staff_views, volunteer_views
+from app import manager_views
+from app.management_views import old_management_views, worker_management_views, volunteer_management_views, table_views, \
+    api_views, activity_views, announcement_views
 
 urlpatterns = [
                   path("admin/", admin.site.urls),
@@ -31,15 +32,17 @@ urlpatterns = [
                   path("", manager_views.index, name="index_1"),
                   path("index/", user_views.index, name="index_2"),
                   path("manager/index/", manager_views.index, name="index_3"),
+                  path("staff/index/", staff_views.index, name="index_4"),
+                  path("volunteer/index/", volunteer_views.index, name="index_5"),
 
                   # 404页面
                   path('404/', TemplateView.as_view(template_name='account/404.html'), name='404'),
 
                   # 注册登录
-                  path("login/", account.login, name="login"),
-                  path("register/", account.register, name="register"),
-                  path("logout/", account.logout, name='logout'),
-                  path("modify_password/", account.modify_password, name="modify_password"),
+                  path("login/", account_views.login, name="login"),
+                  path("register/", account_views.register, name="register"),
+                  path("logout/", account_views.logout, name='logout'),
+                  path("modify_password/", account_views.modify_password, name="modify_password"),
 
                   # 单项功能
                   path("management/select_event/", manager_views.select_event, name="select_event"),
@@ -96,7 +99,6 @@ urlpatterns = [
                   path("api/accont_api/", api_views.accont_api, name="accont_api"),
                   path("api/update_profile/", api_views.update_profile, name="update_profile"),
                   path("api/logging/", api_views.logging, name="logging"),
-                  path("announcement_add_api/", api_views.announcement_add_api, name="announcement_add_api"),
 
                   # 公告信息管理
                   path("management/announcement_list/", announcement_views.announcement_list,
@@ -105,6 +107,8 @@ urlpatterns = [
                        name="announcement_info"),
                   path("management/announcement_add/", announcement_views.announcement_add,
                        name="announcement_add"),
+                  path("management/announcement_modify/", announcement_views.announcement_modify,
+                       name="announcement_modify"),
 
                   # 社区活动管理
                   path("management/activity_list/", activity_views.activity_list, name="activity_list"),

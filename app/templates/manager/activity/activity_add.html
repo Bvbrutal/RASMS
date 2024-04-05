@@ -3,6 +3,25 @@
 
 {% block app-head %}
     <title>社区活动发布</title>
+    <script src="{% static 'plugin/tinymce/js/tinymce/tinymce.min.js' %}"
+            referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
+            language: 'zh_CN',
+        });
+
+    </script>
+    <style>
+        .tox .tox-promotion {
+            display: none !important;
+        }
+
+        .tox-statusbar__right-container {
+            display: none !important;
+        }
+    </style>
     <!-- 引入 flatpickr CSS -->
     <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
     <script>
@@ -47,6 +66,8 @@
             }, 'button, .J_Link');
         });
     </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block app-content %}
