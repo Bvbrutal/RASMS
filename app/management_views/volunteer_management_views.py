@@ -1,10 +1,11 @@
 # 义工信息管理
 import os
-
+from datetime import datetime
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
-
+from django.db.models import Q, Count
+from django.db.models.functions import TruncYear, TruncMonth
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Volunteer, User
@@ -122,6 +123,79 @@ def modify_volunteer(request):
 
 
 def analyze_volunteer(request):
+    # 年龄分布
+    age_distribution = [0, 0, 0, 0, 0]
+    for item in Volunteer.objects.filter(is_active=True):
+        if item.birthday:
+            age = item.calculate_age()
+            if age <= 20:
+                age_distribution[0] += 1
+            elif 21 <= age <= 40:
+                age_distribution[1] += 1
+            elif 41 <= age <= 60:
+                age_distribution[2] += 1
+            elif 61 <= age <= 80:
+                age_distribution[3] += 1
+            else:
+                age_distribution[4] += 1
+
+    # 近八年的流入流出统计
+    # 获取当前年份
+    current_year = datetime.now().year
+    year_range = range(current_year - 7, current_year + 1)
+    checkin_counts = Volunteer.objects.filter(
+        checkin_date__year__gte=current_year - 7,
+        checkin_date__year__lte=current_year
+    ).annotate(
+        year=TruncYear('checkin_date')
+    ).values('year').annotate(
+        count=Count('id')
+    ).order_by('year')
+    checkout_counts = Volunteer.objects.filter(
+        checkout_date__year__gte=current_year - 7,
+        checkout_date__year__lte=current_year,
+        checkout_date__isnull=False  # 排除空值
+    ).annotate(
+        year=TruncYear('checkout_date')
+    ).values('year').annotate(
+        count=Count('id')
+    ).order_by('year')
+    checkin_data = {entry['year'].year: entry['count'] for entry in checkin_counts}
+    checkout_data = {entry['year'].year: entry['count'] for entry in checkout_counts}
+    final_checkin_data = [checkin_data.get(year, 0) for year in year_range]
+    final_checkout_data = [checkout_data.get(year, 0) for year in year_range]
+    year_range_list = [year for year in year_range]
+
+    # 去年一整年不同月份老人流入流出
+    last_year = datetime.now().year - 1
+    checkin_counts = Volunteer.objects.filter(
+        checkin_date__year=last_year
+    ).annotate(
+        month=TruncMonth('checkin_date')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+    # 计算去年的离院人数
+    checkout_counts = Volunteer.objects.filter(
+        checkout_date__year=last_year
+    ).annotate(
+        month=TruncMonth('checkout_date')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+    # 将查询结果转换为更易于处理的格式，例如字典列表
+    checkin_data = [result['count'] for result in checkin_counts]
+    checkout_data = [result['count'] for result in checkout_counts]
+
+    context = {
+        'age_distribution': age_distribution,
+        'final_checkin_data': final_checkin_data,
+        'final_checkout_data': final_checkout_data,
+        'year_range_list': year_range_list,
+        'checkin_data': checkin_data,
+        'checkout_data': checkout_data,
+        'check_year': last_year
+    }
     return render(request, "manager/volunteer_management/analyze_volunteer.html")
 
 
