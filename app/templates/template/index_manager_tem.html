@@ -52,7 +52,7 @@
     <!-- begin::navigation header -->
     <header class="navigation-header">
         <figure class="avatar avatar-state-success">
-            <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image">
+            <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image" id="userImage">
         </figure>
         <div>
             <h5 id="user_name">匿名用户</h5>
@@ -88,6 +88,13 @@
                 <a href="/management/select_event">
                     <i class="nav-link-icon" data-feather="clipboard"></i>
                     <span>事件记录</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
+                <a href="/management/logging_record">
+                    <i class="nav-link-icon" data-feather="clipboard"></i>
+                    <span>操作记录</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
@@ -175,7 +182,7 @@
                     <li><a href="/management/analyze_old">老人统计分析</a></li>
                 </ul>
             </li>
-            <li class="navigation-divider">社区管理</li>
+            <li class="navigation-divider">其他</li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="database"></i>
@@ -184,7 +191,29 @@
                 <ul>
                     <li><a href="/management/activity_list">社区活动列表</a></li>
                     <li><a href="/management/activity_add">社区活动发布</a></li>
-                    <li><a href="/management/activity_modify">社区活动管理</a></li>
+                    <li><a href="/management/activity_modify">社区活动管理列表</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="database"></i>
+                    <span>用户账号管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/account_modify">用户账号信息列表</a></li>
+                    <li><a href="/management/account_add">用户账号信息添加</a></li>
+                    <li><a href="/management/activity_analyze">用户账号信息管理列表</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="database"></i>
+                    <span>老人用药管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/medication_list">老人用药信息列表</a></li>
+                    <li><a href="/management/activity_add">老人用药信息添加</a></li>
+                    <li><a href="/management/activity_modify">老人用药信息管理列表</a></li>
                 </ul>
             </li>
         </ul>
@@ -304,11 +333,15 @@
         const container1 = document.getElementById('user_name');
         const container2 = document.getElementById('user_grade');
         const container3 = document.getElementById('user_name_2');
+        const userImage = document.getElementById('userImage');
         container1.innerHTML = `<ul>${data.username}</ul>`;
         container2.innerHTML = `<ul>${data.grade}</ul>`;
         if (container3) {
             container3.innerHTML = `${data.username}`;
         }
+        if (data.user_photo && userImage)
+            userImage.src = data.user_photo;
+            console.log(userImage.src);
     }
 
     function show_log(datas) {

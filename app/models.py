@@ -4,7 +4,8 @@ from django.contrib.auth.models import Permission
 from django.db import models
 from django.utils import timezone
 
-from app.management_views.configuration import GENDER_CHOICES, GRADE_CHOICES, EVENT_TYPES
+from app.management_views.configuration import GENDER_CHOICES, GRADE_CHOICES, EVENT_TYPES, OPERATION_CHOICES
+
 
 # 测试
 class User(models.Model):
@@ -18,6 +19,8 @@ class User(models.Model):
     email = models.EmailField(verbose_name='邮箱', null=True, blank=True)
     grade = models.IntegerField(choices=GRADE_CHOICES, default='4', verbose_name='类别')
     bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
+    user_photo = models.ImageField(upload_to='user_photo/', null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     class Meta:
         verbose_name = '用户'
@@ -37,7 +40,7 @@ class Elder(models.Model):
     birthday = models.DateField(null=True, blank=True, verbose_name='出生日期')  # 允许为空，有可能未知
     checkin_date = models.DateField(null=True, blank=True, verbose_name='入养老院日期')  # 允许为空，初始状态可能未入住
     checkout_date = models.DateField(null=True, blank=True, verbose_name='离开养老院日期')  # 允许为空，初始状态肯定为空
-    avatar_photo = models.ImageField(upload_to='avatar_photo/', null=True, blank=True)
+    elder_photo = models.ImageField(upload_to='elder_photo/', null=True, blank=True)
     room_number = models.CharField(max_length=50, blank=True, null=True, verbose_name='房间号')  # 允许为空，可能未分配房间
     firstguardian_name = models.CharField(max_length=50, blank=True, null=True, verbose_name='第一监护人姓名')
     firstguardian_relationship = models.CharField(max_length=50, blank=True, null=True, verbose_name='与第一监护人关系')
@@ -58,7 +61,7 @@ class Elder(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
-
+    bind_user=models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,related_name='elder_data', verbose_name='绑定用户')
     def calculate_age(self):
         today = datetime.today()
         age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
@@ -92,6 +95,8 @@ class Staff(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    bind_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='staff_data',
+                                  verbose_name='绑定用户')
 
     def calculate_age(self):
         today = datetime.today()
@@ -126,6 +131,8 @@ class Volunteer(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    bind_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='volunteer_data',
+                                  verbose_name='绑定用户')
 
     def calculate_age(self):
         today = datetime.today()
@@ -162,12 +169,14 @@ class Event(models.Model):
 
 # 日志记录
 class Logging(models.Model):
+
     operation_time = models.DateTimeField(default=timezone.now)
     operator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Logging', verbose_name='日志')
     operation_content = models.TextField(blank=True, null=True, verbose_name='操作信息')
+    operation_type = models.CharField(max_length=20, choices=OPERATION_CHOICES,blank=True, null=True,  verbose_name='操作类型')
 
     def __str__(self):
-        return f"{self.operation_time} - {self.operator}"
+        return f"{self.operation_time} - {self.operator} - {self.get_operation_type_display()}"
 
 
 # 社区活动管理
@@ -179,7 +188,6 @@ class CommunityEvent(models.Model):
     )
     name = models.CharField(max_length=255, verbose_name="活动名称")
     description = models.TextField(verbose_name="描述", null=True, blank=True)
-    created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
     start_time = models.DateTimeField(verbose_name="开始时间", null=True, blank=True)
     end_time = models.DateTimeField(verbose_name="结束时间", null=True, blank=True)
     location = models.CharField(max_length=255, verbose_name="地点", null=True, blank=True)
@@ -192,6 +200,12 @@ class CommunityEvent(models.Model):
     image = models.ImageField(upload_to='communityevents/', verbose_name="图片/海报", null=True, blank=True)
     category = models.CharField(max_length=255, verbose_name="分类", null=True, blank=True)
     registration_link = models.URLField(verbose_name="注册/报名链接", max_length=1024, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
 
     def registration_count(self):
         return self.registrations.count()
@@ -216,13 +230,18 @@ class CommunityAnnouncement(models.Model):
     title = models.CharField(max_length=255, verbose_name="标题")
     introduction=models.CharField(max_length=255, null=True, blank=True,verbose_name="简介")
     content = models.TextField(verbose_name="内容")
-    created = models.DateTimeField(auto_now_add=True, verbose_name='创键日期')
     published_date = models.DateTimeField(null=True, blank=True, verbose_name="发布日期")
     expiry_date = models.DateTimeField(null=True, blank=True, verbose_name="过期日期")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="发布者")
     publisher = models.CharField(max_length=255, null=True, blank=True, verbose_name="发布方")
     announcement_photo = models.ImageField(upload_to='announcement_photo/', null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     STATUS_CHOICES = (
         ('active', '有效'),
         ('inactive', '暂时无效'),

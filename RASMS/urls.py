@@ -23,7 +23,7 @@ from django.views.generic import TemplateView
 from app import account_views, user_views, staff_views, volunteer_views
 from app import manager_views
 from app.management_views import old_management_views, worker_management_views, volunteer_management_views, table_views, \
-    api_views, activity_views, announcement_views
+    api_views, activity_views, announcement_views, account_management_views
 
 urlpatterns = [
                   path("admin/", admin.site.urls),
@@ -48,6 +48,7 @@ urlpatterns = [
                   path("management/select_event/", manager_views.select_event, name="select_event"),
                   path("management/profile/", manager_views.profile, name="profile_user"),
                   path("management/library/", manager_views.library, name="library"),
+                  path("management/logging_record/", manager_views.logging_record, name="logging_record"),
 
                   # 老年人信息管理
                   path("management/list_old/", old_management_views.list_old, name="list_old"),
@@ -115,5 +116,11 @@ urlpatterns = [
                   path("management/activity_info/", activity_views.activity_info, name="activity_info"),
                   path("management/activity_add/", activity_views.activity_add, name="activity_add"),
                   path("management/activity_modify/", activity_views.activity_modify, name="activity_modify"),
+
+                  # 账号信息管理
+                  path("management/account_analyze/", account_management_views.account_analyze, name="account_list"),
+                  path("management/account_info/", account_management_views.account_info, name="account_info"),
+                  path("management/account_add/", account_management_views.account_add, name="account_add"),
+                  path("management/account_modify/", account_management_views.account_modify, name="account_modify"),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

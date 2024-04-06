@@ -25,5 +25,36 @@ EVENT_TYPES = (
         (4, '禁止区域入侵检测'),
     )
 
+OPERATION_CHOICES = (
+        ('ADD_RESIDENT', '添加居民'),
+        ('UPDATE_RESIDENT', '更新居民信息'),
+        ('DELETE_RESIDENT', '删除居民'),
 
+        ('ADD_STAFF', '添加员工'),
+        ('UPDATE_STAFF', '更新员工信息'),
+        ('DELETE_STAFF', '删除员工'),
 
+        ('ADD_SCHEDULE', '添加排班'),
+        ('UPDATE_SCHEDULE', '更新排班信息'),
+        ('DELETE_SCHEDULE', '删除排班'),
+
+        ('ADD_MEDICATION', '添加用药记录'),
+        ('UPDATE_MEDICATION', '更新用药记录'),
+        ('DELETE_MEDICATION', '删除用药记录'),
+
+        ('ADD_ACTIVITY', '添加活动'),
+        ('UPDATE_ACTIVITY', '更新活动信息'),
+        ('DELETE_ACTIVITY', '删除活动'),
+
+        ('ADD_ANNOUNCEMENT', '发布公告'),
+        ('UPDATE_ANNOUNCEMENT', '更新公告'),
+        ('DELETE_ANNOUNCEMENT', '删除公告'),
+
+        ('ADD_FEEDBACK', '收集反馈'),
+        ('UPDATE_FEEDBACK', '处理反馈'),
+        ('DELETE_FEEDBACK', '删除反馈'),
+
+        ('ADD_HEALTH_RECORD', '添加健康记录'),
+        ('UPDATE_HEALTH_RECORD', '更新健康记录'),
+        ('DELETE_HEALTH_RECORD', '删除健康记录'),
+)

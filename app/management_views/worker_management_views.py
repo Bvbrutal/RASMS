@@ -1,10 +1,11 @@
 import os
-
+from datetime import datetime
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
-
+from django.db.models import Q, Count
+from django.db.models.functions import TruncYear, TruncMonth
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Staff, User
@@ -116,7 +117,91 @@ def modify_worker(request):
 
 
 def analyze_worker(request):
-    return render(request, "manager/worker_management/analyze_worker.html")
+    # 年龄分布
+    age_distribution = [0, 0, 0, 0, 0]
+    for item in Staff.objects.filter(is_active=True):
+        if item.birthday:
+            age = item.calculate_age()
+            if age <= 20:
+                age_distribution[0] += 1
+            elif 21 <= age <= 40:
+                age_distribution[1] += 1
+            elif 41 <= age <= 60:
+                age_distribution[2] += 1
+            elif 61 <= age <= 80:
+                age_distribution[3] += 1
+            else:
+                age_distribution[4] += 1
+
+    # 近八年的流入流出统计
+    # 获取当前年份
+    current_year = datetime.now().year
+    year_range = range(current_year - 7, current_year + 1)
+    hire_counts = Staff.objects.filter(
+        hire_date__year__gte=current_year - 7,
+        hire_date__year__lte=current_year
+    ).annotate(
+        year=TruncYear('hire_date')
+    ).values('year').annotate(
+        count=Count('id')
+    ).order_by('year')
+    resign_counts = Staff.objects.filter(
+        resign_date__year__gte=current_year - 7,
+        resign_date__year__lte=current_year,
+        resign_date__isnull=False  # 排除空值
+    ).annotate(
+        year=TruncYear('resign_date')
+    ).values('year').annotate(
+        count=Count('id')
+    ).order_by('year')
+    hire_data = {entry['year'].year: entry['count'] for entry in hire_counts}
+    resign_data = {entry['year'].year: entry['count'] for entry in resign_counts}
+    final_hire_data = [hire_data.get(year, 0) for year in year_range]
+    final_resign_data = [resign_data.get(year, 0) for year in year_range]
+    year_range_list = [year for year in year_range]
+
+    # 去年一整年不同月份老人流入流出
+    last_year = datetime.now().year - 1
+    hire_dates = Staff.objects.filter(
+        hire_date__year=last_year
+    ).annotate(
+        month=TruncMonth('hire_date')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+    # 计算去年的离院人数
+    resign_dates = Staff.objects.filter(
+        resign_date__year=last_year
+    ).annotate(
+        month=TruncMonth('resign_date')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+    # 将查询结果转换为更易于处理的格式，例如字典列表
+    checkin_counts_dict = {c['month'].month: c['count'] for c in hire_dates}
+    checkout_counts_dict = {c['month'].month: c['count'] for c in resign_dates}
+    # 初始化一个包含所有月份的计数字典
+    all_months_counts1 = {month: 0 for month in range(1, 13)}
+    all_months_counts2 = {month: 0 for month in range(1, 13)}
+    # 更新字典，使用查询结果覆盖默认的零计数
+    all_months_counts1.update(checkin_counts_dict)
+    all_months_counts2.update(checkout_counts_dict)
+    print(all_months_counts1, all_months_counts2)
+    # 将查询结果转换为更易于处理的格式，例如字典列表
+    hire_date = [count for month, count in all_months_counts1.items()]
+    resign_date = [count for month, count in all_months_counts2.items()]
+
+    context = {
+        'age_distribution': age_distribution,
+        'final_hire_data': final_hire_data,
+        'final_resign_data': final_resign_data,
+        'year_range_list': year_range_list,
+        'hire_date': hire_date,
+        'resign_date': resign_date,
+        'check_year': last_year
+    }
+    print(context)
+    return render(request, "manager/worker_management/analyze_worker.html",context=context)
 
 
 def modify_worker_basic(request):

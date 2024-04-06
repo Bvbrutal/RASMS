@@ -1,0 +1,111 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>用户详细信息</title>
+
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>用户详细信息</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">用户账号信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'announcement_modify' %}">用户信息列表</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">用户详细信息</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <figure class="avatar avatar-lg m-b-20">
+                                {% if item.elder_photo %}
+                                    <img src="{{ item.user_photo.url }}"
+                                         class="rounded-circle" alt="image">
+                                {% else %}
+                                    <img src="{% static "assets/media/image/user/1.png" %}"
+                                         class="rounded-circle" alt="image">
+                                {% endif %}
+                            </figure>
+                            <h5 class="mb-1">{{ item.username|default:"暂无" }}</h5>
+                            <p class="text-muted small">老年人</p>
+                            <p>{{ item.bio|default:"暂无" }}</p>
+                            <a href="{% url 'modify_old_basic' %}?id={{ item.id }}" class="btn btn-outline-primary">
+                                <i data-feather="edit-2" class="mr-2"></i>编辑老人信息
+                            </a>
+                        </div>
+                        <hr class="m-0">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-12 text-success">
+                                    <h4 class="font-weight-bold">{{ item.creation_time|date:"Y-m-d"|default:"暂无" }}</h4>
+                                    <span>注册日期</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-between align-items-center">
+                                基本信息
+                                <a href="{% url 'modify_old_basic' %}?id={{ item.id }}"
+                                   class="btn btn-outline-light btn-sm">
+                                    <i data-feather="edit-2" class="mr-2"></i> 编辑
+                                </a>
+                            </h6>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">老人ID：</div>
+                                <div class="col-6">{{ item.user_id|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">性别：</div>
+                                <div class="col-6">{{ item.gender|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">手机:</div>
+                                <div class="col-6">{{ item.mobile_phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">电话:</div>
+                                <div class="col-6">{{ item.phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">邮箱:</div>
+                                <div class="col-6">{{ item.email|default:"暂无" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

@@ -55,200 +55,208 @@
 {% endblock %}
 
 {% block app-content %}
-        <!-- begin::main-content -->
-        <div class="main-content">
+    <!-- begin::main-content -->
+    <div class="main-content">
 
-            <!-- begin::container -->
-            <div class="container">
+        <!-- begin::container -->
+        <div class="container">
 
-                <!-- begin::page-header -->
-                <div class="page-header">
-                    <h4>老人信息列表</h4>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="#">老年人信息管理</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">老人信息列表</li>
-                        </ol>
-                    </nav>
-                </div>
-                <!-- end::page-header -->
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>老人信息列表</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">老年人信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">老人信息列表</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- end::page-header -->
 
-                <div class="row">
-                    <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
 
-                        <div class="card-body overflow-hidden card-changecolor p-t-0 p-b-0">
-                            <div class="page-header page-header-cover">
-                                <div class="container">
-                                    <form id="searchForm" method="get" onsubmit="event.preventDefault();
+                    <div class="card-body overflow-hidden card-changecolor p-t-0 p-b-0">
+                        <div class="page-header page-header-cover">
+                            <div class="container">
+                                <form id="searchForm" method="get" onsubmit="event.preventDefault();
                                                   handleSearch(); return false;">
-                                        <input id="searchKey" value="{{ key }}" type="text" name="query"
-                                               placeholder="请输入你想搜索的关键字..."
-                                               aria-label="Example text with button addon">
-                                        <input id="sub-button" type="button" value="搜索">
-                                    </form>
-                                </div>
+                                    <input id="searchKey" value="{{ key }}" type="text" name="query"
+                                           placeholder="请输入你想搜索的关键字..."
+                                           aria-label="Example text with button addon">
+                                    <input id="sub-button" type="button" value="搜索">
+                                </form>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover" id="table-old">
-                                        <thead>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="table-old">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">老人id</th>
+                                        <th scope="col">老人姓名</th>
+                                        <th scope="col">性别</th>
+                                        <th scope="col">房间号</th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in page_obj %}
                                         <tr>
-                                            <th scope="col">老人id</th>
-                                            <th scope="col">老人姓名</th>
-                                            <th scope="col">性别</th>
-                                            <th scope="col">房间号</th>
-                                            <th scope="col"></th>
-                                            <th scope="col"></th>
-                                            <th scope="col"></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for item in page_obj %}
-                                            <tr>
-                                                <td>{{ item.id }}</td>
-                                                <td>{{ item.username }}</td>
-                                                <td>
-                                                    {% if item.gender == 'M' %}
-                                                        男
-                                                    {% elif item.gender == 'F' %}
-                                                        女
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.username }}</td>
+                                            <td>
+                                                {% if item.gender == 'M' %}
+                                                    男
+                                                {% elif item.gender == 'F' %}
+                                                    女
+                                                {% else %}
+                                                    未知
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ item.room_number|default:"暂无" }}</td>
+                                            <td>
+                                                <figure class="avatar avatar-sm">
+                                                    {% if item.elder_photo %}
+                                                        <img src="{{ item.elder_photo.url }}"
+                                                             class="rounded-circle" alt="image">
                                                     {% else %}
-                                                        未知
+                                                        <img src="{% static "assets/media/image/user/13.jpg" %}"
+                                                             class="rounded-circle" alt="image">
                                                     {% endif %}
-                                                </td>
-                                                <td>{{ item.room_number|default:"暂无" }}</td>
-                                                <td>
-                                                    <figure class="avatar avatar-sm">
-                                                        {% if item.avatar_photo %}
-                                                            <img src="{{ item.avatar_photo.url }}"
-                                                                 class="rounded-circle" alt="image">
-                                                        {% else %}
-                                                            <img src="{% static "assets/media/image/user/13.jpg" %}"
-                                                                 class="rounded-circle" alt="image">
-                                                        {% endif %}
-                                                    </figure>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'old_info' %}?id={{ item.id }}">
-                                                        <button type="button"
-                                                                class="btn btn-outline-primary">详细信息
-                                                        </button>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'modify_old_basic' %}?id={{ item.id }}">
-                                                        <button type="button"
-                                                                class="btn btn-outline-primary">修改老人基本信息
-                                                        </button>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'modify_old_guardian' %}?id={{ item.id }}">
-                                                        <button type="button"
-                                                                class="btn btn-outline-light">修改老人监护人信息
-                                                        </button>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <button type="button" onclick="setCurrentitemId(this)"
-                                                            class="btn btn-danger btn-square btn-uppercase"
-                                                            data-toggle="modal" data-target="#delete-verify"
-                                                            data-whatever="@fat" data-id="{{ item.id }}">
-                                                        <i class="ti-trash mr-2"></i> 删除
+                                                </figure>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'old_info' %}?id={{ item.id }}">
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary">详细信息
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    <div class="container">
-                                        <div class="row justify-content-center">
-                                            <div class="col-auto">
-                                                <nav aria-label="Page navigation">
-                                                    <ul class="pagination">
-                                                        <li class="page-item">
-                                                            <a class="page-link" href="?page=1">首页</a>
-                                                        </li>
-                                                        {% if page_obj.number > 1 %}
-                                                            <li class="page-item">
-                                                                <a class="page-link"
-                                                                   href="?page={{ page_obj.previous_page_number }}">&laquo;
-                                                                    上一页</a>
-                                                            </li>
-                                                        {% else %}
-                                                            <li class="page-item">
-                                                                <a class="page-link"
-                                                                   href="?page=1">&laquo;
-                                                                    上一页</a>
-                                                            </li>
-                                                        {% endif %}
-
-                                                        {% for num in page_obj.paginator.page_range %}
-                                                            {% if page_obj.number == num %}
-                                                                <li class="page-item active"><a class="page-link"
-                                                                                                href="?page={{ num }}">{{ num }}</a>
-                                                                </li>
-                                                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                                                <li class="page-item"><a class="page-link"
-                                                                                         href="?page={{ num }}">{{ num }}</a>
-                                                                </li>
-                                                            {% endif %}
-                                                        {% endfor %}
-
-                                                        {% if page_obj.has_next %}
-                                                            <li class="page-item">
-                                                                <a class="page-link"
-                                                                   href="?page={{ page_obj.next_page_number }}">下一页
-                                                                    &raquo;</a>
-                                                            </li>
-                                                        {% else %}
-                                                            <li class="page-item">
-                                                                <a class="page-link"
-                                                                   href="?page={{ page_obj.number }}">下一页
-                                                                    &raquo;</a>
-                                                            </li>
-                                                        {% endif %}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'account_info' %}?id={{ item.id }}">
+                                                    <button type="button"
+                                                            class="btn btn-outline-light">绑定账号信息
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'modify_old_basic' %}?id={{ item.id }}">
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary">修改老人基本信息
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'modify_old_guardian' %}?id={{ item.id }}">
+                                                    <button type="button"
+                                                            class="btn btn-outline-light">修改老人监护人信息
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <button type="button" onclick="setCurrentitemId(this)"
+                                                        class="btn btn-danger btn-square btn-uppercase"
+                                                        data-toggle="modal" data-target="#delete-verify"
+                                                        data-whatever="@fat" data-id="{{ item.id }}">
+                                                    <i class="ti-trash mr-2"></i> 删除
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="container">
+                                    <div class="row justify-content-center">
+                                        <div class="col-auto">
+                                            <nav aria-label="Page navigation">
+                                                <ul class="pagination">
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page=1">首页</a>
+                                                    </li>
+                                                    {% if page_obj.number > 1 %}
                                                         <li class="page-item">
                                                             <a class="page-link"
-                                                               href="?page={{ page_obj.paginator.num_pages }}">尾页</a>
+                                                               href="?page={{ page_obj.previous_page_number }}">&laquo;
+                                                                上一页</a>
                                                         </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
+                                                    {% else %}
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                               href="?page=1">&laquo;
+                                                                上一页</a>
+                                                        </li>
+                                                    {% endif %}
 
-                                            <div class="col-auto">
-                                                <form class="form-inline">
-                                                    <div class="form-group">
-                                                        <label for="page-number">跳转到页码:</label>
-                                                        <input type="number" class="form-control mx-2" id="page-number"
-                                                               min="1" max="{{ page_obj.paginator.num_pages }}"
-                                                               value="{{ page_obj.number }}">
-                                                        <button type="submit" class="btn btn-primary"
-                                                                onclick="event.preventDefault(); window.location.href='?page=' + document.getElementById('page-number').value;">
-                                                            跳转
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                    {% for num in page_obj.paginator.page_range %}
+                                                        {% if page_obj.number == num %}
+                                                            <li class="page-item active"><a class="page-link"
+                                                                                            href="?page={{ num }}">{{ num }}</a>
+                                                            </li>
+                                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                            <li class="page-item"><a class="page-link"
+                                                                                     href="?page={{ num }}">{{ num }}</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if page_obj.has_next %}
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                               href="?page={{ page_obj.next_page_number }}">下一页
+                                                                &raquo;</a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                               href="?page={{ page_obj.number }}">下一页
+                                                                &raquo;</a>
+                                                        </li>
+                                                    {% endif %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.paginator.num_pages }}">尾页</a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+
+                                        <div class="col-auto">
+                                            <form class="form-inline">
+                                                <div class="form-group">
+                                                    <label for="page-number">跳转到页码:</label>
+                                                    <input type="number" class="form-control mx-2" id="page-number"
+                                                           min="1" max="{{ page_obj.paginator.num_pages }}"
+                                                           value="{{ page_obj.number }}">
+                                                    <button type="submit" class="btn btn-primary"
+                                                            onclick="event.preventDefault(); window.location.href='?page=' + document.getElementById('page-number').value;">
+                                                        跳转
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                </div>
 
+                </div>
             </div>
-            <!-- end::container -->
 
         </div>
-        <!-- end::main-content -->
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
     <!-- modal -->
     <div class="modal fade" id="delete-verify" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -264,7 +272,7 @@
                         <p>是否确定删除该信息？</p>
                         <div class="modal-footer modal-footer-centered">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" onclick="del_data()">确定</button>
+                            <button type="button" class="btn btn-primary" onclick="delete_elder()">确定</button>
                         </div>
                     </div>
                 </div>
@@ -272,9 +280,69 @@
         </div>
     </div>
 
+    <!-- modal——2 -->
+    <div class="modal fade" id="reset-verify" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">重置密码验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="ti-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <p>是否确定重置该用户密码？</p>
+                        <div class="modal-footer modal-footer-centered">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="reset_password()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 错误信息将在这里显示 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var statusMessage = sessionStorage.getItem('statusMessage');
+            if (statusMessage) {
+                // 设置模态框中的消息
+                $('#errorModal .modal-body').text(statusMessage);
+                // 显示模态框
+                $('#errorModal').modal('show');
+                // 从sessionStorage中移除消息
+                sessionStorage.removeItem('statusMessage');
+            }
+        });
+
+    </script>
     <script>
         var currentitemId;
 
@@ -301,7 +369,7 @@
 
         const csrftoken = getCookie('csrftoken');
 
-        function del_data() {
+        function delete_elder() {
             // 使用currentitemId变量，它现在包含被选中的老人的ID
             $.ajax({
                 type: "POST",
@@ -309,16 +377,45 @@
                 headers: {"X-CSRFToken": csrftoken},
                 data: {
                     id: currentitemId,
+                    op: "delete_elder"
                 },
                 success: function (data) {
-                    console.log('删除成功！');
+                    sessionStorage.setItem('statusMessage', '删除成功！');
                     window.location.reload("/management/modify_old/");
                 },
                 error: function (xhr, status, error) {
-                    console.log('删除失败，请重试！');
+                    sessionStorage.setItem('statusMessage', '删除成功！');
+                    window.location.reload("/management/modify_old/");
                 }
             });
         }
+
+        function reset_password() {
+            // 使用currentitemId变量，它现在包含被选中的老人的ID
+            $.ajax({
+                type: "POST",
+                url: "/management/modify_old/",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    id: currentitemId,
+                    op: "reset_password",
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '重置成功！');
+                        window.location.reload("/management/modify_old/");
+                    } else if (data.ret === 2) {
+                        sessionStorage.setItem('statusMessage', '该用户未注册');
+                        window.location.reload("/management/modify_old/");
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    console.log('重置失败，请重试！');
+                }
+            });
+        }
+
 
         function getCsrfToken() {
             return $('input[name="csrfmiddlewaretoken"]').val();

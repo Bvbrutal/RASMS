@@ -93,10 +93,10 @@
                     },
                     series: [{
                         name: '入院人数',
-                        data: {{ final_checkin_data|safe }}
+                        data: {{ final_hire_data|safe }}
                     }, {
                         name: '离院人数',
-                        data: {{ final_checkout_data|safe }}
+                        data: {{ final_resign_data|safe }}
                     }],
                     xaxis: {
                         categories: {{ year_range_list|safe }},
@@ -190,12 +190,12 @@
                     data: {
                         labels: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
                         datasets: [{
-                            data: {{ checkin_data|safe }},
+                            data: {{ hire_date|safe }},
                             label: "入院人数（个）",
                             borderColor: colors.primary,
                             backgroundColor: colors.primaryLight,
                         }, {
-                            data: {{ checkout_data|safe }},
+                            data: {{ resign_date|safe }},
                             label: "离院人数（个）",
                             borderColor: colors.success,
                             backgroundColor: colors.successLight,
@@ -203,6 +203,11 @@
                         ]
                     },
                     options: {
+                        layout: {
+                            padding: {
+                                left: 10, // 调整这个值直到X轴标签完全可见
+                            }
+                        },
                         title: {
                             display: true,
                             text: '{{ check_year }}年不同月份养老院义工数量信息变化图'

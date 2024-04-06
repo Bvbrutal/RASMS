@@ -59,8 +59,8 @@
                                             <td>{{ Elder.room_number|default:"暂无" }}</td>
                                             <td>
                                                 <figure class="avatar avatar-sm">
-                                                    {% if Elder.avatar_photo %}
-                                                        <img src="{{ MEDIA_URL }}{{ Elder.avatar_photo }}"
+                                                    {% if Elder.elder_photo %}
+                                                        <img src="{{ MEDIA_URL }}{{ Elder.elder_photo }}"
                                                              class="rounded-circle" alt="image">
                                                     {% else %}
                                                         <img src="{% static "assets/media/image/user/13.jpg" %}"

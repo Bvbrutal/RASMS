@@ -19,7 +19,8 @@ def accont_api(request):
         'user_id': user_id,
         'phone': mobile_phone,
         'bio': bio,
-        'grade': grade
+        'grade': grade,
+        'user_photo':serch_result.user_photo.url if serch_result.user_photo else None,
     }
     return JsonResponse(context)
 
@@ -41,6 +42,7 @@ def update_profile(request):
 
 
 def logging(request):
+    global fomat_time
     mobile_phone = request.session["info"]["mobile_phone"]
     operator = User.objects.get(mobile_phone=mobile_phone)
     loggings = operator.Logging.all().order_by("-operation_time")
@@ -56,10 +58,17 @@ def logging(request):
         # 计算距离现在有多久
         time_diff = current_time - log.operation_time
         total_seconds = time_diff.total_seconds()
-        hours, remainder = divmod(total_seconds, 3600)
+        day, remainder = divmod(total_seconds, 24*3600)
+        hours, remainder = divmod(remainder, 3600)
         minutes, seconds = divmod(remainder, 60)
-        fomat_time = "{}小时{}分钟前".format(int(hours), int(minutes))
-
+        if day > 0:
+            fomat_time="{}天前".format(int(day))
+        elif hours > 0:
+            fomat_time="{}小时前".format(int(hours))
+        elif minutes > 0:
+            fomat_time="{}分钟前".format(int(minutes))
+        elif seconds > 0:  # 如果没有更大的单位，且确实有秒差异，则显示秒
+            fomat_time="{}秒前".format(int(seconds))
         # 将更新后的记录添加到列表中
         updated_loggings.append({
             "operation_time": fomat_time,

@@ -4,6 +4,55 @@
 {% block app-head %}
     <title>公告展示列表</title>
     <link rel="stylesheet" type="text/css" href="{% static "css/mystyle.css" %}">
+    <style>
+        .modal-footer-centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/search.css" %}">
+    <style>
+        #searchForm {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #searchKey {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
+            width: 100%;
+            transition: box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #searchKey:focus {
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #sub-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #sub-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 {% endblock %}
 
 {% block app-content %}
@@ -22,6 +71,21 @@
 
         <div class="row">
             <div class="col-md-12">
+
+                <div class="card-body overflow-hidden card-changecolor p-t-0 p-b-0">
+                    <div class="page-header page-header-cover">
+                        <div class="container">
+                            <form id="searchForm" method="get" onsubmit="event.preventDefault();
+                                                  handleSearch(); return false;">
+                                <input id="searchKey" value="{{ key }}" type="text" name="query"
+                                       placeholder="请输入你想搜索的关键字..."
+                                       aria-label="Example text with button addon">
+                                <input id="sub-button" type="button" value="搜索">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -32,6 +96,8 @@
                                     <th scope="col">公告标题</th>
                                     <th scope="col">公告简介</th>
                                     <th scope="col">发布时间</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
@@ -62,6 +128,21 @@
                                                         class="btn btn-outline-primary">详细信息
                                                 </button>
                                             </a>
+                                        </td>
+                                        <td>
+                                            <a href="/management/announcement_modify_basic?id={{ item.id }}">
+                                                <button type="button"
+                                                        class="btn btn-outline-primary">修改公告信息
+                                                </button>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="setCurrentitemId(this)"
+                                                    class="btn btn-danger btn-square btn-uppercase"
+                                                    data-toggle="modal" data-target="#delete-verify"
+                                                    data-whatever="@fat" data-id="{{ item.id }}">
+                                                <i class="ti-trash mr-2"></i> 删除
+                                            </button>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -144,10 +225,95 @@
             </div>
         </div>
     </div>
+    <!-- modal -->
+    <div class="modal fade" id="delete-verify" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">删除信息验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="ti-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <p>是否确定删除该信息？</p>
+                        <div class="modal-footer modal-footer-centered">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="del_data()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        var currentitemId;
 
+        function setCurrentitemId(element) {
+            // 从被点击的按钮中获取数据属性data-id的值
+            currentitemId = $(element).data('id');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function del_data() {
+            // 使用currentitemId变量，它现在包含被选中的老人的ID
+            $.ajax({
+                type: "POST",
+                url: "/management/modify_old/",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    id: currentitemId,
+                },
+                success: function (data) {
+                    console.log('删除成功！');
+                    window.location.reload("/management/modify_old/");
+                },
+                error: function (xhr, status, error) {
+                    console.log('删除失败，请重试！');
+                }
+            });
+        }
+
+        function getCsrfToken() {
+            return $('input[name="csrfmiddlewaretoken"]').val();
+        }
+
+    </script>
+    <script>
+        function handleSearch() {
+            var searchKey = document.getElementById('searchKey').value;
+            var url = "/management/modify_old?page=1&key=" + encodeURIComponent(searchKey);
+            window.location.href = url;
+        }
+
+        document.getElementById('sub-button').addEventListener('click', function (e) {
+            // 阻止表单的默认提交行为
+            e.preventDefault();
+            handleSearch();           // 调用处理搜索的函数
+        });
+
+    </script>
 {% endblock %}

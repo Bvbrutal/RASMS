@@ -6,9 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
 from app.components.Pagination import Pagination
-from app.models import User, Elder, Staff, Volunteer
-
-
+from app.models import User, Elder, Staff, Volunteer, Logging
 
 from django.db.models import Count
 from django.utils.timezone import now
@@ -139,3 +137,10 @@ def library(request):
 
     return render(request, "manager/library.html")
 
+
+def logging_record(request):
+    loggings=Logging.objects.all()
+    context={
+        'items':loggings,
+    }
+    return render(request, "manager/logging_record.html",context=context)

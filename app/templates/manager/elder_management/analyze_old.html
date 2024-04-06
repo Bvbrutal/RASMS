@@ -6,55 +6,55 @@
 {% endblock %}
 
 {% block app-content %}
-        <!-- begin::main-content -->
-        <div class="main-content">
+    <!-- begin::main-content -->
+    <div class="main-content">
 
-            <!-- begin::container -->
-            <div class="container">
+        <!-- begin::container -->
+        <div class="container">
 
-                <!-- begin::page-header -->
-                <div class="page-header">
-                    <h4>统计分析</h4>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="#">老年人信息管理</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">统计分析</li>
-                        </ol>
-                    </nav>
-                </div>
-                <!-- end::page-header -->
-
-                <div class="row">
-                    <div class="col-md-12">
-
-                        <div class="card">
-                            <div class="card-body">
-                                <canvas id="chartjs_one_old"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-body">
-                                <div id="apex_chart_old" style="height: 300px"></div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-body">
-                                <canvas id="chartjs_two_old"></canvas>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>统计分析</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">老年人信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">统计分析</li>
+                    </ol>
+                </nav>
             </div>
-            <!-- end::container -->
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="chartjs_one_old"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="apex_chart_old" style="height: 300px"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="chartjs_two_old"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
-        <!-- end::main-content -->
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
 {% endblock %}
 
 {% block app-foot %}
@@ -157,7 +157,7 @@
                 new Chart(element, {
                     type: 'bar',
                     data: {
-                        labels: ["20岁以下","20-40岁","40-60岁", "60-70岁", "70-80岁", "80岁以上"],
+                        labels: ["20岁以下", "20-40岁", "40-60岁", "60-70岁", "70-80岁", "80岁以上"],
                         datasets: [
                             {
                                 label: "人数 (个)",
@@ -173,7 +173,7 @@
                         ]
                     },
                     options: {
-                        legend: { display: false },
+                        legend: {display: false},
                         title: {
                             display: true,
                             text: '养老院老年人年龄信息统计图'
@@ -203,6 +203,11 @@
                         ]
                     },
                     options: {
+                        layout: {
+                            padding: {
+                                left: 10, // 调整这个值直到X轴标签完全可见
+                            }
+                        },
                         title: {
                             display: true,
                             text: '{{ check_year }}年不同月份养老院老年人数量信息变化图'

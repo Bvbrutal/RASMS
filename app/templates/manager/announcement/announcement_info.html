@@ -51,8 +51,43 @@
                     <img src="{{ item.announcement_photo.url }}" alt="Community Cleaning" class="announcement-image">
                 {% else %}
                 {% endif %}
-                <div class="announcement-content">
-                    {{ item.content|safe }}
+                <div class="row mb-2">
+                    <div class="col-12 text-muted">公告内容：</div>
+                    <div class="announcement-content p-l-80">
+                        {{ item.content|safe }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title d-flex justify-content-between align-items-center">
+                    主要信息
+                </h6>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">发布时间：</div>
+                    <div class="col-6">{{ item.published_date|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">发布方：</div>
+                    <div class="col-6">{{ item.publisher|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">创建时间：</div>
+                    <div class="col-6">{{ item.created|date:"Y-m-d" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">创建人：</div>
+                    <div class="col-6">{{ item.updated_by|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">更新时间：</div>
+                    <div class="col-6">{{ item.updated|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">更新人：</div>
+                    <div class="col-6">{{ item.updated_by|default:"暂无" }}</div>
                 </div>
             </div>
         </div>

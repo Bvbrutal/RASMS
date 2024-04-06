@@ -1,19 +1,18 @@
 # 老年人信息管理
+import hashlib
 import os
 from datetime import datetime
 
-from anyio import current_time
-from dateutil.relativedelta import relativedelta
+from django.db.models import Q, Count
 from django.db.models.functions import TruncYear, TruncMonth
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from django.utils.timezone import now
 
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Elder, User
-from django.db.models import Q, Count
-from django.http import JsonResponse, HttpResponse
-from django.utils.timezone import now
-from django.shortcuts import get_object_or_404
 
 GENDER_CHOICES = {
     'M': '男',
@@ -26,8 +25,8 @@ def add_old(request):
         return render(request, "manager/elder_management/add_old.html")
 
     # 获取表单数据
-    created_by_id=request.session["info"]["user_id"]
-    created_by=User.objects.filter(user_id=created_by_id).first()
+    created_by_id = request.session["info"]["user_id"]
+    created_by = User.objects.filter(user_id=created_by_id).first()
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
     mobile_phone = request.POST.get('input2')
@@ -71,7 +70,7 @@ def add_old(request):
         birthday=birthday,
         checkin_date=checkin_date,
         checkout_date=checkout_date,
-        avatar_photo=uploaded_file,
+        elder_photo=uploaded_file,
         room_number=room_number,
         firstguardian_name=firstguardian_name,
         firstguardian_relationship=firstguardian_relationship,
@@ -141,15 +140,33 @@ def modify_old(request):
     updated_by_id = request.session["info"]["user_id"]
     updated_by = User.objects.filter(user_id=updated_by_id).first()
     old_id = request.POST.get("id")
+    op = request.POST.get("op")
     elder = Elder.objects.filter(id=old_id).first()
-    elder.is_active = False
-    elder.updated_by=updated_by
-    elder.save()
-    context = {
-        'ret': 1,
-        'msg': "删除成功"
-    }
-    return JsonResponse(context, safe=False)
+    if op == 'delete_elder':
+        elder.is_active = False
+        elder.updated_by = updated_by
+        elder.save()
+        context = {
+            'ret': 1,
+            'msg': "删除成功"
+        }
+
+        return JsonResponse(context, safe=False)
+    if op == 'reset_password':
+        if elder.bind_user:
+            elder.updated_by = updated_by
+            elder.bind_user.password = hashlib.md5('123456'.encode()).hexdigest()
+            elder.save()
+            context = {
+                'ret': 1,
+                'msg': "重置成功"
+            }
+            return JsonResponse(context, safe=False)
+        context = {
+            'ret': 2,
+            'msg': "该用户未注册"
+        }
+        return JsonResponse(context, safe=False)
 
 
 def analyze_old(request):
@@ -213,10 +230,19 @@ def analyze_old(request):
     ).values('month').annotate(
         count=Count('id')
     ).order_by('month')
+    # 转换查询结果为字典，键为月份
+    checkin_counts_dict = {c['month'].month: c['count'] for c in checkin_counts}
+    checkout_counts_dict = {c['month'].month: c['count'] for c in checkout_counts}
+    # 初始化一个包含所有月份的计数字典
+    all_months_counts1 = {month: 0 for month in range(1, 13)}
+    all_months_counts2 = {month: 0 for month in range(1, 13)}
+    # 更新字典，使用查询结果覆盖默认的零计数
+    all_months_counts1.update(checkin_counts_dict)
+    all_months_counts2.update(checkout_counts_dict)
+    print(all_months_counts1, all_months_counts2)
     # 将查询结果转换为更易于处理的格式，例如字典列表
-    checkin_data = [result['count'] for result in checkin_counts]
-    checkout_data = [result['count'] for result in checkout_counts]
-
+    checkin_data = [count for month, count in all_months_counts1.items()]
+    checkout_data = [count for month, count in all_months_counts2.items()]
     context = {
         'age_distribution': age_distribution,
         'final_checkin_data': final_checkin_data,
@@ -226,23 +252,26 @@ def analyze_old(request):
         'checkout_data': checkout_data,
         'check_year': last_year
     }
+    print(context)
     return render(request, "manager/elder_management/analyze_old.html", context)
 
 
 def old_info(request):
     old_id = request.GET.get('id')
     elder = Elder.objects.filter(id=old_id).first()
-    if elder.birthday:
-        age = elder.calculate_age()
-    else:
-        age = None
-    elder.gender = GENDER_CHOICES[elder.gender]
-    context = {
-        'item': elder,
-        'age': age
-    }
-    print(elder.updated_by.user_id)
-    return render(request, "manager/elder_management/old_info.html", context=context)
+    if elder:
+        if elder.birthday:
+            age = elder.calculate_age()
+        else:
+            age = None
+        elder.gender = GENDER_CHOICES[elder.gender]
+        context = {
+            'item': elder,
+            'age': age
+        }
+        return render(request, "manager/elder_management/old_info.html", context=context)
+
+    return render(request, "manager/elder_management/elder_info_none.html")
 
 
 def list_old(request):
@@ -295,7 +324,7 @@ def modify_old_basic(request):
 
             # 使用用户的电话号码作为文件名，保留原始文件的扩展名
             uploaded_file.name = f"{mobile_phone}_{now().strftime('%Y%m%d%H%M%S')}{ext}"
-            item.avatar_photo.save(uploaded_file.name, uploaded_file, save=True)
+            item.elder_photo.save(uploaded_file.name, uploaded_file, save=True)
         # 更新模型实例的字段
         item.username = username
         item.gender = gender if gender in ['M', 'F'] else 'U'
@@ -327,7 +356,7 @@ def modify_old_guardian(request):
     if request.method == 'GET':
         old_id = request.GET.get('id')
         elder = get_object_or_404(Elder, id=old_id)
-        if elder:
+        if elder.birthday:
             age = elder.calculate_age()
         else:
             age = None

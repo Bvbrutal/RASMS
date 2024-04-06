@@ -143,60 +143,71 @@ def analyze_volunteer(request):
     # 获取当前年份
     current_year = datetime.now().year
     year_range = range(current_year - 7, current_year + 1)
-    checkin_counts = Volunteer.objects.filter(
-        checkin_date__year__gte=current_year - 7,
-        checkin_date__year__lte=current_year
+    hire_counts = Volunteer.objects.filter(
+        hire_date__year__gte=current_year - 7,
+        hire_date__year__lte=current_year
     ).annotate(
-        year=TruncYear('checkin_date')
+        year=TruncYear('hire_date')
     ).values('year').annotate(
         count=Count('id')
     ).order_by('year')
-    checkout_counts = Volunteer.objects.filter(
-        checkout_date__year__gte=current_year - 7,
-        checkout_date__year__lte=current_year,
-        checkout_date__isnull=False  # 排除空值
+    resign_counts = Volunteer.objects.filter(
+        resign_date__year__gte=current_year - 7,
+        resign_date__year__lte=current_year,
+        resign_date__isnull=False  # 排除空值
     ).annotate(
-        year=TruncYear('checkout_date')
+        year=TruncYear('resign_date')
     ).values('year').annotate(
         count=Count('id')
     ).order_by('year')
-    checkin_data = {entry['year'].year: entry['count'] for entry in checkin_counts}
-    checkout_data = {entry['year'].year: entry['count'] for entry in checkout_counts}
-    final_checkin_data = [checkin_data.get(year, 0) for year in year_range]
-    final_checkout_data = [checkout_data.get(year, 0) for year in year_range]
+    hire_data = {entry['year'].year: entry['count'] for entry in hire_counts}
+    resign_data = {entry['year'].year: entry['count'] for entry in resign_counts}
+    final_hire_data = [hire_data.get(year, 0) for year in year_range]
+    final_resign_data = [resign_data.get(year, 0) for year in year_range]
     year_range_list = [year for year in year_range]
 
     # 去年一整年不同月份老人流入流出
     last_year = datetime.now().year - 1
-    checkin_counts = Volunteer.objects.filter(
-        checkin_date__year=last_year
+    hire_dates = Volunteer.objects.filter(
+        hire_date__year=last_year
     ).annotate(
-        month=TruncMonth('checkin_date')
+        month=TruncMonth('hire_date')
     ).values('month').annotate(
         count=Count('id')
     ).order_by('month')
     # 计算去年的离院人数
-    checkout_counts = Volunteer.objects.filter(
-        checkout_date__year=last_year
+    resign_dates = Volunteer.objects.filter(
+        resign_date__year=last_year
     ).annotate(
-        month=TruncMonth('checkout_date')
+        month=TruncMonth('resign_date')
     ).values('month').annotate(
         count=Count('id')
     ).order_by('month')
     # 将查询结果转换为更易于处理的格式，例如字典列表
-    checkin_data = [result['count'] for result in checkin_counts]
-    checkout_data = [result['count'] for result in checkout_counts]
+    checkin_counts_dict = {c['month'].month: c['count'] for c in hire_dates}
+    checkout_counts_dict = {c['month'].month: c['count'] for c in resign_dates}
+    # 初始化一个包含所有月份的计数字典
+    all_months_counts1 = {month: 0 for month in range(1, 13)}
+    all_months_counts2 = {month: 0 for month in range(1, 13)}
+    # 更新字典，使用查询结果覆盖默认的零计数
+    all_months_counts1.update(checkin_counts_dict)
+    all_months_counts2.update(checkout_counts_dict)
+    print(all_months_counts1, all_months_counts2)
+    # 将查询结果转换为更易于处理的格式，例如字典列表
+    hire_date = [count for month, count in all_months_counts1.items()]
+    resign_date = [count for month, count in all_months_counts2.items()]
 
     context = {
         'age_distribution': age_distribution,
-        'final_checkin_data': final_checkin_data,
-        'final_checkout_data': final_checkout_data,
+        'final_hire_data': final_hire_data,
+        'final_resign_data': final_resign_data,
         'year_range_list': year_range_list,
-        'checkin_data': checkin_data,
-        'checkout_data': checkout_data,
+        'hire_date': hire_date,
+        'resign_date': resign_date,
         'check_year': last_year
     }
-    return render(request, "manager/volunteer_management/analyze_volunteer.html")
+    print(context)
+    return render(request, "manager/volunteer_management/analyze_volunteer.html",context=context)
 
 
 def volunteer_info(request):

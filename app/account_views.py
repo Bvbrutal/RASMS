@@ -2,7 +2,7 @@ import time
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from .models import User
+from .models import User, Elder, Staff, Volunteer
 import hashlib
 from datetime import datetime
 
@@ -67,8 +67,24 @@ def register(request):
         if passwd == repasswd:
             # 对密码进行MD5加密
             encrypted_passwd = hashlib.md5(passwd.encode()).hexdigest()
+            # 自动绑定账号
+            user_now=User.objects.create(mobile_phone=mobile_phone, username=username, password=encrypted_passwd)
+            elder = Elder.objects.filter(mobile_phone=mobile_phone).first()
+            staff = Staff.objects.filter(mobile_phone=mobile_phone).first()
+            volunteer = Volunteer.objects.filter(mobile_phone=mobile_phone).first()
+
+            if elder:
+                elder.bind_user = user_now
+                elder.save()
+
+            if staff:
+                staff.bind_user = user_now
+                staff.save()
+
+            if volunteer:
+                volunteer.bind_user = user_now
+                volunteer.save()
             # 将加密后的密码存储到数据库中
-            User.objects.create(mobile_phone=mobile_phone, username=username, password=encrypted_passwd)
             context = {
                 'ret': 1,
                 'msg': "注册成功"
