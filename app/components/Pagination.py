@@ -8,18 +8,18 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
             <nav aria-label="Page navigation">
                 <ul class="pagination">
                     <li class="page-item">
-                        <a class="page-link" href="?page=1">首页</a>
+                        <a class="page-link" href="?key={{ key }}&page=1">首页</a>
                     </li>
                     {% if page_obj.number > 1 %}
                         <li class="page-item">
                             <a class="page-link"
-                               href="?page={{ page_obj.previous_page_number }}">&laquo;
+                               href="?key={{ key }}&page={{ page_obj.previous_page_number }}">&laquo;
                                 上一页</a>
                         </li>
                     {% else %}
                         <li class="page-item">
                             <a class="page-link"
-                               href="?page=1">&laquo;
+                               href="?key={{ key }}&page=1">&laquo;
                                 上一页</a>
                         </li>
                     {% endif %}
@@ -27,11 +27,11 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
                             <li class="page-item active"><a class="page-link"
-                                                            href="?page={{ num }}">{{ num }}</a>
+                                                            href="?key={{ key }}&page={{ num }}">{{ num }}</a>
                             </li>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                             <li class="page-item"><a class="page-link"
-                                                     href="?page={{ num }}">{{ num }}</a>
+                                                     href="?key={{ key }}&page={{ num }}">{{ num }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
@@ -39,19 +39,19 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
                     {% if page_obj.has_next %}
                         <li class="page-item">
                             <a class="page-link"
-                               href="?page={{ page_obj.next_page_number }}">下一页
+                               href="?key={{ key }}&page={{ page_obj.next_page_number }}">下一页
                                 &raquo;</a>
                         </li>
                         {% else %}
                         <li class="page-item">
                             <a class="page-link"
-                               href="?page={{ page_obj.number }}">下一页
+                               href="?key={{ key }}&page={{ page_obj.number }}">下一页
                                 &raquo;</a>
                         </li>
                     {% endif %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="?page={{ page_obj.paginator.num_pages }}">尾页</a>
+                           href="?key={{ key }}&page={{ page_obj.paginator.num_pages }}">尾页</a>
                     </li>
                 </ul>
             </nav>
@@ -65,7 +65,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
                            min="1" max="{{ page_obj.paginator.num_pages }}"
                            value="{{ page_obj.number }}">
                     <button type="submit" class="btn btn-primary"
-                            onclick="event.preventDefault(); window.location.href='?page=' + document.getElementById('page-number').value;">
+                            onclick="event.preventDefault(); window.location.href='?key={{ key }}&page=' + document.getElementById('page-number').value;">
                         跳转
                     </button>
                 </div>
@@ -86,7 +86,7 @@ context = {
 """
 
 
-def Pagination(request, object, items_per_page=10):
+def Pagination(request, object, items_per_page=6):
     """
     :param request: 请求头
     :param object: 数据库对象

@@ -152,11 +152,12 @@ class Volunteer(models.Model):
 
 # 事件
 class Event(models.Model):
-    event_id = models.IntegerField(default=0, choices=EVENT_TYPES, verbose_name='事件id')
+    event_type = models.IntegerField(default=0, choices=EVENT_TYPES, verbose_name='事件类型')
     event_date = models.DateTimeField(verbose_name='事件发生时间')
     event_location = models.CharField(max_length=200, blank=True, default='', verbose_name='事件发生地点')
     event_desc = models.TextField(max_length=200, blank=True, default='', verbose_name='事件描述')
     oldperson_id = models.IntegerField(blank=True, null=True, verbose_name='老人id')
+    op_id = models.IntegerField(blank=True, null=True, verbose_name='记录者id')
 
     class Meta:
         verbose_name = '事件记录'
@@ -164,7 +165,7 @@ class Event(models.Model):
         db_table = 'event_record'
 
     def __str__(self):
-        return f"{self.get_event_id_display()} - {self.event_date.strftime('%Y-%m-%d %H:%M:%S')}"
+        return f"{self.get_event_type_display()} - {self.event_date.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
 # 日志记录
