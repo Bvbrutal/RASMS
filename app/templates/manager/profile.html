@@ -24,8 +24,13 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <figure class="avatar avatar-lg m-b-20">
-                                <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle"
+                                {% if item.user_photo.url %}
+                                    <img src="{{ item.user_photo.url }}" class="rounded-circle"
                                      alt="...">
+                                {% else %}
+                                    <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle"
+                                     alt="...">
+                                {% endif %}
                             </figure>
                             <h5 class="mb-1">{{ username }}</h5>
                             <p class="text-muted small">{{ grade }}</p>
@@ -38,8 +43,8 @@
                         <div class="card-body">
                             <div class="row text-center">
                                 <div class="col-12 text-success">
-                                    <h4 class="font-weight-bold">17301053</h4>
-                                    <span>用户名</span>
+                                    <h4 class="font-weight-bold">{{ user_id|default:"暂无" }}</h4>
+                                    <span>账户ID</span>
                                 </div>
                             </div>
                         </div>
@@ -93,79 +98,37 @@
 
                 </div>
             </div>
-            <div class="row">
+     <div class="row">
                 <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>登录记录</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th scope="col">IP</th>
-                                <th scope="col">归属地</th>
-                                <th scope="col">登录时间</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="shadow-sm">
-                                <td>111.246.0.190</td>
-                                <td>台湾省彰化县中华电信</td>
-                                <td>2024-03-07 14:55:07</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>61.224.105.72</td>
-                                <td>台湾省彰化县中华电信</td>
-                                <td>2024-02-28 05:28:23</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>159.223.33.156</td>
-                                <td>美国</td>
-                                <td>2024-02-27 01:09:00</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>183.229.52.237</td>
-                                <td>重庆市移动</td>
-                                <td>2024-02-23 22:09:22</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>2409:8a60:5436:7940:c88d:ef4e:6819:e4f2</td>
-                                <td>IANA保留地址</td>
-                                <td>2024-02-23 01:18:56</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>183.229.53.41</td>
-                                <td>重庆市移动</td>
-                                <td>2024-02-11 21:14:26</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>38.150.11.214</td>
-                                <td>美国华盛顿Cogent通信公司</td>
-                                <td>2024-01-28 21:45:56</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>240e:430:1e32:71b2:699e:5283:93cf:fff3</td>
-                                <td>IANA保留地址</td>
-                                <td>2023-12-12 19:06:11</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>175.140.76.252</td>
-                                <td>马来西亚</td>
-                                <td>2023-11-25 21:29:36</td>
-                            </tr>
-                            <tr class="shadow-sm">
-                                <td>111.246.27.138</td>
-                                <td>台湾省台中市中华电信</td>
-                                <td>2023-11-13 22:48:59</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>登录记录</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">IP</th>
+                                    <th scope="col">归属地</th>
+                                    <th scope="col">最近登录时间</th>
+                                    <th scope="col">登录次数</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in ip_addr %}
+                                    <tr class="shadow-sm">
+                                        <td>{{ item.ip }}</td>
+                                        <td>{{ item.ip_addr }}</td>
+                                        <td>{{ item.created_at }}</td>
+                                        <td>{{ item.count }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-
 
         </div>
         <!-- end::container -->

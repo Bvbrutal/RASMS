@@ -6,6 +6,8 @@ from .models import User, Elder, Staff, Volunteer
 import hashlib
 from datetime import datetime
 
+from .script.visit_info import change_info
+
 
 def login(request):
     if request.method == 'GET':
@@ -26,6 +28,7 @@ def login(request):
             'ret': 1,
             'msg': "登陆成功"
         }
+        change_info(request, '/login',user_object.user_id)
         return JsonResponse(context, safe=False)
     elif User.objects.filter(mobile_phone=mobile_phone).first() or User.objects.filter(password=passwd).first():
         context = {

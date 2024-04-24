@@ -23,7 +23,8 @@ from django.views.generic import TemplateView
 from app import account_views, user_views, staff_views, volunteer_views
 from app import manager_views
 from app.management_views import old_management_views, worker_management_views, volunteer_management_views, table_views, \
-    api_views, activity_views, announcement_views, account_management_views
+    api_views, activity_views, announcement_views, account_management_views, regional_views, medication_views, \
+    service_views
 
 urlpatterns = [
                   path("admin/", admin.site.urls),
@@ -110,6 +111,8 @@ urlpatterns = [
                        name="announcement_add"),
                   path("management/announcement_modify/", announcement_views.announcement_modify,
                        name="announcement_modify"),
+                  path("management/announcement_modify_basic/", announcement_views.announcement_modify_basic,
+                       name="announcement_modify_basic"),
 
                   # 社区活动管理
                   path("management/activity_list/", activity_views.activity_list, name="activity_list"),
@@ -122,5 +125,20 @@ urlpatterns = [
                   path("management/account_info/", account_management_views.account_info, name="account_info"),
                   path("management/account_add/", account_management_views.account_add, name="account_add"),
                   path("management/account_modify/", account_management_views.account_modify, name="account_modify"),
+
+                  # 区域排班
+                  path("management/modify_regional/", regional_views.modify_regional, name="modify_regional"),
+                  path("management/add_regional/", regional_views.add_regional, name="add_regional"),
+                  path("management/analyze_regional/", regional_views.analyze_regional, name="analyze_regional"),
+
+                  # 用药信息
+                  path("management/medication_list/", medication_views.medication_list, name="medication_list"),
+                  path("management/medication_add/", medication_views.medication_add, name="medication_add"),
+                  path("management/medication_modify/", medication_views.medication_modify, name="medication_modify"),
+
+                  # 服务订单
+                  path("management/modify_service/", service_views.modify_service, name="modify_service"),
+                  path("management/add_service/", service_views.add_service, name="add_service"),
+                  path("management/analyze_service/", service_views.analyze_service, name="analyze_service"),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

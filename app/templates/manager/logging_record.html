@@ -5,13 +5,14 @@
     <title>事件记录</title>
     <link rel="stylesheet" type="text/css" href="{% static "assets/css/search.css" %}">
     <style>
-        #unique-search-form {
+        #searchForm {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
 
-        #unique-search-input {
+        #searchKey {
             padding: 10px;
             font-size: 16px;
             border: none;
@@ -22,12 +23,12 @@
             box-sizing: border-box;
         }
 
-        #unique-search-input:focus {
+        #searchKey:focus {
             outline: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #unique-search-button {
+        #sub-button {
             padding: 10px 20px;
             font-size: 16px;
             background-color: #4CAF50;
@@ -40,10 +41,9 @@
             box-sizing: border-box;
         }
 
-        #unique-search-button:hover {
+        #sub-button:hover {
             background-color: #45a049;
         }
-
     </style>
 {% endblock %}
 
@@ -61,19 +61,19 @@
             <div class="row">
                 <div class="col-md-12">
 
-                    <div class="card-body overflow-hidden card-changecolor">
+                    <div class="card-body overflow-hidden card-changecolor p-t-0 p-b-0">
                         <div class="page-header page-header-cover">
                             <div class="container">
-                                <form id="unique-search-form" action="/search" method="get" style="width: 100%">
-                                    <input id="unique-search-input" type="text" name="query"
-                                           placeholder="请输入你想搜索的关键字...">
-                                    <input id="unique-search-button" type="submit" value="搜索">
+                                <form id="searchForm" method="get" onsubmit="event.preventDefault();
+                                              handleSearch(); return false;">
+                                    <input id="searchKey" value="{{ key }}" type="text" name="query"
+                                           placeholder="请输入你想搜索的关键字..."
+                                           aria-label="Example text with button addon">
+                                    <input id="sub-button" type="button" value="搜索">
                                 </form>
                             </div>
                         </div>
                     </div>
-
-
                     <div class="card">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -81,29 +81,115 @@
                                     <thead>
                                     <tr>
                                         <th>id</th>
-                                        <th>操作类型</th>
+                                        <th>操作类型
+                                            <div class="dropdown">
+                                                <button class="btn" type="button"
+                                                        id="typeFilterDropdown" data-toggle="dropdown">
+                                                    <i class="fa fa-filter"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right"
+                                                     aria-labelledby="typeFilterDropdown" id="event-type-filter">
+                                                    <a class="dropdown-item" href="{% url 'logging_record' %}?page=1"
+                                                       data-filter="all">全部</a>
+                                                    {% for column_name in column_names %}
+                                                        <a class="dropdown-item"
+                                                           href="{% url 'logging_record' %}?page=1&filter={{ forloop.counter0 }}"
+                                                           data-filter="{{ column_name }}">{{ column_name }}</a>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </th>
                                         <th>操作时间</th>
                                         <th>操作人员</th>
                                         <th>操作人员id</th>
-                                        <th>操作内容</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for item in items %}
-                                    <tr>
-                                        <td>{{ item.id }}</td>
-                                        <td>{{ item.op_type }}</td>
-                                        <td>{{ item.operation_time }}</td>
-                                        <td>{{ item.operator.username }}</td>
-                                        <td>{{ item.operator.user_id }}</td>
-                                        <td>{{ item.operation_content }}</td>
-                                    </tr>
+                                    {% for item in page_obj %}
+                                        <tr>
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.get_operation_type_display }}</td>
+                                            <td>{{ item.operation_time|date:"Y/m/d H:i:s" }}</td>
+                                            <td>{{ item.operator.username }}</td>
+                                            <td>{{ item.operator.user_id }}</td>
+                                        </tr>
                                     {% endfor %}
                                 </table>
                             </div>
                         </div>
                     </div>
 
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <a class="page-link" href="?key={{ key }}&page=1&filter={{ filter }}">首页</a>
+                                </li>
+                                {% if page_obj.number > 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?key={{ key }}&page={{ page_obj.previous_page_number }}&filter={{ filter }}">&laquo;
+                                            上一页</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?key={{ key }}&page=1&filter={{ filter }}">&laquo;
+                                            上一页</a>
+                                    </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active"><a class="page-link"
+                                                                        href="?key={{ key }}&page={{ num }}&filter={{ filter }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="?key={{ key }}&page={{ num }}&filter={{ filter }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?key={{ key }}&page={{ page_obj.next_page_number }}&filter={{ filter }}">下一页
+                                            &raquo;</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?key={{ key }}&page={{ page_obj.number }}&filter={{ filter }}">下一页
+                                            &raquo;</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="?key={{ key }}&page={{ page_obj.paginator.num_pages }}&filter={{ filter }}">尾页</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-auto">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="page-number">跳转到页码:</label>
+                                <input type="number" class="form-control mx-2" id="page-number"
+                                       min="1" max="{{ page_obj.paginator.num_pages }}"
+                                       value="{{ page_obj.number }}">
+                                <button type="submit" class="btn btn-primary"
+                                        onclick="event.preventDefault(); window.location.href='?key={{ key }}&filter={{ filter }}&page=' + document.getElementById('page-number').value;">
+                                    跳转
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -115,5 +201,18 @@
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        function handleSearch() {
+            var searchKey = document.getElementById('searchKey').value;
+            var url = "{% url 'logging_record' %}?page=1&key=" + encodeURIComponent(searchKey);
+            window.location.href = url;
+        }
 
+        document.getElementById('sub-button').addEventListener('click', function (e) {
+            // 阻止表单的默认提交行为
+            e.preventDefault();
+            handleSearch();           // 调用处理搜索的函数
+        });
+
+    </script>
 {% endblock %}

@@ -35,7 +35,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <figure class="avatar avatar-lg m-b-20">
-                                {% if item.elder_photo %}
+                                {% if item.user_photo %}
                                     <img src="{{ item.user_photo.url }}"
                                          class="rounded-circle" alt="image">
                                 {% else %}
@@ -44,10 +44,10 @@
                                 {% endif %}
                             </figure>
                             <h5 class="mb-1">{{ item.username|default:"暂无" }}</h5>
-                            <p class="text-muted small">老年人</p>
+                            <p class="text-muted small">普通用户</p>
                             <p>{{ item.bio|default:"暂无" }}</p>
                             <a href="{% url 'modify_old_basic' %}?id={{ item.id }}" class="btn btn-outline-primary">
-                                <i data-feather="edit-2" class="mr-2"></i>编辑老人信息
+                                <i data-feather="edit-2" class="mr-2"></i>编辑用户信息
                             </a>
                         </div>
                         <hr class="m-0">
@@ -73,12 +73,12 @@
                                 </a>
                             </h6>
                             <div class="row mb-2">
-                                <div class="col-6 text-muted">老人ID：</div>
+                                <div class="col-6 text-muted">用户ID：</div>
                                 <div class="col-6">{{ item.user_id|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">性别：</div>
-                                <div class="col-6">{{ item.gender|default:"暂无" }}</div>
+                                <div class="col-6">{{ item.get_gender_display|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">手机:</div>

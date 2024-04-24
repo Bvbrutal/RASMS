@@ -61,7 +61,9 @@ class Elder(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
-    bind_user=models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,related_name='elder_data', verbose_name='绑定用户')
+    bind_user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='elder_data',
+                                     verbose_name='绑定用户')
+
     def calculate_age(self):
         today = datetime.today()
         age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
@@ -95,8 +97,8 @@ class Staff(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
-    bind_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='staff_data',
-                                  verbose_name='绑定用户')
+    bind_user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='staff_data',
+                                     verbose_name='绑定用户')
 
     def calculate_age(self):
         today = datetime.today()
@@ -131,20 +133,19 @@ class Volunteer(models.Model):
     updated_by = models.ForeignKey(User, related_name='%(class)s_requests_updated',
                                    on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
-    bind_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='volunteer_data',
-                                  verbose_name='绑定用户')
+    bind_user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True,
+                                     related_name='volunteer_data',
+                                     verbose_name='绑定用户')
 
     def calculate_age(self):
         today = datetime.today()
         age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
         return age
 
-
     class Meta:
         verbose_name = "义工"
         verbose_name_plural = "义工"
         db_table = 'volunteer_info'
-
 
     def __str__(self):
         return self.username
@@ -158,6 +159,7 @@ class Event(models.Model):
     event_desc = models.TextField(max_length=200, blank=True, default='', verbose_name='事件描述')
     oldperson_id = models.IntegerField(blank=True, null=True, verbose_name='老人id')
     op_id = models.IntegerField(blank=True, null=True, verbose_name='记录者id')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     class Meta:
         verbose_name = '事件记录'
@@ -170,11 +172,12 @@ class Event(models.Model):
 
 # 日志记录
 class Logging(models.Model):
-
     operation_time = models.DateTimeField(default=timezone.now)
     operator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Logging', verbose_name='日志')
     operation_content = models.TextField(blank=True, null=True, verbose_name='操作信息')
-    operation_type = models.CharField(max_length=20, choices=OPERATION_CHOICES,blank=True, null=True,  verbose_name='操作类型')
+    operation_type = models.CharField(max_length=20, choices=OPERATION_CHOICES, blank=True, null=True,
+                                      verbose_name='操作类型')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
 
     def __str__(self):
         return f"{self.operation_time} - {self.operator} - {self.get_operation_type_display()}"
@@ -229,7 +232,7 @@ class Registration(models.Model):
 # 社区公告管理
 class CommunityAnnouncement(models.Model):
     title = models.CharField(max_length=255, verbose_name="标题")
-    introduction=models.CharField(max_length=255, null=True, blank=True,verbose_name="简介")
+    introduction = models.CharField(max_length=255, null=True, blank=True, verbose_name="简介")
     content = models.TextField(verbose_name="内容")
     published_date = models.DateTimeField(null=True, blank=True, verbose_name="发布日期")
     expiry_date = models.DateTimeField(null=True, blank=True, verbose_name="过期日期")
@@ -268,10 +271,13 @@ class CommunityAnnouncement(models.Model):
 
 # 访问网站的 ip 地址、端点和次数
 class UserIP(models.Model):
-    ip = models.CharField(verbose_name='IP 地址', max_length=30)
-    ip_addr = models.CharField(verbose_name='IP 地理位置', max_length=30)
-    end_point = models.CharField(verbose_name='访问端点', default='/', max_length=30)
-    count = models.IntegerField(verbose_name='访问次数', default=0)
+    ip = models.CharField(verbose_name='IP 地址', max_length=30, blank=True, null=True)
+    ip_addr = models.CharField(verbose_name='IP 地理位置', max_length=30, blank=True, null=True)
+    end_point = models.CharField(verbose_name='访问端点', default='/', max_length=30, blank=True, null=True)
+    count = models.IntegerField(verbose_name='访问次数', default=0, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='登录时间', blank=True, null=True)
+    user_by = models.ForeignKey(User, related_name='%(class)s_user_by', on_delete=models.SET_NULL, blank=True,
+                                null=True, verbose_name='账户')
 
     class Meta:
         verbose_name = '访问用户信息'

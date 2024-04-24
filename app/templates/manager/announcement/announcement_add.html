@@ -5,6 +5,7 @@
     <title>社区公告发布</title>
     <script src="{% static 'plugin/tinymce/js/tinymce/tinymce.min.js' %}"
             referrerpolicy="origin"></script>
+    <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
     <script>
         tinymce.init({
             selector: 'textarea',
@@ -86,6 +87,31 @@
                         <label for="introduction" class="form-label">简介</label>
                         <input type="text" class="form-control" id="introduction" name="introduction"
                                placeholder="请输入公告简介">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">封面照片</label>
+                        <div class="col-sm-8">
+                            <div class="fileinput fileinput-new" data-provides="fileinput"
+                                 id="exampleInputUpload">
+                                <div class="fileinput-new thumbnail"
+                                     style="width: 200px; height: auto; max-height:150px;">
+                                    <img id='picImg'
+                                         style="width: 100%; height: auto; max-height: 140px;"
+                                         src="{% static 'assets/media/image/noimage.png' %}"
+                                         alt=""/>
+                                </div>
+                                <div class="fileinput-preview fileinput-exists thumbnail"
+                                     style="max-width: 200px; max-height: 150px;"></div>
+                                <div>
+                                    <span class="btn btn-primary btn-file"><span class="fileinput-new">选择文件</span>
+                                                        <span class="fileinput-exists">换一张</span>
+                                                        <input type="file" name="pic1" id="picID"
+                                                               accept="image/gif,image/jpeg,image/x-png,image/webp"></span>
+                                    <a href="javascript:;" class="btn btn-warning fileinput-exists"
+                                       data-dismiss="fileinput">移除</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">内容</label>
@@ -193,8 +219,8 @@
                 return $('[name="csrfmiddlewaretoken"]').val();
             }
 
-            $("#publishInfo").text('公告发布中');
-            $('#publishInfo').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            $("#save-button1").text('公告发布中');
+            $('#save-button1').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
                 type: "POST", // 请求方式
@@ -219,8 +245,8 @@
                             }
                         });
                     } else if (data.ret === 2) {
-                        $("#publishInfo").text('发布公告');
-                        $('#publishInfo').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $("#save-button1").text('发布公告');
+                        $('#save-button1').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
                         $.notify({
                             message: '<strong>' + data.msg + '</strong>'
                         }, {
@@ -296,8 +322,8 @@
                 return $('[name="csrfmiddlewaretoken"]').val();
             }
 
-            $("#publishInfo").text('公告发布中');
-            $('#publishInfo').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            $("#save-button2").text('公告保存中');
+            $('#save-button2').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
                 type: "POST", // 请求方式
@@ -314,16 +340,16 @@
                     if (data.ret === 1) {
                         swal.fire({
                             type: 'success',
-                            title: '发布成功',
-                            confirmButtonText: '查看公告列表信息',
+                            title: '保存成功',
+                            confirmButtonText: '查看公告管理列表',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
                                 window.location.href = '/management/announcement_list/';
                             }
                         });
                     } else if (data.ret === 2) {
-                        $("#publishInfo").text('发布公告');
-                        $('#publishInfo').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $("#save-button2").text('发布公告');
+                        $('#save-button2').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
                         $.notify({
                             message: '<strong>' + data.msg + '</strong>'
                         }, {

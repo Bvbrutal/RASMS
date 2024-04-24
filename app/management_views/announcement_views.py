@@ -1,3 +1,5 @@
+import os
+
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -5,6 +7,7 @@ from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import CommunityAnnouncement, User
 
+from django.utils.timezone import now
 
 def announcement_list(request):
     communityAnnouncements = CommunityAnnouncement.objects.filter(is_active=True).order_by("-published_date")
@@ -41,6 +44,16 @@ def announcement_add(request):
     author = User.objects.filter(user_id=author_id).first()
     content_text = re.sub('<[^<]+?>', '', content.strip())
     is_active=request.POST.get('is_active') or True
+    # 获取上传的文件
+    uploaded_file = request.FILES.get('pic1') or None
+    created_by_id=request.session["info"]["user_id"]
+    updated_by_id=created_by_id
+    print(updated_by_id)
+    if uploaded_file:
+        _, ext = os.path.splitext(uploaded_file.name)
+
+        # 使用用户的电话号码作为文件名，保留原始文件的扩展名
+        uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
     if introduction is None:
         introduction=content_text[:30]
     if is_active=='false':
@@ -54,7 +67,10 @@ def announcement_add(request):
         publisher=publisher,
         status=status,
         introduction=introduction,
-        is_active=is_active
+        announcement_photo=uploaded_file,
+        is_active=is_active,
+        created_by_id=created_by_id,
+        updated_by_id=updated_by_id
     )
     CA.save()
     print(title, content, publisher, published_date, author)
@@ -72,3 +88,12 @@ def announcement_modify(request):
         "page_obj": page_obj,
     }
     return render(request, "manager/announcement/announcement_modify.html", context)
+
+
+def announcement_modify_basic(request):
+    id = request.GET.get('id')
+    communityAnnouncement = CommunityAnnouncement.objects.filter(id=id,is_active=True).first()
+    context = {
+        "item": communityAnnouncement,
+    }
+    return render(request, "manager/announcement/announcement_modify_basic.html", context)

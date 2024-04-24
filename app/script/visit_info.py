@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from ..models import UserIP, VisitNumber, DayNumber
+from ..models import UserIP, VisitNumber, DayNumber, User
 from .ip_convert_addr import ip_to_addr
 
 """
@@ -9,7 +9,7 @@ from .ip_convert_addr import ip_to_addr
     # city = UserIP.objects.all().last()
 """
 # 自定义的函数，不是视图
-def change_info(request, end_point):
+def change_info(request, end_point,user_id):
     """
     # 修改网站访问量和访问 ip 等信息
     # 每一次访问，网站总访问次数加一
@@ -39,6 +39,8 @@ def change_info(request, end_point):
         uobj = UserIP()
         uobj.ip = client_ip
         uobj.end_point = end_point
+        user_by=User.objects.filter(user_id=user_id).first()
+        uobj.user_by=user_by
         try:
             uobj.ip_addr = ip_to_addr(client_ip)
         except:

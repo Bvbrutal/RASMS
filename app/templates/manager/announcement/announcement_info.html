@@ -17,7 +17,7 @@
 
         .announcement-image {
             width: 100%;
-            max-height: 400px;
+            max-height: 300px;
             object-fit: cover;
             margin-bottom: 20px;
         }
@@ -39,25 +39,87 @@
             border-left: 5px solid #333;
         }
     </style>
+    <style>
+        .announcement-content {
+            padding-left: 80px; /* 保持你的左侧填充 */
+            padding-right: 80px; /* 保持你的右侧填充 */
+            overflow-wrap: break-word; /* 确保长单词可以在边界处自动换行 */
+            word-wrap: break-word; /* 老版本的浏览器可能需要这个 */
+            overflow: hidden; /* 隐藏溢出容器的内容 */
+        }
+
+        .announcement-content img {
+            border-radius: .25rem;
+            max-width: 100%; /* 使图片宽度不超过容器宽度 */
+            height: auto; /* 高度自动调整以保持图片比例 */
+            display: block; /* 避免图片底部有空隙 */
+        }
+
+        .announcement-header {
+            border-radius: .25rem;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            min-height: 200px; /* 根据需要调整高度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white; /* 设置文字颜色为白色，根据背景图片调整 */
+            text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8); /* 增加文字的可读性 */
+        }
+
+        .announcement-header::before {
+            border-radius: .25rem;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); /* 增加透明度以更深色的覆盖层 */
+            z-index: 0;
+        }
+
+        .announcement-title {
+            font-size: 24px; /* 或根据设计调整更大的尺寸 */
+            font-weight: bold; /* 使用粗体 */
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8), -1px -1px 10px rgba(0, 0, 0, 0.8);
+        }
+
+
+        .announcement-title, .announcement-date {
+            color: white;
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8), -1px -1px 10px rgba(0, 0, 0, 0.8); /* 增加了一个额外的反向阴影以增强效果 */
+            z-index: 1;
+            position: relative;
+        }
+
+    </style>
 {% endblock %}
 
 {% block app-content %}
     <div class="container">
-        <div class="card">
-            <div class="card-body">
+        {% if item.announcement_photo %}
+            <div class="announcement-header"
+                 style="background-image: url('{{ item.announcement_photo.url }}');">
                 <h1 class="announcement-title">{{ item.title }}</h1>
                 <p class="announcement-date">发布日期: {{ item.published_date|date:"Y-m-d" }}</p>
-                {% if item.announcement_photo %}
-                    <img src="{{ item.announcement_photo.url }}" alt="Community Cleaning" class="announcement-image">
-                {% else %}
-                {% endif %}
+            </div>
+        {% else %}
+            <div class="announcement-header"
+                 style="background-image: url({% static 'assets/media/image/image1.png' %});">
+                <h1 class="announcement-title">{{ item.title }}</h1>
+                <p class="announcement-date">发布日期: {{ item.published_date|date:"Y-m-d" }}</p>
+            </div>
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
                 <div class="row mb-2">
                     <div class="col-12 text-muted">公告内容：</div>
-                    <div class="announcement-content p-l-80">
+                    <div class="announcement-content p-l-80 p-r-80">
                         {{ item.content|safe }}
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="card">
