@@ -60,12 +60,24 @@
     <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
     <script>
         tinymce.init({
-            selector: 'textarea',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
+            selector: '#mytextarea',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough image',
             language: 'zh_CN',
+            plugins: 'image',
+            images_reuse_filename: true,
+            automatic_uploads: true,
+            images_upload_url: '{% url 'image_upload' %}',
         });
-
     </script>
+    <style>
+        .tox .tox-promotion {
+            display: none !important;
+        }
+
+        .tox-statusbar__right-container {
+            display: none !important;
+        }
+    </style>
     <script>
         YUI({
             modules: {
@@ -278,6 +290,10 @@
                                 <div class="col-6 text-muted">更新人：</div>
                                 <div class="col-6">{{ item.updated_by|default:"暂无" }}</div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">状态：</div>
+                                <div class="col-6">{{ item.get_status_display }}</div>
+                            </div>
                         </div>
                     </div>
 
@@ -335,7 +351,7 @@
                                 <div class="mb-3">
                                     <label for="content" class="form-label">内容</label>
                                     <textarea class="form-control" id="mytextarea" name="content"
-                                              placeholder="请输入公告内容..."> {{ item.content|safe }}</textarea>
+                                              placeholder="请输入公告内容..."> {{ item.content }}</textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="publisher" class="form-label">发布方</label>
@@ -356,7 +372,7 @@
                                             <label for="expiry_date" class="form-label">过期日期</label>
                                             <input class="J_Item" id="expiry_date" name="expiry_date"
                                                    placeholder="请输入公告内容"
-                                                   value="{{ item.expiry_date|date:"Y-m-d"|default:"暂无" }}">
+                                                   value="{{ item.expiry_date|date:"Y-m-d" }}">
                                             <small class="form-text text-muted ">请选择或输入公告的过期日期和时间。</small>
                                         </div>
                                     </div>
@@ -404,34 +420,24 @@
     <script src="{% static 'js/notify.js' %}"></script>
     <script>
         function saveInfo() {
+            tinymce.triggerSave();
             var form = $("#formId");
             var formData = new FormData(document.getElementById('formId'));
             formData.append("id", {{ item.id }})
             form.validate({
+                ignore: [],
                 rules: {
-                    input1: {
+                    title: {
                         required: true
                     },
-                    input2: {
-                        required: true,
-                        rangelength: [11, 11]
+                    content: {
+                        required: true
                     },
 
-                    input3: {
-                        required: true,
-                        rangelength: [18, 18]
-                    }
                 },
                 messages: {
-                    input1: "请填写名字",
-                    input2: {
-                        required: "请填写手机号",
-                        rangelength: "手机号不正确"
-                    },
-                    input3: {
-                        required: "请填写身份证号",
-                        rangelength: "身份证不正确"
-                    },
+                    title: "请填写标题",
+                    content: "请填写内容",
                 },
                 errorPlacement: function (error, element) {
                     error.appendTo(element.parent());
@@ -441,7 +447,7 @@
             });
             if (!form.valid()) {
                 $.notify({
-                    message: '<strong>请完善信息</strong>'
+                    message: '<strong>请填写完整公告信息</strong>'
                 }, {
                     type: 'danger',
                     placement: {
@@ -467,7 +473,7 @@
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
                 type: "POST", // 请求方式
-                url: "{% url 'modify_volunteer_basic' %}", // 请求的 URL
+                url: "{% url 'announcement_modify_basic' %}", // 请求的 URL
                 processData: false, // 告诉jQuery不要处理发送的数据
                 contentType: false, // 告诉jQuery不要设置内容类型头
                 data: formData, // 表单数据
@@ -480,15 +486,15 @@
                     if (data.ret === 1) {
                         swal.fire({
                             type: 'success',
-                            title: '录入成功',
-                            confirmButtonText: '查看详细信息',
+                            title: '修改成功',
+                            confirmButtonText: '查看公告信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '{% url 'volunteer_info' %}?id={{ item.id }}';
+                                window.location.href = '{% url 'announcement_info' %}?id={{ item.id }}';
                             }
                         });
                     } else if (data.ret === 2) {
-                        $("#save-button").text('录入信息');
+                        $("#save-button").text('修改信息');
                         $('#save-button').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
                         $.notify({
                             message: '<strong>' + data.msg + '</strong>'
@@ -508,7 +514,7 @@
                 },
                 error: function (xhr, status, error) {
                     // 请求失败时的回调函数
-                    console.log('更新失败: ' + error);
+                    console.log('修改失败: ' + error);
                 }
             });
         }

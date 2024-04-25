@@ -240,6 +240,7 @@ class CommunityAnnouncement(models.Model):
     publisher = models.CharField(max_length=255, null=True, blank=True, verbose_name="发布方")
     announcement_photo = models.ImageField(upload_to='announcement_photo/', null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    is_save = models.BooleanField(default=True, verbose_name="是否保存为草稿")
     created = models.DateTimeField(auto_now_add=True, verbose_name='创键时间')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
     created_by = models.ForeignKey(User, related_name='%(class)s_requests_created',

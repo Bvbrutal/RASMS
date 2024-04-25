@@ -276,7 +276,7 @@
             var editorContent = tinymce.get("mytextarea").getContent();
             var form = $("#formId");
             var formData = new FormData(document.getElementById('formId'));
-            formData.append('is_active', 'false')
+            formData.append('is_save', 'false')
             formData.append('editorContent', editorContent)
             form.validate({
                 ignore: [],

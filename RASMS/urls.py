@@ -101,6 +101,7 @@ urlpatterns = [
                   path("api/accont_api/", api_views.accont_api, name="accont_api"),
                   path("api/update_profile/", api_views.update_profile, name="update_profile"),
                   path("api/logging/", api_views.logging, name="logging"),
+                  path('api/image_upload/', api_views.image_upload, name='image_upload'),
 
                   # 公告信息管理
                   path("management/announcement_list/", announcement_views.announcement_list,

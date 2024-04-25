@@ -1,11 +1,15 @@
 import json
+import os
 
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.timezone import now
+
+from RASMS import settings
 from app.management_views.configuration import GENDER_CHOICES
 from app.models import User, CommunityAnnouncement
 from app.user_views import USER_TYPES
-
+from django.core.files.storage import FileSystemStorage
 
 def accont_api(request):
     mobile_phone = request.session["info"]["mobile_phone"]
@@ -81,3 +85,15 @@ def logging(request):
     return JsonResponse(context, safe=False, status=200)
 
 
+# 图片上传
+def image_upload(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        image_file = request.FILES['file']
+        fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ann_images'))
+        _, ext = os.path.splitext(image_file.name)
+        image_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
+        filename = fs.save(image_file.name, image_file)
+        image_url = os.path.join('\media','ann_images',filename)
+        print(image_url)
+        return JsonResponse({'location': image_url})
+    return JsonResponse({'error': 'Failed to upload image'})
