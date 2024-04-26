@@ -145,7 +145,7 @@
                                             <td>
                                                 <a href="{% url 'old_info' %}?id={{ item.user_id }}">
                                                     <button type="button"
-                                                            class="btn btn-outline-primary">绑定老人账号
+                                                            class="btn btn-outline-primary">绑定老人信息
                                                     </button>
                                                 </a>
                                             </td>
@@ -267,7 +267,7 @@
                         <p>是否确定删除该信息？</p>
                         <div class="modal-footer modal-footer-centered">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" onclick="delete_elder()">确定</button>
+                            <button type="button" class="btn btn-primary" onclick="delete_account()">确定</button>
                         </div>
                     </div>
                 </div>
@@ -364,14 +364,14 @@
 
         const csrftoken = getCookie('csrftoken');
 
-        function delete_elder() {
+        function delete_account() {
             $.ajax({
                 type: "POST",
                 url: "{% url 'account_modify' %}",
                 headers: {"X-CSRFToken": csrftoken},
                 data: {
                     id: currentitemId,
-                    op: "delete_elder"
+                    op: "delete_account"
                 },
                 success: function (data) {
                     sessionStorage.setItem('statusMessage', '删除成功！');

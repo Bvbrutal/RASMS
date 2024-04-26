@@ -1,8 +1,10 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
     <title>个人信息</title>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block app-content %}
@@ -24,15 +26,15 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <figure class="avatar avatar-lg m-b-20">
-                                {% if item.user_photo.url %}
+                                {% if item.user_photo %}
                                     <img src="{{ item.user_photo.url }}" class="rounded-circle"
-                                     alt="...">
+                                         alt="...">
                                 {% else %}
                                     <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle"
-                                     alt="...">
+                                         alt="...">
                                 {% endif %}
                             </figure>
-                            <h5 class="mb-1">{{ username }}</h5>
+                            <h5 class="mb-1">{{ username|default:"匿名用户" }}</h5>
                             <p class="text-muted small">{{ grade }}</p>
                             <p id="bio-display">{{ bio|default:"这个人很懒什么都没留下" }}</p>
                             <a id="edit-info-btn" onclick="editInfo()" class="btn btn-outline-primary">
@@ -98,7 +100,7 @@
 
                 </div>
             </div>
-     <div class="row">
+            <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
@@ -138,6 +140,13 @@
 {% endblock %}
 
 {% block app-foot %}
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
     <script>
         function getCsrfToken() {
             // 从cookie中获取CSRF令牌
@@ -159,20 +168,39 @@
             // 直接使用forEach并通过index判断是否跳过第一个元素
             document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
                 // 如果是第一个元素，则跳过
-                if (index === 0 || index === 7) return;
+                if (index === 0 || index === 7 || index === 2) return;
 
                 const infoDiv = row.children[1];
 
-                if (!infoDiv.querySelector('input')) {
-                    const infoDivId = infoDiv.id;
-                    const currentValue = infoDiv.textContent.trim();
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = currentValue;
-                    input.className = 'form-control';
-                    input.style.height = '1.5rem';
-                    infoDiv.textContent = '';
-                    infoDiv.appendChild(input);
+                if (!infoDiv.querySelector('input') && !infoDiv.querySelector('select')) {
+                    const infoDivId = infoDiv.id; // ID 用于可能的进一步操作或引用
+                    const currentValue = infoDiv.textContent.trim(); // 当前文本内容，用于初始化值
+
+                    if (index === 3) { // 特别为第四个元素创建选择框
+                        const select = document.createElement('select');
+                        select.className = 'form-control';
+                        select.style.height = '2.0rem';
+                        // 为 select 添加选项，这里的值可以根据需要更改
+                        ['男', '女', '无'].forEach(function (optionText) {
+                            const option = document.createElement('option');
+                            option.value = optionText;
+                            option.textContent = optionText;
+                            if (currentValue === optionText) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
+                        infoDiv.textContent = ''; // 清空原始内容
+                        infoDiv.appendChild(select); // 添加新的 select 元素
+                    } else { // 其他元素仍使用输入框
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = currentValue;
+                        input.className = 'form-control';
+                        input.style.height = '1.5rem';
+                        infoDiv.textContent = '';
+                        infoDiv.appendChild(input);
+                    }
                 }
             });
 
@@ -191,14 +219,19 @@
         function saveAll() {
             document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
                 // 如果是第一个元素或特定的跳过元素，则返回
-                if (index === 0 || index === 7) return;
+                if (index === 0 || index === 7 || index === 2) return;
 
                 const infoInput = row.children[1].querySelector('input');
+                const infoSelect = row.children[1].querySelector('select');
 
                 if (infoInput) {
                     const newValue = infoInput.value.trim();
                     const infoDiv = row.children[1];
                     infoDiv.innerHTML = newValue; // 将新值设置回div
+                }
+                if (infoSelect) {
+                    const selectedValue = infoSelect.options[infoSelect.selectedIndex].text; // 获取选择框的选中文本
+                    row.children[1].innerHTML = selectedValue; // 更新显示的值
                 }
             });
             var data = {
@@ -214,7 +247,7 @@
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
                 type: "POST", // 请求方式
-                url: "/api/update_profile", // 路径
+                url: "{% url 'update_profile' %}", // 路径
                 async: true, // 是否异步
                 beforeSend: function (xhr) {
                     // 将CSRF令牌设置到请求头中
@@ -225,7 +258,38 @@
                 dataType: "json", // 预期服务器返回的数据类型
                 // 成功的回调函数
                 success: function (response) {
-                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                    if (response.re === 1) {
+                        $.notify({
+                            message: '<strong>' + response.message + '</strong>'
+                        }, {
+                            type: 'success',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                    if (response.re === 2) {
+                        $.notify({
+                            message: '<strong>' + response.message + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
                 },
                 // 请求超时设置（可选）
                 timeout: 20000,
@@ -268,7 +332,7 @@
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
                 type: "POST", // 请求方式
-                url: "/api/update_profile", // 路径
+                url: "/api/update_profile/", // 路径
                 async: true, // 是否异步
                 beforeSend: function (xhr) {
                     // 将CSRF令牌设置到请求头中
@@ -279,7 +343,20 @@
                 dataType: "json", // 预期服务器返回的数据类型
                 // 成功的回调函数
                 success: function (response) {
-                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                    $.notify({
+                        message: '<strong>' + response.message + '</strong>'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 1000,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
                 },
                 // 请求超时设置（可选）
                 timeout: 20000,

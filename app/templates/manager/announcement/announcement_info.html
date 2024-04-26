@@ -1,4 +1,4 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
@@ -150,6 +150,19 @@
                 <div class="row mb-2">
                     <div class="col-6 text-muted">更新人：</div>
                     <div class="col-6">{{ item.updated_by|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">状态：</div>
+                    <div class="col-6">{{ item.get_status_display|default:"暂无" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 text-muted">发布状态：</div>
+                    <div class="col-6">{% if item.is_save %}
+                        已发布
+                    {% else %}
+                        草稿
+                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

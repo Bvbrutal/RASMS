@@ -5,13 +5,17 @@
     <title>社区活动发布</title>
     <script src="{% static 'plugin/tinymce/js/tinymce/tinymce.min.js' %}"
             referrerpolicy="origin"></script>
+    <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
     <script>
         tinymce.init({
-            selector: 'textarea',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
+            selector: '#content',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough image',
             language: 'zh_CN',
+            plugins: 'image',
+            images_reuse_filename: true,
+            automatic_uploads: true,
+            images_upload_url: '{% url 'image_upload' %}',
         });
-
     </script>
     <style>
         .tox .tox-promotion {
@@ -23,7 +27,7 @@
         }
     </style>
     <!-- 引入 flatpickr CSS -->
-    <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
     <script>
         YUI({
             modules: {
@@ -79,7 +83,38 @@
                 <form id="formId" action="javascript:void(0);" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="title" class="form-label">标题</label>
-                        <input type="text" class="form-control" id="title" name="title" placeholder="请输入社区活动标题">
+                        <input type="text" class="form-control" id="title" name="title"
+                               placeholder="请输入社区活动标题">
+                    </div>
+                    <div class="mb-3">
+                        <label for="introduction" class="form-label">简介</label>
+                        <input type="text" class="form-control" id="introduction" name="introduction"
+                               placeholder="请输入公告简介">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">封面照片</label>
+                        <div class="col-sm-8">
+                            <div class="fileinput fileinput-new" data-provides="fileinput"
+                                 id="exampleInputUpload">
+                                <div class="fileinput-new thumbnail"
+                                     style="width: 200px; height: auto; max-height:150px;">
+                                    <img id='picImg'
+                                         style="width: 100%; height: auto; max-height: 140px;"
+                                         src="{% static 'assets/media/image/noimage.png' %}"
+                                         alt=""/>
+                                </div>
+                                <div class="fileinput-preview fileinput-exists thumbnail"
+                                     style="max-width: 200px; max-height: 150px;"></div>
+                                <div>
+                                    <span class="btn btn-primary btn-file"><span class="fileinput-new">选择文件</span>
+                                                        <span class="fileinput-exists">换一张</span>
+                                                        <input type="file" name="pic1" id="picID"
+                                                               accept="image/gif,image/jpeg,image/x-png,image/webp"></span>
+                                    <a href="javascript:;" class="btn btn-warning fileinput-exists"
+                                       data-dismiss="fileinput">移除</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">内容</label>
@@ -108,13 +143,13 @@
                         </div>
                         <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                        <label for="status" class="form- p-b-50">状态</label>
-                        <select class="form-select" id="status" name="status">
-                               <option value="not_started">未开始</option>
-                <option value="ongoing">进行中</option>
-                <option value="finished">已结束</option>
-                        </select>
-                    </div>
+                                <label for="status" class="form- p-b-50">状态</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="not_started">未开始</option>
+                                    <option value="ongoing">进行中</option>
+                                    <option value="finished">已结束</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" id="button1">发布活动</button>

@@ -1,11 +1,13 @@
 import json
 
+from dateutil.relativedelta import relativedelta
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.timezone import now
 
-from app.models import User
-
-
+from app.components.Community_information import community_information
+from app.components.Dynamic_inheritance import Dynamic_inheritance
+from app.models import User, Elder, Staff, Volunteer
 
 USER_TYPES = {
     '0': '管理员',
@@ -24,18 +26,10 @@ GENDER_CHOICES = {
 
 
 def index(request):
-    for key, value in request.session.items():
-        print(f'{key}: {value}')
-    info_dic=request.session.get('info')
-    mobile_phone = info_dic['mobile_phone']
-    grade=User.objects.filter(mobile_phone=mobile_phone).first().grade
-    if grade == 0:
-        return redirect('/manager/index/')
-    if grade == 1:
-        return redirect('/staff/index/')
-    if grade == 2:
-        return redirect('/volunteer/index/')
-    return render(request, "user/index_user.html")
+    template_name=Dynamic_inheritance(request)
+    context=community_information()
+    context['template_name']=template_name
+    return render(request, "user/index_user.html",context)
 
 
 def profile(request):

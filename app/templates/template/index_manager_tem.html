@@ -78,7 +78,7 @@
     <div class="navigation-menu-body">
         <ul>
             <li>
-                <a href="/manager/index">
+                <a href="{% url 'index_2' %}">
                     <i class="nav-link-icon" data-feather="airplay"></i>
                     <span>首页</span>
                     <span class="badge badge-success">2</span>
@@ -106,6 +106,17 @@
                 </a>
             </li>
             <li class="navigation-divider">信息管理</li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="database"></i>
+                    <span>用户账号管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/account_modify">用户账号管理列表</a></li>
+                    <li><a href="/management/account_add">用户账号信息添加</a></li>
+                    <li><a href="/management/account_analyze">用户账号统计分析</a></li>
+                </ul>
+            </li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="tag"></i>
@@ -162,7 +173,7 @@
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <i class="nav-link-icon" data-feather="edit-2"></i>
                     <span>服务订单管理</span>
                 </a>
                 <ul>
@@ -173,7 +184,7 @@
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <i class="nav-link-icon" data-feather="figma"></i>
                     <span>区域排班管理</span>
                 </a>
                 <ul>
@@ -182,10 +193,9 @@
                     <li><a href="/management/analyze_regional">区域排班信息可视化</a></li>
                 </ul>
             </li>
-            <li class="navigation-divider">其他</li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
+                    <i class="nav-link-icon" data-feather="trello"></i>
                     <span>社区活动管理</span>
                 </a>
                 <ul>
@@ -196,18 +206,7 @@
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
-                    <span>用户账号管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/account_modify">用户账号信息列表</a></li>
-                    <li><a href="/management/account_add">用户账号信息添加</a></li>
-                    <li><a href="/management/account_analyze">用户账号信息管理列表</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
+                    <i class="nav-link-icon" data-feather="slack"></i>
                     <span>老人用药管理</span>
                 </a>
                 <ul>
@@ -341,7 +340,7 @@
         }
         if (data.user_photo && userImage)
             userImage.src = data.user_photo;
-            console.log(userImage.src);
+        console.log(userImage.src);
     }
 
     function show_log(datas) {

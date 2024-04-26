@@ -17,7 +17,7 @@ class User(models.Model):
     creation_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
     phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='电话')
     email = models.EmailField(verbose_name='邮箱', null=True, blank=True)
-    grade = models.IntegerField(choices=GRADE_CHOICES, default='4', verbose_name='类别')
+    grade = models.CharField(max_length=1,choices=GRADE_CHOICES, default='3', verbose_name='类别')
     bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
     user_photo = models.ImageField(upload_to='user_photo/', null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name="是否有效")

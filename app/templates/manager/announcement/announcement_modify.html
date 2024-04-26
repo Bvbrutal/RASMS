@@ -96,6 +96,7 @@
                                     <th scope="col">公告标题</th>
                                     <th scope="col">公告简介</th>
                                     <th scope="col">发布时间</th>
+                                    <th scope="col">状态</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
@@ -109,7 +110,8 @@
                                         <td>{{ item.id }}</td>
                                         <td>{{ item.title }}</td>
                                         <td>{{ item.introduction }}</td>
-                                        <td>{{ item.published_date }}</td>
+                                        <td>{{ item.published_date|date:'Y/m/d' }}</td>
+                                        <td>{{ item.get_status_display }}</td>
                                         <td>
                                             <figure class="avatar avatar-sm">
                                                 {% if item.announcement_photo %}

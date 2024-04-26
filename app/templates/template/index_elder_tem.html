@@ -1,0 +1,298 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Plugin styles -->
+    <link rel="stylesheet" href="{% static "vendors/css/bundle.css" %}" type="text/css">
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="{% static "assets/css/app.min.css" %}" type="text/css">
+
+    <!-- My styles -->
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}" type="text/css">
+
+    {% block app-head %}{% endblock %}
+</head>
+
+<body>
+
+<!-- begin::preloader-->
+<div class="preloader">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="50px" height="50px" viewBox="0 0 128 128"
+         xml:space="preserve">
+            <rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF"></rect>
+        <g>
+                <path
+                        d="M75.4 126.63a11.43 11.43 0 0 1-2.1-22.65 40.9 40.9 0 0 0 30.5-30.6 11.4 11.4 0 1 1 22.27 4.87h.02a63.77 63.77 0 0 1-47.8 48.05v-.02a11.38 11.38 0 0 1-2.93.37z"
+                        fill="#000000" fill-opacity="1"></path>
+            <animateTransform attributeName="transform" type="rotate" from="0 64 64" to="360 64 64" dur="500ms"
+                              repeatCount="indefinite">
+                </animateTransform>
+            </g>
+        </svg>
+</div>
+<!-- end::preloader -->
+
+<!-- begin::navigation -->
+<div class="navigation">
+
+    <!-- begin::logo -->
+    <div id="logo">
+        <a href="/">
+            <img class="logo" src="{% static "assets/media/image/logo.png" %}" alt="logo">
+            <img class="logo-sm" src="{% static "assets/media/image/logo-sm.png" %}" alt="small logo">
+        </a>
+    </div>
+    <!-- end::logo -->
+
+    <!-- begin::navigation header -->
+    <header class="navigation-header">
+        <figure class="avatar avatar-state-success">
+            <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image" id="userImage">
+        </figure>
+        <div>
+            <h5 id="user_name">匿名用户</h5>
+            <p id="user_grade" class="text-muted">管理员</p>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a href="{% url 'profile_user' %}" class="btn nav-link bg-info-bright" title="个人信息"
+                       data-toggle="tooltip">
+                        <i data-feather="user"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="btn nav-link bg-danger-bright" title="注销" data-toggle="tooltip">
+                        <i data-feather="log-out"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- end::navigation header -->
+
+    <!-- begin::navigation menu -->
+    <div class="navigation-menu-body">
+        <ul>
+            <li>
+                <a href="{% url 'index_2' %}">
+                    <i class="nav-link-icon" data-feather="airplay"></i>
+                    <span>首页</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
+               <a href="{% url 'announcement_list_elder' %}">
+                    <i class="nav-link-icon" data-feather="book-open"></i>
+                    <span>公告展示</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'modify_regional_elder' %}">
+                    <i class="nav-link-icon" data-feather="clipboard"></i>
+                    <span>排班展示</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'modify_service_elder' %}">
+                    <i class="nav-link-icon" data-feather="coffee"></i>
+                    <span>养老服务</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+           <li>
+                <a href="{% url 'activity_list_elder' %}">
+                    <i class="nav-link-icon" data-feather="sun"></i>
+                    <span>社区活动</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'medication_list_elder_elder' %}">
+                    <i class="nav-link-icon" data-feather="slack"></i>
+                    <span>老人用药</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- end::navigation menu -->
+
+</div>
+<!-- end::navigation -->
+
+<!-- begin::main -->
+<div id="main">
+
+    <!-- begin::header -->
+    <div class="header">
+
+        <!-- begin::header left -->
+        <ul class="navbar-nav">
+
+            <!-- begin::navigation-toggler -->
+            <li class="nav-item navigation-toggler">
+                <a href="#" class="nav-link">
+                    <i data-feather="menu"></i>
+                </a>
+            </li>
+            <!-- end::navigation-toggler -->
+
+            <!-- begin::header-logo -->
+            <li class="nav-item" id="header-logo">
+                <a href="/">
+                    <img class="logo" src="{% static "assets/media/image/logo.png" %}" alt="logo">
+                    <img class="logo-sm" src="{% static "assets/media/image/logo-sm.png" %}" alt="small logo">
+                </a>
+            </li>
+            <!-- end::header-logo -->
+        </ul>
+        <!-- end::header left -->
+
+        <!-- begin::header-right -->
+        <div class="header-right">
+            <ul class="navbar-nav">
+
+                <!-- begin::search-form -->
+                <li class="nav-item search-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>社区养老公寓服务管理系统</h4>
+                        </div>
+                    </div>
+                </li>
+                <!-- end::search-form -->
+
+                <!-- begin::header minimize/maximize -->
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link" title="全屏" data-toggle="fullscreen">
+                        <i class="maximize" data-feather="maximize"></i>
+                        <i class="minimize" data-feather="minimize"></i>
+                    </a>
+                </li>
+                <!-- end::header minimize/maximize -->
+
+                <!-- begin::header notification dropdown -->
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link nav-link-notify" title="通知" data-toggle="dropdown">
+                        <i data-feather="bell"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
+                        <div class="p-4 text-center"
+                             data-backround-image="{% static "assets/media/image/image1.png" %}">
+                            <h6 class="mb-1">通知</h6>
+                        </div>
+                        <div>
+                            <ul class="list-group list-group-flush" id="log-list">
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <!-- end::header notification dropdown -->
+            </ul>
+
+            <!-- begin::mobile header toggler -->
+            <ul class="navbar-nav d-flex align-items-center">
+                <li class="nav-item header-toggler">
+                    <a href="#" class="nav-link">
+                        <i data-feather="arrow-down"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- end::mobile header toggler -->
+        </div>
+        <!-- end::header-right -->
+    </div>
+    <!-- end::header -->
+
+    {% block app-content %}{% endblock %}
+
+    <!-- begin::footer -->
+    <footer>
+        <div class="container">
+            <div>Copyright &copy; <a href="http://faculty.bjtu.edu.cn/rjxy/9438.html"></a></div>
+        </div>
+    </footer>
+    <!-- end::footer -->
+
+</div>
+<!-- end::main -->
+
+<!-- Plugin scripts -->
+<script src="{% static "vendors/js/bundle.js" %}"></script>
+
+<!-- App scripts -->
+<script src="{% static "assets/js/app.min.js" %}"></script>
+
+<!-- Chartjs -->
+<script src="{% static "vendors/charts/chartjs/chart.min.js" %}"></script>
+<script>
+    function show_id(data) {
+        const container1 = document.getElementById('user_name');
+        const container2 = document.getElementById('user_grade');
+        const container3 = document.getElementById('user_name_2');
+        const userImage = document.getElementById('userImage');
+        container1.innerHTML = `<ul>${data.username}</ul>`;
+        container2.innerHTML = `<ul>${data.grade}</ul>`;
+        if (container3) {
+            container3.innerHTML = `${data.username}`;
+        }
+        if (data.user_photo && userImage)
+            userImage.src = data.user_photo;
+            console.log(userImage.src);
+    }
+
+    function show_log(datas) {
+        var logList = $("#log-list");
+        if (datas.loggings[0]) {
+            console.log("Operation Time:", datas.loggings[0].operation_time);
+            console.log("Operator ID:", datas.loggings[0].operator);
+            console.log("Operation Content:", datas.loggings[0].operation_content);
+            console.log("----------");
+            datas.loggings.forEach(function (item) {
+                var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
+                var contentDiv = $("<div>").addClass("flex-grow-1");
+                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_content);
+                var timeSpan = $("<span>").addClass("text-muted small").text(item.operation_time);
+                // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
+                contentDiv.append(messagePara).append(timeSpan);
+                listItem.append(contentDiv);
+                // 将 LI 元素添加到 UL 列表中
+                logList.append(listItem);
+            })
+        } else {
+            var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
+            var contentDiv = $("<div>").addClass("flex-grow-1");
+            var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text("暂无消息...");
+            // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
+            contentDiv.append(messagePara);
+            listItem.append(contentDiv);
+            // 将 LI 元素添加到 UL 列表中
+            logList.append(listItem);
+        }
+    }
+
+    function fetchData() {
+        fetch("/api/accont_api/")
+            .then(response => response.json())
+            .then(data => show_id(data))
+            .catch(error => console.error('Error fetching data:', error));
+
+        fetch("/api/logging/")
+            .then(response => response.json())
+            .then(data => show_log(data))
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    fetchData();
+</script>
+{% block app-foot %}{% endblock %}
+</body>
+
+</html>

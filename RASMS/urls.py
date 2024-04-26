@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
-from app import account_views, user_views, staff_views, volunteer_views
+from app import account_views, user_views, staff_views, volunteer_views, elder_views
 from app import manager_views
 from app.management_views import old_management_views, worker_management_views, volunteer_management_views, table_views, \
     api_views, activity_views, announcement_views, account_management_views, regional_views, medication_views, \
@@ -30,11 +30,8 @@ urlpatterns = [
                   path("admin/", admin.site.urls),
 
                   # 主页
-                  path("", manager_views.index, name="index_1"),
+                  path("", user_views.index, name="index_1"),
                   path("index/", user_views.index, name="index_2"),
-                  path("manager/index/", manager_views.index, name="index_3"),
-                  path("staff/index/", staff_views.index, name="index_4"),
-                  path("volunteer/index/", volunteer_views.index, name="index_5"),
 
                   # 404页面
                   path('404/', TemplateView.as_view(template_name='account/404.html'), name='404'),
@@ -44,6 +41,12 @@ urlpatterns = [
                   path("register/", account_views.register, name="register"),
                   path("logout/", account_views.logout, name='logout'),
                   path("modify_password/", account_views.modify_password, name="modify_password"),
+
+                  # api
+                  path("api/accont_api/", api_views.accont_api, name="accont_api"),
+                  path("api/update_profile/", api_views.update_profile, name="update_profile"),
+                  path("api/logging/", api_views.logging, name="logging"),
+                  path('api/image_upload/', api_views.image_upload, name='image_upload'),
 
                   # 单项功能
                   path("management/select_event/", manager_views.select_event, name="select_event"),
@@ -97,12 +100,6 @@ urlpatterns = [
                   path("user/modify_profile/", user_views.modify_profile, name="modify_profile"),
                   path("user/community_activity/", user_views.community_activity, name="community_activity"),
 
-                  # api
-                  path("api/accont_api/", api_views.accont_api, name="accont_api"),
-                  path("api/update_profile/", api_views.update_profile, name="update_profile"),
-                  path("api/logging/", api_views.logging, name="logging"),
-                  path('api/image_upload/', api_views.image_upload, name='image_upload'),
-
                   # 公告信息管理
                   path("management/announcement_list/", announcement_views.announcement_list,
                        name="announcement_list"),
@@ -122,7 +119,7 @@ urlpatterns = [
                   path("management/activity_modify/", activity_views.activity_modify, name="activity_modify"),
 
                   # 账号信息管理
-                  path("management/account_analyze/", account_management_views.account_analyze, name="account_list"),
+                  path("management/account_analyze/", account_management_views.account_analyze, name="account_analyze"),
                   path("management/account_info/", account_management_views.account_info, name="account_info"),
                   path("management/account_add/", account_management_views.account_add, name="account_add"),
                   path("management/account_modify/", account_management_views.account_modify, name="account_modify"),
@@ -142,4 +139,11 @@ urlpatterns = [
                   path("management/add_service/", service_views.add_service, name="add_service"),
                   path("management/analyze_service/", service_views.analyze_service, name="analyze_service"),
 
+                  # 老人页面
+                  path("elder/modify_regional/", elder_views.modify_regional, name="modify_regional_elder"),
+                  path("elder/activity_list/", elder_views.activity_list, name="activity_list_elder"),
+                  path("elder/announcement_list/", elder_views.announcement_list,
+                       name="announcement_list_elder"),
+                  path("elder/medication_list/", elder_views.medication_list, name="medication_list_elder_elder"),
+                  path("elder/modify_service/", elder_views.modify_service, name="modify_service_elder"),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

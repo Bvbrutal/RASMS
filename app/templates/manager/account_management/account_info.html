@@ -43,11 +43,11 @@
                                          class="rounded-circle" alt="image">
                                 {% endif %}
                             </figure>
-                            <h5 class="mb-1">{{ item.username|default:"暂无" }}</h5>
-                            <p class="text-muted small">普通用户</p>
-                            <p>{{ item.bio|default:"暂无" }}</p>
-                            <a href="{% url 'modify_old_basic' %}?id={{ item.id }}" class="btn btn-outline-primary">
-                                <i data-feather="edit-2" class="mr-2"></i>编辑用户信息
+                            <h5 class="mb-1">{{ item.username|default:"匿名用户" }}</h5>
+                            <p class="text-muted small">{{ item.get_grade_display|default:"普通用户" }}</p>
+                            <p id="bio-display">{{ bio|default:"这个人很懒什么都没留下" }}</p>
+                            <a id="edit-info-btn" onclick="editInfo()" class="btn btn-outline-primary">
+                                <i data-feather="edit-2" class="mr-2"></i>编辑个人简介
                             </a>
                         </div>
                         <hr class="m-0">
@@ -67,30 +67,37 @@
                         <div class="card-body">
                             <h6 class="card-title d-flex justify-content-between align-items-center">
                                 基本信息
-                                <a href="{% url 'modify_old_basic' %}?id={{ item.id }}"
-                                   class="btn btn-outline-light btn-sm">
+                                <a id=editButton onclick="editAll()" class="btn btn-outline-light btn-sm">
                                     <i data-feather="edit-2" class="mr-2"></i> 编辑
                                 </a>
                             </h6>
                             <div class="row mb-2">
-                                <div class="col-6 text-muted">用户ID：</div>
-                                <div class="col-6">{{ item.user_id|default:"暂无" }}</div>
+                                <div class="col-6 text-muted">账户ID：</div>
+                                <div class="col-4">{{ item.user_id|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">用户名字：</div>
+                                <div id="username-input" class="col-4">{{ item.username|default:"匿名用户" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">性别：</div>
-                                <div class="col-6">{{ item.get_gender_display|default:"暂无" }}</div>
+                                <div id="gender-input" class="col-4">{{ item.get_gender_display|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">用户类型：</div>
+                                <div id="grade-input" class="col-4">{{ item.get_grade_display|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">手机:</div>
-                                <div class="col-6">{{ item.mobile_phone|default:"暂无" }}</div>
+                                <div id="mobile_phone-input" class="col-4">{{ item.mobile_phone|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">电话:</div>
-                                <div class="col-6">{{ item.phone|default:"暂无" }}</div>
+                                <div id="phone-input" class="col-4">{{ item.phone|default:"暂无" }}</div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-6 text-muted">邮箱:</div>
-                                <div class="col-6">{{ item.email|default:"暂无" }}</div>
+                                <div class="col-6 text-muted">邮箱：</div>
+                                <div id="email-input" class="col-4">{{ item.email|default:"暂无" }}</div>
                             </div>
                         </div>
                     </div>
@@ -107,5 +114,204 @@
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        function getCsrfToken() {
+            // 从cookie中获取CSRF令牌
+            let csrfToken = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        csrfToken = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return csrfToken;
+        }
 
+        function editAll() {
+            // 直接使用forEach并通过index判断是否跳过第一个元素
+            document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
+                // 如果是第一个元素，则跳过
+                if (index === 0) return;
+
+                const infoDiv = row.children[1];
+
+                if (!infoDiv.querySelector('input') && !infoDiv.querySelector('select')) {
+                    const infoDivId = infoDiv.id; // ID 用于可能的进一步操作或引用
+                    const currentValue = infoDiv.textContent.trim(); // 当前文本内容，用于初始化值
+
+                    if (index === 2 || index === 3) { // 特别为第四个元素创建选择框
+                        if (index === 2) {
+                            const select = document.createElement('select');
+                            select.className = 'form-control';
+                            select.style.height = '2.0rem';
+                            // 为 select 添加选项，这里的值可以根据需要更改
+                            ['男', '女', '无'].forEach(function (optionText) {
+                                const option = document.createElement('option');
+                                option.value = optionText;
+                                option.textContent = optionText;
+                                if (currentValue === optionText) {
+                                    option.selected = true;
+                                }
+                                select.appendChild(option);
+                            });
+                            infoDiv.textContent = ''; // 清空原始内容
+                            infoDiv.appendChild(select); // 添加新的 select 元素
+                        } else {
+                            const select = document.createElement('select');
+                            select.className = 'form-control';
+                            select.style.height = '2.0rem';
+                            // 为 select 添加选项，这里的值可以根据需要更改
+                            ['管理员', '工作人员', '老人用户', '义工用户'].forEach(function (optionText) {
+                                const option = document.createElement('option');
+                                option.value = optionText;
+                                option.textContent = optionText;
+                                if (currentValue === optionText) {
+                                    option.selected = true;
+                                }
+                                select.appendChild(option);
+                            });
+                            infoDiv.textContent = ''; // 清空原始内容
+                            infoDiv.appendChild(select); // 添加新的 select 元素
+                        }
+                    } else { // 其他元素仍使用输入框
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = currentValue;
+                        input.className = 'form-control';
+                        input.style.height = '1.5rem';
+                        infoDiv.textContent = '';
+                        infoDiv.appendChild(input);
+                    }
+                }
+            });
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('editButton');
+
+            // 检查当前是编辑模式还是保存模式
+            if (editButton.textContent.includes('编辑')) {
+                // 更改按钮文本为"保存"并更改其onclick事件为调用saveAll()函数
+                editButton.innerHTML = '<i id="editIcon" data-feather="save" class="mr-2"></i> 保存';
+                editButton.setAttribute('onclick', 'saveAll()');
+                feather.replace(); // 重新初始化feather icons
+            }
+        }
+
+        function saveAll() {
+            document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
+                // 如果是第一个元素或特定的跳过元素，则返回
+                if (index === 0) return;
+
+                const infoInput = row.children[1].querySelector('input');
+                const infoSelect = row.children[1].querySelector('select');
+
+                if (infoInput) {
+                    const newValue = infoInput.value.trim();
+                    const infoDiv = row.children[1];
+                    infoDiv.innerHTML = newValue; // 将新值设置回div
+                }
+                if (infoSelect) {
+                    const selectedValue = infoSelect.options[infoSelect.selectedIndex].text; // 获取选择框的选中文本
+                    row.children[1].innerHTML = selectedValue; // 更新显示的值
+                }
+            });
+            var data = {
+                email: document.getElementById('email-input').textContent,
+                username: document.getElementById('username-input').textContent,
+                grade: document.getElementById('grade-input').textContent,
+                gender: document.getElementById('gender-input').textContent,
+                mobile_phone: document.getElementById('mobile_phone-input').textContent,
+                phone: document.getElementById('phone-input').textContent,
+            };
+
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'update_profile' %}", // 路径
+                async: true, // 是否异步
+                beforeSend: function (xhr) {
+                    // 将CSRF令牌设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                data: JSON.stringify(data), // 将数据转换为JSON字符串
+                contentType: "application/json; charset=utf-8", // 设置发送信息至服务器时内容编码类型
+                dataType: "json", // 预期服务器返回的数据类型
+                // 成功的回调函数
+                success: function (response) {
+                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                },
+                // 请求超时设置（可选）
+                timeout: 20000,
+                // 失败的回调函数
+                error: function (xhr, status, error) {
+                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                }
+            });
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('editButton');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i id="editIcon" data-feather="edit-2" class="mr-2"></i> 编辑';
+            editButton.setAttribute('onclick', 'editAll()');
+            feather.replace(); // 重新初始化feather icons
+        }
+    </script>
+    <script>
+
+        function editInfo() {
+            // 将自我介绍转换为<textarea>
+            var bio = document.getElementById('bio-display').innerText;
+            document.getElementById('bio-display').innerHTML = `<textarea id="bio-input">${bio}</textarea>`;
+
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('edit-info-btn');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i data-feather="save" class="mr-2"></i>保存自我介绍';
+            editButton.setAttribute('onclick', 'saveInfo()');
+            feather.replace(); // 重新初始化feather icons
+        }
+
+        function saveInfo() {
+            document.getElementById('bio-display').innerText = document.getElementById('bio-input').value;
+            data = {
+                bio: document.getElementById('bio-display').textContent,
+            }
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "/api/update_profile/", // 路径
+                async: true, // 是否异步
+                beforeSend: function (xhr) {
+                    // 将CSRF令牌设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                data: JSON.stringify(data), // 将数据转换为JSON字符串
+                contentType: "application/json; charset=utf-8", // 设置发送信息至服务器时内容编码类型
+                dataType: "json", // 预期服务器返回的数据类型
+                // 成功的回调函数
+                success: function (response) {
+                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                },
+                // 请求超时设置（可选）
+                timeout: 20000,
+                // 失败的回调函数
+                error: function (xhr, status, error) {
+                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                }
+            });
+            // 获取编辑/保存按钮
+            var editButton = document.getElementById('edit-info-btn');
+
+            // 更改按钮文本为"编辑"并更改其onclick事件为调用editAll()函数
+            editButton.innerHTML = '<i data-feather="edit-2" class="mr-2"></i>编辑自我介绍';
+            editButton.setAttribute('onclick', 'editInfo()');
+            feather.replace(); // 重新初始化feather icons
+        }
+    </script>
 {% endblock %}

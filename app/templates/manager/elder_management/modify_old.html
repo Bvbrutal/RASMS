@@ -142,7 +142,7 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'account_info' %}?id={{ item.bind_user_id }}">
+                                               <a href="{% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
                                                     <button type="button"
                                                             class="btn btn-outline-light">绑定账号信息
                                                     </button>

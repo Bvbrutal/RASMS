@@ -8,11 +8,14 @@
     <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
     <script>
         tinymce.init({
-            selector: 'textarea',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough',
+            selector: '#mytextarea',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough image',
             language: 'zh_CN',
+            plugins: 'image',
+            images_reuse_filename: true,
+            automatic_uploads: true,
+            images_upload_url: '{% url 'image_upload' %}',
         });
-
     </script>
     <style>
         .tox .tox-promotion {
@@ -24,7 +27,7 @@
         }
     </style>
     <!-- 引入 flatpickr CSS -->
-    <script src="{% static "vendors/datepicker/yui-min.js" %}"></script>
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
     <script>
         YUI({
             modules: {
@@ -241,7 +244,7 @@
                             confirmButtonText: '查看公告列表信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '/management/announcement_list/';
+                                window.location.href = '{% url 'announcement_modify' %}';
                             }
                         });
                     } else if (data.ret === 2) {
@@ -276,7 +279,7 @@
             var editorContent = tinymce.get("mytextarea").getContent();
             var form = $("#formId");
             var formData = new FormData(document.getElementById('formId'));
-            formData.append('is_save', 'false')
+            formData.append('is_save', 'False')
             formData.append('editorContent', editorContent)
             form.validate({
                 ignore: [],
@@ -344,7 +347,7 @@
                             confirmButtonText: '查看公告管理列表',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '/management/announcement_list/';
+                                window.location.href = '{% url 'announcement_modify' %}';
                             }
                         });
                     } else if (data.ret === 2) {

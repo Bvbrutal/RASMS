@@ -3,6 +3,7 @@ import os
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import CommunityAnnouncement, User
@@ -16,6 +17,8 @@ def announcement_list(request):
     context = {
         "items": communityAnnouncements
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/announcement/announcement_list.html", context)
 
 
@@ -25,6 +28,8 @@ def announcement_info(request):
     context = {
         'item': item
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/announcement/announcement_info.html", context)
 
 
@@ -58,8 +63,8 @@ def announcement_add(request):
         # 使用用户的电话号码作为文件名，保留原始文件的扩展名
         uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
     if introduction is None:
-        introduction=content_text[:30]
-    if is_save=='false':
+        introduction=content_text[:20]
+    if is_save=='False':
         is_save=False
     CA = CommunityAnnouncement(
         title=title,
@@ -78,7 +83,7 @@ def announcement_add(request):
     CA.save()
     context = {
         'ret': 1,
-        'msg': "录入成功"
+        'msg': "公告编辑成功"
     }
     return JsonResponse(context, safe=False, status=200)
 
@@ -108,7 +113,10 @@ def announcement_modify_basic(request):
         uploaded_file = request.FILES.get('pic1') or None
 
         is_exists = CommunityAnnouncement.objects.filter(id=id)
-        print(is_exists.exists())
+        is_save = request.POST.get('is_active') or True
+        if is_save == 'False':
+            is_save = False
+        print(is_save)
         if is_exists.exists():
             item = is_exists.first()
             if uploaded_file:
@@ -128,6 +136,7 @@ def announcement_modify_basic(request):
             item.expiry_date = expiry_date
             item.status = status
             item.updated_by_id = updated_by_id
+            item.is_save=is_save
             item.save()
             context = {
                 'ret': 1,
@@ -143,6 +152,7 @@ def announcement_modify_basic(request):
 
     id = request.GET.get('id')
     communityAnnouncement = CommunityAnnouncement.objects.filter(id=id).first()
+    print(communityAnnouncement.is_save)
     context = {
         "item": communityAnnouncement,
     }
