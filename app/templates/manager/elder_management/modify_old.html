@@ -135,14 +135,14 @@
                                                 </figure>
                                             </td>
                                             <td>
-                                                <a href="{% url 'old_info' %}?id={{ item.id }}">
+                                                <a href="{% url 'old_info' %}?id={{ item.mobile_phone }}">
                                                     <button type="button"
                                                             class="btn btn-outline-primary">详细信息
                                                     </button>
                                                 </a>
                                             </td>
                                             <td>
-                                               <a href="{% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
+                                                <a href="{% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
                                                     <button type="button"
                                                             class="btn btn-outline-light">绑定账号信息
                                                     </button>
@@ -380,11 +380,15 @@
                     op: "delete_elder"
                 },
                 success: function (data) {
-                    sessionStorage.setItem('statusMessage', '删除成功！');
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '删除成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '删除失败！');
+                    }
                     window.location.reload("/management/modify_old/");
                 },
                 error: function (xhr, status, error) {
-                    sessionStorage.setItem('statusMessage', '删除成功！');
+                    sessionStorage.setItem('statusMessage', '删除失败！');
                     window.location.reload("/management/modify_old/");
                 }
             });
@@ -403,15 +407,16 @@
                 success: function (data) {
                     if (data.ret === 1) {
                         sessionStorage.setItem('statusMessage', '重置成功！');
-                        window.location.reload("/management/modify_old/");
                     } else if (data.ret === 2) {
-                        sessionStorage.setItem('statusMessage', '该用户未注册');
-                        window.location.reload("/management/modify_old/");
+                        sessionStorage.setItem('statusMessage', '该用户未注册!');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '重置失败！');
                     }
-
+                    window.location.reload("{% url 'modify_old' %}");
                 },
                 error: function (xhr, status, error) {
-                    console.log('重置失败，请重试！');
+                    sessionStorage.setItem('statusMessage', '重置失败！');
+                    window.location.reload("{% url 'modify_old' %}");
                 }
             });
         }

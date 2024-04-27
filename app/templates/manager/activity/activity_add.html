@@ -82,14 +82,15 @@
                 <h2 class="mb-4">发布社区活动</h2>
                 <form id="formId" action="javascript:void(0);" method="POST" novalidate>
                     <div class="mb-3">
-                        <label for="title" class="form-label">标题</label>
-                        <input type="text" class="form-control" id="title" name="title"
-                               placeholder="请输入社区活动标题">
+                        <label for="title" class="form-label">活动名字<span
+                                style="color: red; font-weight: bold;">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               placeholder="请输入社区活动名字">
                     </div>
                     <div class="mb-3">
-                        <label for="introduction" class="form-label">简介</label>
+                        <label for="introduction" class="form-label">活动描述</label>
                         <input type="text" class="form-control" id="introduction" name="introduction"
-                               placeholder="请输入公告简介">
+                               placeholder="请输入活动描述">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">封面照片</label>
@@ -117,43 +118,82 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="content" class="form-label">内容</label>
+                        <label for="content" class="form-label">内容<span
+                                style="color: red; font-weight: bold;">*</span></label>
                         <textarea class="form-control" id="content" name="content" rows="15"
-                                  placeholder="请输入社区活动描述..." style="min-height: 200px;"></textarea>
+                                  placeholder="请输入社区活动内容..." style="min-height: 200px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">活动地点</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                               placeholder="请输入社区活动地点">
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">发布者</label>
+                        <input type="text" class="form-control" id="author" name="author"
+                               placeholder="请输入活动发布者">
                     </div>
                     <div class="mb-3">
                         <label for="publisher" class="form-label">发布方</label>
-                        <input type="text" class="form-control" id="publisher" name="publisher"
+                        <input type="text" class="form-control" id="organizer" name="organizer"
                                placeholder="请输入社区活动发布方">
                     </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">联系信息</label>
+                        <input type="text" class="form-control" id="participant_limit" name="participant_limit"
+                               placeholder="请输入社区活动联系信息">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cost" class="form-label">费用</label>
+                        <input type="text" class="form-control" id="cost" name="cost"
+                               placeholder="请输入活动参加费用">
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">注册/报名链接</label>
+                        <input type="text" class="form-control" id="registration_link" name="registration_link"
+                               placeholder="请输入社区活动注册/报名链接">
+                    </div>
                     <div class="row">
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="published_date" class="form-label">发布日期</label>
-                                <input class="J_Item" id="published_date" name="published_date">
-                                <small class="form-text text-muted">请选择或输入公告的发布日期和时间。</small>
+                                <label for="published_date" class="form-label">开始时间</label>
+                                <input class="J_Item" id="published_date"
+                                       name="published_date" placeholder="选择开始时间">
+                                <small class="form-text text-muted">请选择活动的开始日期和时间。</small>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="expiry_date" class="form-label">过期日期</label>
-                                <input class="J_Item" id="expiry_date" name="expiry_date" placeholder="请输入公告内容">
-                                <small class="form-text text-muted ">请选择或输入公告的过期日期和时间。</small>
+                                <label for="expiry_date" class="form-label">结束时间</label>
+                                <input class="J_Item" id="expiry_date" name="expiry_date"
+                                       placeholder="选择结束时间">
+                                <small class="form-text text-muted">请选择活动的结束日期和时间。</small>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="status" class="form- p-b-50">状态</label>
-                                <select class="form-select" id="status" name="status">
+                                <label for="participant_limit" class="form-label">参与人数限制</label>
+                                <input type="number" class="form-control" id="participant_limit"
+                                       name="participant_limit" min="1" placeholder="请输入人数">
+                                <small class="form-text text-muted">请输入活动的最大参与人数。</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
+                            <div class="mb-3">
+                                <label for="status" class="form-label">状态</label>
+                                <select class="form-control" id="status" name="status">
                                     <option value="not_started">未开始</option>
                                     <option value="ongoing">进行中</option>
                                     <option value="finished">已结束</option>
                                 </select>
+                                <small class="form-text text-muted">请选择活动当前的状态。</small>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="button1">发布活动</button>
-                    <button type="button" class="btn btn-secondary">保存草稿</button>
+                    <button type="submit" class="btn btn-primary" id="save-button1" onclick="publishInfo()">发布公告
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="save-button2" onclick="saveInfo()">保存草稿
+                    </button>
                 </form>
             </div>
         </div>
@@ -161,5 +201,217 @@
 {% endblock %}
 
 {% block app-foot %}`
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
 
+    <script>
+        function publishInfo() {
+            tinymce.triggerSave();
+            var editorContent = tinymce.get("content").getContent();
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            formData.append('editorContent', editorContent)
+            form.validate({
+                ignore: [],
+                rules: {
+                    name: {
+                        required: true
+                    },
+                    content: {
+                        required: true
+                    },
+
+                },
+                messages: {
+                    name: "请填写活动名字",
+                    content: "请填写活动描述",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()) {
+                $.notify({
+                    message: '<strong>请填写完整活动信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#save-button1").text('活动发布中');
+            $('#save-button1').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'activity_add' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '发布成功',
+                            confirmButtonText: '查看活动列表信息',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '{% url 'account_modify' %}';
+                            }
+                        });
+                    } else if (data.ret === 2) {
+                        $("#save-button1").text('发布活动');
+                        $('#save-button1').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('发布失败: ' + error);
+                }
+            });
+        }
+    </script>
+    <script>
+        function saveInfo() {
+            tinymce.triggerSave();
+            var editorContent = tinymce.get("content").getContent();
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            formData.append('is_save', 'False')
+            formData.append('editorContent', editorContent)
+            form.validate({
+                ignore: [],
+                rules: {
+                    title: {
+                        required: true
+                    },
+                    content: {
+                        required: true
+                    },
+
+                },
+                messages: {
+                    title: "请填写标题",
+                    content: "请填写内容",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()) {
+                $.notify({
+                    message: '<strong>请填写完整活动信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#save-button2").text('活动保存中');
+            $('#save-button2').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'activity_add' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '保存成功',
+                            confirmButtonText: '查看活动管理列表',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '{% url 'account_modify' %}';
+                            }
+                        });
+                    } else if (data.ret === 2) {
+                        $("#save-button2").text('保存草稿');
+                        $('#save-button2').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('保存失败: ' + error);
+                }
+            });
+        }
+    </script>
 {% endblock %}

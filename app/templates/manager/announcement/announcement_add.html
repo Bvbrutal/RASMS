@@ -122,33 +122,40 @@
                                   placeholder="请输入公告内容..."></textarea>
                     </div>
                     <div class="mb-3">
+                        <label for="publisher" class="form-label">发布者</label>
+                        <input type="text" class="form-control" id="author" name="author"
+                               placeholder="请输入公告发布者">
+                    </div>
+                    <div class="mb-3">
                         <label for="publisher" class="form-label">发布方</label>
                         <input type="text" class="form-control" id="publisher" name="publisher"
                                placeholder="请输入公告发布方">
                     </div>
                     <div class="row">
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                       <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="published_date" class="form-label">发布日期</label>
-                                <input class="J_Item" id="published_date" name="published_date">
-                                <small class="form-text text-muted">请选择或输入公告的发布日期和时间。</small>
+                                <label for="published_date" class="form-label">开始时间</label>
+                                <input class="J_Item" id="published_date"
+                                       name="published_date" placeholder="选择开始时间">
+                                <small class="form-text text-muted">请选择活动的开始日期和时间。</small>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">过期日期</label>
                                 <input class="J_Item" id="expiry_date" name="expiry_date" placeholder="请输入公告内容">
                                 <small class="form-text text-muted ">请选择或输入公告的过期日期和时间。</small>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-sm-12 d-flex justify-content-center">
+                        <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="status" class="form- p-b-50">状态</label>
-                                <select class="form-select" id="status" name="status">
+                                <label for="status" class="form-label">状态</label>
+                                <select class="form-control" id="status" name="status">
                                     <option value="active">有效</option>
                                     <option value="inactive">无效</option>
                                     <option value="expired">过期</option>
                                 </select>
+                                <small class="form-text text-muted">请选择公告当前的状态。</small>
                             </div>
                         </div>
                     </div>
@@ -279,7 +286,7 @@
             var editorContent = tinymce.get("mytextarea").getContent();
             var form = $("#formId");
             var formData = new FormData(document.getElementById('formId'));
-            formData.append('is_save', 'False')
+            formData.append('is_save', 'True')
             formData.append('editorContent', editorContent)
             form.validate({
                 ignore: [],
@@ -351,7 +358,7 @@
                             }
                         });
                     } else if (data.ret === 2) {
-                        $("#save-button2").text('发布公告');
+                        $("#save-button2").text('保存草稿');
                         $('#save-button2').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
                         $.notify({
                             message: '<strong>' + data.msg + '</strong>'
@@ -371,7 +378,7 @@
                 },
                 error: function (xhr, status, error) {
                     // 请求失败时的回调函数
-                    console.log('更新失败: ' + error);
+                    console.log('保存失败: ' + error);
                 }
             });
         }

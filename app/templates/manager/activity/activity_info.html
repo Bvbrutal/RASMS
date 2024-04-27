@@ -1,8 +1,48 @@
 {% extends template_name %}
 {% load static %}
-
+{% load myfilter %}
 {% block app-head %}
-<title>社区活动详情</title>
+    <title>社区活动详情</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            margin: 20px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .card-body {
+            background-color: #f8f9fa;
+            font-size: 16px;
+        }
+
+        .list-group-item {
+            border: none; /* Remove borders */
+            padding: 10px 15px; /* Adjust padding */
+            font-size: 14px; /* Smaller font size */
+            background-color: #ffffff; /* White background for readability */
+        }
+
+        .list-group-item i {
+            margin-right: 5px; /* Space out icons from text */
+            color: #007bff; /* Icon color to match the header */
+        }
+
+        a {
+            color: #007bff; /* Ensuring links are visible and styled */
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 {% endblock %}
 
 {% block app-content %}
@@ -32,28 +72,50 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header text-white text-center">
+                <h1 class="my-0 font-weight-normal">{{ event.name }}</h1>
+            </div>
             <div class="card-body">
-                <div class="m-l-25"><h1>{{ event.name }}</h1></div>
+                <h4 class="card-title pricing-card-title">活动详情</h4>
                 <ul class="list-group list-group-flush">
-                    {% load myfilter %}
-                    <li class="list-group-item">活动描述: {{ event.description }}</li>
-                    <li class="list-group-item">创建时间: {{ event.created|date:"Y-m-d H:i" }}</li>
-                    <li class="list-group-item">开始时间: {{ event.start_time|date:"Y-m-d H:i" }}</li>
-                    <li class="list-group-item">结束时间: {{ event.end_time|date:"Y-m-d H:i" }}</li>
-                    <li class="list-group-item">地点: {{ event.location }}</li>
-                    <li class="list-group-item">主办方: {{ event.organizer }}</li>
-                    <li class="list-group-item">参与人数限制: {{ event.participant_limit|activity_filter  }}</li>
-                    <li class="list-group-item">报名状态: {{ event.registration_status|yesno:"是,否" }}</li>
-                    <li class="list-group-item">活动状态: {{ event.get_status_display }}</li>
-                    <li class="list-group-item">联系信息: {{ event.contact_info }}</li>
-                    <li class="list-group-item">费用: {{ event.cost }}</li>
-                    <li class="list-group-item">分类: {{ event.category }}</li>
-                    <li class="list-group-item">报名链接: <a
-                            href="{{ event.registration_link }}">{{ event.registration_link }}</a></li>
+                    <li class="list-group-item"><i class="fas fa-align-left"></i>
+                        <strong>活动描述:</strong> {{ event.description|safe }}</li>
+                    <li class="list-group-item"><i class="fas fa-calendar-alt"></i>
+                        <strong>创建时间:</strong> {{ event.created|date:"Y-m-d H:i" }}</li>
+                    <li class="list-group-item"><i class="fas fa-hourglass-start"></i>
+                        <strong>开始时间:</strong> {{ event.start_time|date:"Y-m-d H:i"|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-hourglass-end"></i>
+                        <strong>结束时间:</strong> {{ event.end_time|date:"Y-m-d H:i"|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-map-marker-alt"></i>
+                        <strong>地点:</strong> {{ event.location|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-user-edit"></i>
+                        <strong>发布者:</strong> {{ event.author|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-user-tie"></i>
+                        <strong>主办方:</strong> {{ event.organizer|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-users"></i>
+                        <strong>参与人数限制:</strong> {{ event.participant_limit|activity_filter }}</li>
+                    <li class="list-group-item"><i class="fas fa-info-circle"></i>
+                        <strong>活动状态:</strong> {{ event.get_status_display }}</li>
+                    <li class="list-group-item"><i class="fas fa-phone-alt"></i>
+                        <strong>联系信息:</strong> {{ event.contact_info|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-money-bill-wave"></i>
+                        <strong>费用:</strong> {{ event.cost|default:'暂无' }}</li>
+                    <li class="list-group-item"><i class="fas fa-tags"></i>
+                        <strong>分类:</strong> {{ event.category|default:'暂无' }}</li>
+                    {% if event.registration_link %}
+                        <li class="list-group-item"><i class="fas fa-link"></i> <strong>报名链接:</strong> <a
+                                href="{{ event.registration_link }}">{{ event.registration_link|default:'暂无' }}</a>
+                        </li>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary" id="Sign-button" onclick="Signup()">点击报名
+                        </button>
+                    {% endif %}
                 </ul>
             </div>
         </div>
+
     </div>
 {% endblock %}
 

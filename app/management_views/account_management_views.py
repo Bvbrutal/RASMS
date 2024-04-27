@@ -23,7 +23,7 @@ def account_modify(request):
                  Q(username__icontains=key) |
                  Q(mobile_phone__icontains=key)) &
                 Q(is_active=True)
-            ).order_by('id')
+            ).order_by('user_id')
         else:
             # 如果没有提供关键词，则返回所有用户
             items = User.objects.filter(is_active=True).order_by('user_id')
@@ -40,25 +40,31 @@ def account_modify(request):
     id = request.POST.get("id")
     op = request.POST.get("op")
     item = User.objects.filter(user_id=id).first()
-    if op == 'delete_account':
-        item.is_active = False
-        item.updated_by = updated_by
-        item.save()
-        context = {
-            'ret': 1,
-            'msg': "删除成功"
-        }
+    try:
+        if op == 'delete_account':
+            item.is_active = False
+            item.updated_by = updated_by
+            item.save()
+            context = {
+                'ret': 1,
+                'msg': "删除成功"
+            }
 
-        return JsonResponse(context, safe=False)
-    if op == 'reset_password':
-        item.password = hashlib.md5('123456'.encode()).hexdigest()
-        item.save()
+            return JsonResponse(context, safe=False)
+        if op == 'reset_password':
+            item.password = hashlib.md5('123456'.encode()).hexdigest()
+            item.save()
+            context = {
+                'ret': 1,
+                'msg': "重置成功"
+            }
+            return JsonResponse(context, safe=False)
+    except:
         context = {
-            'ret': 1,
-            'msg': "重置成功"
+            'ret': 2,
+            'msg': "删除失败"
         }
         return JsonResponse(context, safe=False)
-    return render(request, "manager/account_management/account_modify.html")
 
 
 def account_analyze(request):

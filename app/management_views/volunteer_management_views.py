@@ -212,17 +212,20 @@ def analyze_volunteer(request):
 
 def volunteer_info(request):
     volunteer_id = request.GET.get('id')
-    volunteer = Volunteer.objects.filter(id=volunteer_id).first()
-    if volunteer.birthday:
-        age = volunteer.calculate_age()
-    else:
-        age = None
-    volunteer.gender = GENDER_CHOICES[volunteer.gender]
-    context = {
-        'item': volunteer,
-        'age': age
-    }
-    return render(request, "manager/volunteer_management/volunteer_info.html", context)
+    volunteer = Volunteer.objects.filter(mobile_phone=volunteer_id).first()
+    if volunteer:
+        if volunteer.birthday:
+            age = volunteer.calculate_age()
+        else:
+            age = None
+        volunteer.gender = GENDER_CHOICES[volunteer.gender]
+        context = {
+            'item': volunteer,
+            'age': age
+        }
+        return render(request, "manager/volunteer_management/volunteer_info.html", context)
+
+    return render(request, "manager/volunteer_management/volunteer_info_none.html")
 
 
 def modify_volunteer_basic(request):

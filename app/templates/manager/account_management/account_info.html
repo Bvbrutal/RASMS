@@ -3,7 +3,7 @@
 
 {% block app-head %}
     <title>用户详细信息</title>
-
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block app-content %}
@@ -93,11 +93,16 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">电话:</div>
-                                <div id="phone-input" class="col-4">{{ item.phone|default:"暂无" }}</div>
+                                <div id="phone-input" class="col-4">{{ item.phone|default:"" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">邮箱：</div>
-                                <div id="email-input" class="col-4">{{ item.email|default:"暂无" }}</div>
+                                <div id="email-input" class="col-4">{{ item.email|default:"" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">创建时间：</div>
+                                <div id="email-input"
+                                     class="col-4">{{ item.creation_time|date:'Y-m-d'|default:"暂无" }}</div>
                             </div>
                         </div>
                     </div>
@@ -114,6 +119,13 @@
 {% endblock %}
 
 {% block app-foot %}
+        <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
     <script>
         function getCsrfToken() {
             // 从cookie中获取CSRF令牌
@@ -135,7 +147,7 @@
             // 直接使用forEach并通过index判断是否跳过第一个元素
             document.querySelectorAll('.row.mb-2').forEach(function (row, index) {
                 // 如果是第一个元素，则跳过
-                if (index === 0) return;
+                if (index === 0 || index === 7) return;
 
                 const infoDiv = row.children[1];
 
@@ -226,6 +238,7 @@
                 gender: document.getElementById('gender-input').textContent,
                 mobile_phone: document.getElementById('mobile_phone-input').textContent,
                 phone: document.getElementById('phone-input').textContent,
+                mobile_phone_old:  '{{ item.mobile_phone }}'
             };
 
             // 使用 jQuery 的 $.ajax 方法发送数据
@@ -242,13 +255,57 @@
                 dataType: "json", // 预期服务器返回的数据类型
                 // 成功的回调函数
                 success: function (response) {
-                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                    if (response.ret === 1) {
+                        $.notify({
+                            message: '<strong>' + response.message + '</strong>'
+                        }, {
+                            type: 'success',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                    else{
+                        $.notify({
+                            message: '<strong>' + response.message + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
                 },
                 // 请求超时设置（可选）
                 timeout: 20000,
                 // 失败的回调函数
                 error: function (xhr, status, error) {
-                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                   $.notify({
+                            message: '<strong>更新失败</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
                 }
             });
 
@@ -281,6 +338,7 @@
             document.getElementById('bio-display').innerText = document.getElementById('bio-input').value;
             data = {
                 bio: document.getElementById('bio-display').textContent,
+                mobile_phone_old: '{{ item.mobile_phone }}'
             }
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
@@ -296,13 +354,39 @@
                 dataType: "json", // 预期服务器返回的数据类型
                 // 成功的回调函数
                 success: function (response) {
-                    console.log('更新成功'); // 可以在这里处理一些成功更新的逻辑
+                    $.notify({
+                        message: '<strong>' + response.message + '</strong>'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 1000,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
                 },
                 // 请求超时设置（可选）
                 timeout: 20000,
                 // 失败的回调函数
                 error: function (xhr, status, error) {
-                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                   $.notify({
+                            message: '<strong>更新失败</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 1000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
                 }
             });
             // 获取编辑/保存按钮

@@ -142,29 +142,36 @@ def modify_old(request):
     old_id = request.POST.get("id")
     op = request.POST.get("op")
     elder = Elder.objects.filter(id=old_id).first()
-    if op == 'delete_elder':
-        elder.is_active = False
-        elder.updated_by = updated_by
-        elder.save()
-        context = {
-            'ret': 1,
-            'msg': "删除成功"
-        }
-
-        return JsonResponse(context, safe=False)
-    if op == 'reset_password':
-        if elder.bind_user:
+    try:
+        if op == 'delete_elder':
+            elder.is_active = False
             elder.updated_by = updated_by
-            elder.bind_user.password = hashlib.md5('123456'.encode()).hexdigest()
             elder.save()
             context = {
                 'ret': 1,
-                'msg': "重置成功"
+                'msg': "删除成功"
             }
+
             return JsonResponse(context, safe=False)
+        # if op == 'reset_password':
+        #     if elder.bind_user:
+        #         elder.updated_by = updated_by
+        #         elder.bind_user.password = hashlib.md5('123456'.encode()).hexdigest()
+        #         elder.save()
+        #         context = {
+        #             'ret': 1,
+        #             'msg': "重置成功"
+        #         }
+        #         return JsonResponse(context, safe=False)
+        #     context = {
+        #         'ret': 2,
+        #         'msg': "该用户未注册"
+        #     }
+        #     return JsonResponse(context, safe=False)
+    except:
         context = {
-            'ret': 2,
-            'msg': "该用户未注册"
+            'ret': 3,
+            'msg': "删除失败"
         }
         return JsonResponse(context, safe=False)
 
@@ -257,8 +264,8 @@ def analyze_old(request):
 
 
 def old_info(request):
-    old_id = request.GET.get('id')
-    elder = Elder.objects.filter(id=old_id).first()
+    id = request.GET.get('id')
+    elder = Elder.objects.filter(mobile_phone=id).first()
     if elder:
         if elder.birthday:
             age = elder.calculate_age()

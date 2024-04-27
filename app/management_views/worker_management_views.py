@@ -1,11 +1,12 @@
 import os
 from datetime import datetime
-from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.utils.timezone import now
+
 from django.db.models import Q, Count
 from django.db.models.functions import TruncYear, TruncMonth
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.utils.timezone import now
+
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Staff, User
@@ -13,7 +14,9 @@ from app.models import Staff, User
 GENDER_CHOICES = {
     'M': '男',
     'F': '女',
-    'U': '未知',}
+    'U': '未知', }
+
+
 # 工作人员信息管理
 def add_worker(request):
     if request.method == "GET":
@@ -21,7 +24,7 @@ def add_worker(request):
 
     # 获取表单数据
     created_by_id = request.session["info"]["user_id"]
-    created_by=User.objects.filter(user_id=created_by_id).first()
+    created_by = User.objects.filter(user_id=created_by_id).first()
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
     mobile_phone = request.POST.get('input2')
@@ -107,7 +110,7 @@ def modify_worker(request):
     staff_id = request.POST.get("id")
     staff = Staff.objects.filter(id=staff_id).first()
     staff.is_active = False
-    staff.updated_by=updated_by
+    staff.updated_by = updated_by
     staff.save()
     context = {
         'ret': 1,
@@ -201,13 +204,13 @@ def analyze_worker(request):
         'check_year': last_year
     }
     print(context)
-    return render(request, "manager/worker_management/analyze_worker.html",context=context)
+    return render(request, "manager/worker_management/analyze_worker.html", context=context)
 
 
 def modify_worker_basic(request):
     if request.method == 'GET':
         staff_id = request.GET.get('id')
-        staff =get_object_or_404(Staff, id=staff_id)
+        staff = get_object_or_404(Staff, id=staff_id)
         if staff.birthday:
             age = staff.calculate_age()
         else:
@@ -217,10 +220,10 @@ def modify_worker_basic(request):
             'item': staff,
             'age': age
         }
-        return render(request, "manager/worker_management/modify_worker_basic.html",context)
+        return render(request, "manager/worker_management/modify_worker_basic.html", context)
 
     updated_by_id = request.session["info"]["user_id"]
-    updated_by=User.objects.filter(user_id=updated_by_id).first()
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
     id = request.POST.get('id')
     username = request.POST.get('input1')
     gender = 'M' if request.POST.get('gridRadios') == 'option1' else 'F'
@@ -267,19 +270,21 @@ def modify_worker_basic(request):
 
 def worker_info(request):
     old_id = request.GET.get('id')
-    staff = Staff.objects.filter(id=old_id).first()
-    if staff.birthday:
-        age = staff.calculate_age()
-    else:
-        age = None
-    staff.gender = GENDER_CHOICES[staff.gender]
-    context = {
-        'item': staff,
-        'age': age
-    }
-    return render(request, "manager/worker_management/worker_info.html", context)
+    staff = Staff.objects.filter(mobile_phone=old_id).first()
+    if staff:
+        if staff.birthday:
+            age = staff.calculate_age()
+        else:
+            age = None
+        staff.gender = GENDER_CHOICES[staff.gender]
+        context = {
+            'item': staff,
+            'age': age
+        }
+        return render(request, "manager/worker_management/worker_info.html", context)
+
+    return render(request, "manager/worker_management/worker_info_none.html")
 
 
 def select_worker(request):
     return render(request, "manager/worker_management/select_worker.html")
-

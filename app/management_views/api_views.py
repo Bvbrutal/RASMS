@@ -1,6 +1,9 @@
 import json
 import os
-
+from django.http import JsonResponse
+import json
+import re
+from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.utils import timezone
@@ -30,31 +33,61 @@ def accont_api(request):
     return JsonResponse(context)
 
 
+
+
 def update_profile(request):
-    mobile_phone = request.session["info"]["mobile_phone"]
-    search_result = User.objects.filter(mobile_phone=mobile_phone)
     datas = json.loads(request.body)
+    mobile_phone = datas.get('mobile_phone_old')
+    new_phone = datas.get('phone')
+    new_mobile_phone = datas.get('mobile_phone')
+    email = datas.get('email')
+
+
+    # 更新用户信息
+    search_result = User.objects.filter(mobile_phone=mobile_phone)
     if "bio" in datas:
         search_result.update(bio=datas['bio'])
-        context = {'message': '修改成功'}
-        return JsonResponse(context, status=200)  # 成功响应
-    else:
-        item = User.objects.filter(mobile_phone=datas['mobile_phone'])
-        if item.exists() and (datas['mobile_phone'] != mobile_phone):
-            context = {'re':2,'message': '该手机号已经注册'}
-            return JsonResponse(context, status=200)  # 成功响应
-        gender = [key for key, value in GENDER_CHOICES if value == datas['gender']]
-        print(gender)
-        search_result.update(username=datas['username'], phone=datas['phone'], email=datas['email'],
-                             gender=gender[0], mobile_phone=datas['mobile_phone'])
-        print(request.session["info"])
-        request.session["info"]["mobile_phone"] = datas['mobile_phone']
-        request.session.modified = True
-        print(request.session["info"])
-        context = {
-            're':1,
-            'message': '修改成功'}
-        return JsonResponse(context, status=200)  # 成功响应
+        return JsonResponse({'ret': 1, 'message': '修改成功'}, status=200)
+
+    phone_pattern = re.compile(r'^0\d{2,3}-\d{7,8}$')
+    mobile_phone_pattern = re.compile(r'^\+?1?\d{9,15}$')
+    email_pattern = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+
+    # 验证电话号码
+    if new_phone and not phone_pattern.match(new_phone):
+        return JsonResponse({'ret': 0, 'message': '无效的电话号码格式'}, status=200)
+
+    # 验证移动电话号码
+    if new_mobile_phone and not mobile_phone_pattern.match(new_mobile_phone):
+        return JsonResponse({'ret': 0, 'message': '无效的手机号格式'}, status=200)
+
+    # 验证电子邮箱
+    if email and not email_pattern.match(email):
+        return JsonResponse({'ret': 0, 'message': '无效的邮箱格式'}, status=200)
+
+    # 检查手机号是否已被其他账户使用
+    if User.objects.exclude(mobile_phone=mobile_phone).filter(mobile_phone=new_mobile_phone).exists():
+        return JsonResponse({'ret': 2, 'message': '该手机号已经注册'}, status=200)
+
+
+    # 更详尽的信息更新
+    gender = next((key for key, value in GENDER_CHOICES if value == datas['gender']), None)
+    if search_result.exists():
+        search_result.update(
+            username=datas['username'],
+            phone=datas['phone'],
+            email=email,
+            gender=gender,
+            mobile_phone=new_mobile_phone
+        )
+        if request.session.get("info", {}).get("mobile_phone") == mobile_phone:
+            request.session["info"]["mobile_phone"] = new_mobile_phone
+            request.session.modified = True
+
+        return JsonResponse({'ret': 1, 'message': '修改成功'}, status=200)
+
+    return JsonResponse({'ret': 0, 'message': '用户未找到'}, status=200)
+
 
 
 def logging(request):
@@ -89,7 +122,8 @@ def logging(request):
         updated_loggings.append({
             "operation_time": fomat_time,
             "operator": log.operator_id,  # 假设是外键关联到操作员的 ID
-            "operation_content": log.operation_content
+            "operation_content": log.operation_content,
+            "operation_type":log.get_operation_type_display()
         })
         if len(updated_loggings) > 6:
             break

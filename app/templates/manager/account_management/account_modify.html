@@ -102,6 +102,7 @@
                                         <th scope="col">用户姓名</th>
                                         <th scope="col">性别</th>
                                         <th scope="col">移动电话</th>
+                                        <th scope="col">身份</th>
                                         <th scope="col"></th>
                                         <th scope="col"></th>
                                         <th scope="col"></th>
@@ -124,6 +125,7 @@
                                                 {% endif %}
                                             </td>
                                             <td>{{ item.mobile_phone|default:"暂无" }}</td>
+                                            <td>{{ item.get_grade_display }}</td>
                                             <td>
                                                 <figure class="avatar avatar-sm">
                                                     {% if item.user_photo %}
@@ -142,13 +144,43 @@
                                                     </button>
                                                 </a>
                                             </td>
-                                            <td>
-                                                <a href="{% url 'old_info' %}?id={{ item.user_id }}">
-                                                    <button type="button"
-                                                            class="btn btn-outline-primary">绑定老人信息
-                                                    </button>
-                                                </a>
-                                            </td>
+                                            {% if item.grade == '0' %}
+                                                <td>
+                                                    <a href="{% url 'profile_user' %}?id={{ item.mobile_phone }}"
+                                                       class="hidden-link">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary">绑定管理信息
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            {% elif item.grade == '1' %}
+                                                <td>
+                                                    <a href="{% url 'worker_info' %}?id={{ item.mobile_phone }}"
+                                                       class="hidden-link">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary">绑定员工信息
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            {% elif item.grade == '2' %}
+                                                <td>
+                                                    <a href="{% url 'old_info' %}?id={{ item.mobile_phone }}"
+                                                       class="hidden-link">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary">绑定老人信息
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            {% elif item.grade == '3' %}
+                                                <td>
+                                                    <a href="{% url 'volunteer_info' %}?id={{ item.mobile_phone }}"
+                                                       class="hidden-link">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary">绑定义工信息
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
                                             <td>
                                                 <button type="button" onclick="setCurrentitemId(this)"
                                                         class="btn btn-primary btn-square btn-uppercase"
@@ -374,7 +406,11 @@
                     op: "delete_account"
                 },
                 success: function (data) {
-                    sessionStorage.setItem('statusMessage', '删除成功！');
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '删除成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '删除失败！');
+                    }
                     window.location.reload("{% url 'account_modify' %}");
                 },
                 error: function (xhr, status, error) {
@@ -397,15 +433,15 @@
                 success: function (data) {
                     if (data.ret === 1) {
                         sessionStorage.setItem('statusMessage', '重置成功！');
-                        window.location.reload("{% url 'account_modify' %}");
-                    } else if (data.ret === 2) {
-                        sessionStorage.setItem('statusMessage', '该用户未注册');
-                        window.location.reload("{% url 'account_modify' %}");
+                    } else {
+                        sessionStorage.setItem('statusMessage', '重置失败！');
                     }
+                    window.location.reload("{% url 'account_modify' %}");
 
                 },
                 error: function (xhr, status, error) {
-                    console.log('重置失败，请重试！');
+                    sessionStorage.setItem('statusMessage', '重置失败！');
+                    window.location.reload("{% url 'account_modify' %}");
                 }
             });
         }
@@ -419,7 +455,7 @@
     <script>
         function handleSearch() {
             var searchKey = document.getElementById('searchKey').value;
-            var url = "/management/modify_old?page=1&key=" + encodeURIComponent(searchKey);
+            var url = "/management/account_modify?page=1&key=" + encodeURIComponent(searchKey);
             window.location.href = url;
         }
 

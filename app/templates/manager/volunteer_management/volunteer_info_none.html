@@ -1,0 +1,52 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+
+{% block app-head %}
+    <title>用户详细信息</title>
+
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>绑定义工详细信息</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">用户账号信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'account_modify' %}">用户信息列表</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">绑定义工详细信息</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h1 class="mb-1">暂无义工信息...</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

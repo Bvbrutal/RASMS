@@ -1,0 +1,584 @@
+{% extends "template/index_manager_tem.html" %}
+{% load static %}
+{% load myfilter %}
+{% block app-head %}
+    <title>编辑活动信息</title>
+    <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
+    <script src="{% static 'plugin/tinymce/js/tinymce/tinymce.min.js' %}"
+            referrerpolicy="origin"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 0;
+            margin: 0 10px;
+        }
+
+        .title {
+            padding: 0;
+            margin: 10px 0;
+            font: 700 18px/1.5 \5fae\8f6f\96c5\9ed1;
+            text-align: center;
+        }
+
+        .title a {
+            font: 400 14px/1.5 Tahoma;
+            margin-left: 20px;
+        }
+
+        .example {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            margin-left: -275px;
+            font-size: 12px;
+        }
+
+        .example .item {
+            border: 1px solid #85BEE5;
+        }
+
+        .example input {
+            color: #404040;
+            padding: 3px;
+            width: 170px;
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #AFAFAF;
+            font: 12px/18px Arial;
+        }
+
+        .example button {
+            margin-right: 50px;
+        }
+
+        .checkie6 {
+            padding: 3px;
+            width: 178px;
+            border: 1px solid #AFAFAF;
+            font: 12px/1.5 Arial;
+        }
+    </style>
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
+    <script>
+        tinymce.init({
+            selector: '#mytextarea',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough image',
+            language: 'zh_CN',
+            plugins: 'image',
+            images_reuse_filename: true,
+            automatic_uploads: true,
+            images_upload_url: '{% url 'image_upload' %}',
+        });
+    </script>
+    <style>
+        .tox .tox-promotion {
+            display: none !important;
+        }
+
+        .tox-statusbar__right-container {
+            display: none !important;
+        }
+    </style>
+    <script>
+        YUI({
+            modules: {
+                'trip-calendar': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.js' %}',
+                    type: 'js',
+                    requires: ['trip-calendar-css']
+                },
+                'trip-calendar-css': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.css' %}',
+                    type: 'css'
+                }
+            }
+        }).use('trip-calendar', function (Y) {
+
+            /**
+             * 弹出式日历实例
+             * 将日历与指定的触发元素绑定
+             * 日历可根据浏览器窗口大小，自动调整显示位置
+             */
+            var oCal = new Y.TripCalendar({
+                //绑定日历的节点，支持选择器模式，可批量设置（必选）
+                triggerNode: '.J_Item, #J_Item-1, #J_Item-2, .J_Link'
+            });
+
+            oCal.on('dateclick', function (e) {
+                this.getCurrentNode().setAttribute('data-date', e.date);
+            });
+
+            //显示日历时自定义事件
+            oCal.on('show', function () {
+                var v = this.getCurrentNode().getAttribute('data-date');
+                this.set('date', v || new Date);
+                this.set('selectedDate', v).render();
+            });
+
+            //解决chrome的foucs事件bug
+            Y.on('click', function (e) {
+                e.currentTarget.focus();
+            }, '.J_Item, button, .J_Link');
+        });
+    </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
+    <style>
+        .announcement-title {
+            color: #333;
+            text-align: center;
+        }
+
+        .announcement-date {
+            text-align: center;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .announcement-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .announcement-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .announcement-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .announcement-content li {
+            background-color: #eee;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 5px solid #333;
+        }
+    </style>
+    <style>
+        .announcement-content {
+            padding-left: 80px; /* 保持你的左侧填充 */
+            padding-right: 80px; /* 保持你的右侧填充 */
+            overflow-wrap: break-word; /* 确保长单词可以在边界处自动换行 */
+            word-wrap: break-word; /* 老版本的浏览器可能需要这个 */
+            overflow: hidden; /* 隐藏溢出容器的内容 */
+        }
+
+        .announcement-content img {
+            border-radius: .25rem;
+            max-width: 100%; /* 使图片宽度不超过容器宽度 */
+            height: auto; /* 高度自动调整以保持图片比例 */
+            display: block; /* 避免图片底部有空隙 */
+        }
+
+        .announcement-header {
+            border-radius: .25rem;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            min-height: 200px; /* 根据需要调整高度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white; /* 设置文字颜色为白色，根据背景图片调整 */
+            text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8); /* 增加文字的可读性 */
+        }
+
+        .announcement-header::before {
+            border-radius: .25rem;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); /* 增加透明度以更深色的覆盖层 */
+            z-index: 0;
+        }
+
+        .announcement-title {
+            font-size: 24px; /* 或根据设计调整更大的尺寸 */
+            font-weight: bold; /* 使用粗体 */
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8), -1px -1px 10px rgba(0, 0, 0, 0.8);
+        }
+
+
+        .announcement-title, .announcement-date {
+            color: white;
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8), -1px -1px 10px rgba(0, 0, 0, 0.8); /* 增加了一个额外的反向阴影以增强效果 */
+            z-index: 1;
+            position: relative;
+        }
+
+    </style>
+    <style>
+        .card {
+            margin: 20px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .card-body {
+            background-color: #f8f9fa;
+            font-size: 16px;
+        }
+
+        .list-group-item {
+            border: none; /* Remove borders */
+            padding: 10px 15px; /* Adjust padding */
+            font-size: 14px; /* Smaller font size */
+            background-color: #ffffff; /* White background for readability */
+        }
+
+        .list-group-item i {
+            margin-right: 5px; /* Space out icons from text */
+            color: #007bff; /* Icon color to match the header */
+        }
+
+        a {
+            color: #007bff; /* Ensuring links are visible and styled */
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>编辑活动信息</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">社区活动信息管理</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'announcement_modify' %}">社区活动信息管理列表</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">编辑活动信息</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- end::page-header -->
+            {% if event.image %}
+                <div class="announcement-header"
+                     style="background-image: url('{{ event.image.url }}');">
+                    <h1 class="announcement-title">{{ event.name }}</h1>
+                    <p class="announcement-date">创建日期: {{ event.created|date:"Y-m-d" }}</p>
+                </div>
+            {% else %}
+                <div class="announcement-header"
+                     style="background-image: url({% static 'assets/media/image/image1.png' %});">
+                    <h1 class="announcement-title">{{ event.title }}</h1>
+                    <p class="announcement-date">创建日期: {{ event.created|date:"Y-m-d" }}</p>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title pricing-card-title">原活动详情</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><i class="fas fa-align-left"></i>
+                                    <strong>活动描述:</strong> {{ event.description|safe }}</li>
+                                <li class="list-group-item"><i class="fas fa-calendar-alt"></i>
+                                    <strong>创建时间:</strong> {{ event.created|date:"Y-m-d H:i" }}</li>
+                                <li class="list-group-item"><i class="fas fa-hourglass-start"></i>
+                                    <strong>开始时间:</strong> {{ event.start_time|date:"Y-m-d H:i"|default:'暂无' }}
+                                </li>
+                                <li class="list-group-item"><i class="fas fa-hourglass-end"></i>
+                                    <strong>结束时间:</strong> {{ event.end_time|date:"Y-m-d H:i"|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-map-marker-alt"></i>
+                                    <strong>地点:</strong> {{ event.location|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-user-edit"></i>
+                                    <strong>发布者:</strong> {{ event.author|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-user-tie"></i>
+                                    <strong>主办方:</strong> {{ event.organizer|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-users"></i>
+                                    <strong>参与人数限制:</strong> {{ event.participant_limit|activity_filter }}</li>
+                                <li class="list-group-item"><i class="fas fa-info-circle"></i>
+                                    <strong>活动状态:</strong> {{ event.get_status_display }}</li>
+                                <li class="list-group-item"><i class="fas fa-phone-alt"></i>
+                                    <strong>联系信息:</strong> {{ event.contact_info|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-money-bill-wave"></i>
+                                    <strong>费用:</strong> {{ event.cost|default:'暂无' }}</li>
+                                <li class="list-group-item"><i class="fas fa-tags"></i>
+                                    <strong>分类:</strong> {{ event.category|default:'暂无' }}</li>
+                                {% if event.registration_link %}
+                                    <li class="list-group-item"><i class="fas fa-link"></i> <strong>报名链接:</strong>
+                                        <a href="{{ event.registration_link }}">{{ event.registration_link|default:'暂无' }}</a>
+                                    </li>
+                                {% else %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="mb-4">修改活动信息</h2>
+                            <form id="formId" action="javascript:void(0);" method="POST" novalidate>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">活动名字<span
+                                            style="color: red; font-weight: bold;">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name"
+                                           placeholder="请输入社区活动名字" value="{{ event.name }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="introduction" class="form-label">活动描述</label>
+                                    <input type="text" class="form-control" id="introduction" name="introduction"
+                                           placeholder="请输入活动描述" value="{{ event.description|safe }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">封面照片</label>
+                                    <div class="col-sm-8">
+                                        <div class="fileinput fileinput-new" data-provides="fileinput"
+                                             id="exampleInputUpload">
+                                            <div class="fileinput-new thumbnail"
+                                                 style="width: 200px; height: auto; max-height:150px;">
+                                                {% if event.image %}
+                                                    <img id='picImg'
+                                                         style="width: 100%; height: auto; max-height: 140px;"
+                                                         src="{{ event.image.url }}"
+                                                         alt=""/>
+                                                {% else %}
+                                                    <img id='picImg'
+                                                         style="width: 100%; height: auto; max-height: 140px;"
+                                                         src="{% static 'assets/media/image/noimage.png' %}"
+                                                         alt=""/>
+                                                {% endif %}
+                                            </div>
+                                            <div class="fileinput-preview fileinput-exists thumbnail"
+                                                 style="max-width: 200px; max-height: 150px;"></div>
+                                            <div><span class="btn btn-primary btn-file"><span
+                                                    class="fileinput-new">选择文件</span>
+                                                        <span class="fileinput-exists">换一张</span>
+                                                        <input type="file" name="pic1" id="picID"
+                                                               accept="image/gif,image/jpeg,image/x-png,image/webp">
+                                                    </span>
+                                                <a href="javascript:;" class="btn btn-warning fileinput-exists"
+                                                   data-dismiss="fileinput">移除</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">内容<span
+                                            style="color: red; font-weight: bold;">*</span></label>
+                                    <textarea class="form-control" id="content" name="content" rows="15"
+                                              placeholder="请输入社区活动内容..."
+                                              style="min-height: 200px;">{{ event.description }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="publisher" class="form-label">活动地点</label>
+                                    <input type="text" class="form-control" id="location" name="location"
+                                           placeholder="请输入社区活动地点" value="{{ event.location|default:'暂无' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="publisher" class="form-label">发布者</label>
+                                    <input type="text" class="form-control" id="author" name="author"
+                                           placeholder="请输入活动发布者" value="{{ event.author|default:'暂无' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="publisher" class="form-label">发布方</label>
+                                    <input type="text" class="form-control" id="organizer" name="organizer"
+                                           placeholder="请输入社区活动发布方"
+                                           value="{{ event.organizer|default:'暂无' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="publisher" class="form-label">联系信息</label>
+                                    <input type="text" class="form-control" id="participant_limit"
+                                           name="participant_limit"
+                                           placeholder="请输入社区活动联系信息"
+                                           value="{{ event.contact_info|default:'暂无' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="publisher" class="form-label">注册/报名链接</label>
+                                    <input type="text" class="form-control" id="registration_link"
+                                           name="registration_link"
+                                           placeholder="请输入社区活动注册/报名链接"
+                                           value="{{ event.registration_link|default:'暂无' }}">
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
+                                        <div class="mb-3">
+                                            <label for="published_date" class="form-label">开始时间</label>
+                                            <input class="J_Item" id="published_date"
+                                                   name="published_date" placeholder="选择开始时间" value="{{ event.start_time|date:"Y-m-d"|default:'暂无' }}">
+                                            <small class="form-text text-muted">请选择活动的开始日期和时间。</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
+                                        <div class="mb-3">
+                                            <label for="expiry_date" class="form-label">结束时间</label>
+                                            <input class="J_Item" id="expiry_date" name="expiry_date"
+                                                   placeholder="选择结束时间" value="{{ event.end_time|date:"Y-m-d"|default:'暂无' }}">
+                                            <small class="form-text text-muted">请选择活动的结束日期和时间。</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
+                                        <div class="mb-3">
+                                            <label for="participant_limit" class="form-label">参与人数限制</label>
+                                            <input type="number" class="form-control" id="participant_limit"
+                                                   name="participant_limit" min="1" placeholder="请输入人数" value="{{ event.participant_limit|activity_filter }}">
+                                            <small class="form-text text-muted">请输入活动的最大参与人数。</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
+                                        <div class="mb-3">
+                                            <label for="status" class="form-label">状态</label>
+                                            <select class="form-control" id="status" name="status">
+                                                <option value="not_started" {% if item.status == 'not_started' %}selected{% endif %}>未开始</option>
+                                                <option value="ongoing" {% if item.status == 'ongoing' %}selected{% endif %}>进行中</option>
+                                                <option value="finished" {% if item.status == 'finished' %}selected{% endif %}>已结束</option>
+                                            </select>
+                                            <small class="form-text text-muted">请选择活动当前的状态。</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" id="save-button" class="btn btn-primary"
+                                        onclick="saveInfo()">修改信息
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
+    <script>
+        function saveInfo() {
+            tinymce.triggerSave();
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            formData.append("id", {{ item.id }})
+            form.validate({
+                ignore: [],
+                rules: {
+                    name: {
+                        required: true
+                    },
+                    content: {
+                        required: true
+                    },
+
+                },
+                messages: {
+                    name: "请填写活动名字",
+                    content: "请填写活动描述",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()) {
+                $.notify({
+                    message: '<strong>请填写完整活动信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#save-button").text('信息修改中');
+            $('#save-button').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'activity_modify_basic' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '修改成功',
+                            confirmButtonText: '查看活动信息',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '{% url 'activity_info' %}?id={{ item.id }}';
+                            }
+                        });
+                    } else if (data.ret === 2) {
+                        $("#save-button").text('修改信息');
+                        $('#save-button').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('修改失败: ' + error);
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,32 +1,35 @@
 import os
 import re
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.timezone import now
-
+from django.db.models import Q, Count
 from app.components.Dynamic_inheritance import Dynamic_inheritance
+from app.components.Pagination import Pagination
+from app.management_views.configuration import items_per_page
 from app.models import CommunityEvent, User
 
-from django.http import JsonResponse
+
 def activity_list(request):
-    communityEvent=CommunityEvent.objects.all().order_by("-created")
+    communityEvent = CommunityEvent.objects.all().order_by("-created")
     print(communityEvent)
-    context={
-        'communityEvent':communityEvent
+    context = {
+        'communityEvent': communityEvent
     }
 
-    return render(request,"manager/activity/activity_list.html",context)
+    return render(request, "manager/activity/activity_list.html", context)
 
 
 def activity_info(request):
-    activity_id=request.GET.get('activity_id')
-    activity=CommunityEvent.objects.filter(id=activity_id).first()
+    id = request.GET.get('id')
+    activity = CommunityEvent.objects.filter(id=id).first()
     context = {
         'event': activity
     }
     template_name = Dynamic_inheritance(request)
     context['template_name'] = template_name
-    return render(request,"manager/activity/activity_info.html",context)
+    return render(request, "manager/activity/activity_info.html", context)
 
 
 def activity_add(request):
@@ -36,18 +39,20 @@ def activity_add(request):
         }
         return render(request, "manager/activity/activity_add.html", context)
     # 从请求数据中获取字段值
-    title = request.POST.get('title')
+    name = request.POST.get('name')
+    editorContent = request.POST.get('editorContent') or None
     introduction = request.POST.get('introduction') or None
     content = request.POST.get('content')
-    editorContent = request.POST.get('editorContent')
-    publisher = request.POST.get('publisher') or None
-    published_date = request.POST.get('published_date') or None
-    expiry_date = request.POST.get('expiry_date') or None
+    location = request.POST.get('location')
+    organizer = request.POST.get('organizer') or None
+    participant_limit = request.POST.get('participant_limit') or None
     status = request.POST.get('status') or None
-    author_id = request.session["info"]["user_id"]
-    author = User.objects.filter(user_id=author_id).first()
+    contact_info = request.POST.get('contact_info') or None
+    cost = request.POST.get('cost') or None
+    registration_link = request.POST.get('registration_link') or None
+    is_save=request.POST.get('is_active') or False
+    author = request.POST.get('author') or None
     content_text = re.sub('<[^<]+?>', '', content.strip())
-    is_save = request.POST.get('is_active') or True
     # 获取上传的文件
     uploaded_file = request.FILES.get('pic1') or None
     created_by_id = request.session["info"]["user_id"]
@@ -60,19 +65,22 @@ def activity_add(request):
         uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
     if introduction is None:
         introduction = content_text[:20]
-    if is_save == 'False':
-        is_save = False
+    if is_save == 'True':
+        is_save = True
     CE = CommunityEvent(
-        title=title,
-        content=content,
-        published_date=published_date,
-        expiry_date=expiry_date,
+        name=name,
+        description=content,
+        contact_info=contact_info,
+        cost=cost,
+        participant_limit=participant_limit,
         author=author,
-        publisher=publisher,
+        organizer=organizer,
         status=status,
         introduction=introduction,
-        announcement_photo=uploaded_file,
+        image=uploaded_file,
         is_save=is_save,
+        location=location,
+        registration_link=registration_link,
         created_by_id=created_by_id,
         updated_by_id=updated_by_id
     )
@@ -85,4 +93,110 @@ def activity_add(request):
 
 
 def activity_modify(request):
-    return None
+    if request.method == "GET":
+        key = request.GET.get('key', '')
+        if key:
+            status_mapping = {v: k for k, v in CommunityEvent.STATUS_CHOICES}
+            status_key = status_mapping.get(key.capitalize(), key)  # 假设用户输入的是“有效”
+            # 搜索 address, name, 或 email 字段包含关键词的用户
+            communityEvent = CommunityEvent.objects.filter(
+                (Q(name__icontains=key) |
+                 Q(introduction__icontains=key) |
+                 Q(start_time__icontains=key) |
+                 Q(status=status_key) |
+                 Q(id__icontains=key)) &
+                Q(is_active=True)
+            ).order_by("-created")
+        else:
+            # 如果没有提供关键词，则返回所有用户
+            communityEvent = CommunityEvent.objects.filter(is_active=True).order_by("-created")
+
+        page_obj = Pagination(request, communityEvent, items_per_page)
+        context = {
+            "page_obj": page_obj,
+            "key": key
+        }
+        return render(request, "manager/activity/activity_modify.html", context)
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
+    id = request.POST.get("id")
+    op = request.POST.get("op")
+    CA = CommunityEvent.objects.filter(id=id).first()
+    if op == 'delete':
+        CA.is_active = False
+        CA.updated_by = updated_by
+        CA.save()
+        context = {
+            'ret': 1,
+            'msg': "删除成功"
+        }
+
+        return JsonResponse(context, safe=False)
+
+    context = {
+        'ret': 2,
+        'msg': "删除失败"
+    }
+    return JsonResponse(context, safe=False)
+
+
+def activity_modify_basic(request):
+    if request.method == "POST":
+        updated_by_id = request.session["info"]["user_id"]
+        id = request.POST.get('id')
+        title = request.POST.get('title')
+        introduction = request.POST.get('introduction') or None
+        content = request.POST.get('content')
+        publisher = request.POST.get('publisher') or None
+        published_date = request.POST.get('published_date') or None
+        expiry_date = request.POST.get('expiry_date') or None
+        status = request.POST.get('status') or None
+        content_text = re.sub('<[^<]+?>', '', content.strip())
+        # 获取上传的文件
+        uploaded_file = request.FILES.get('pic1') or None
+
+        is_exists = CommunityEvent.objects.filter(id=id)
+        is_save = request.POST.get('is_active') or True
+        if is_save == 'False':
+            is_save = False
+        print(is_save)
+        if is_exists.exists():
+            item = is_exists.first()
+            if uploaded_file:
+                _, ext = os.path.splitext(uploaded_file.name)
+
+                # 使用用户的电话号码作为文件名，保留原始文件的扩展名
+                uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
+                item.announcement_photo.save(uploaded_file.name, uploaded_file, save=True)
+            if introduction is None:
+                introduction = content_text[:30]
+            # 更新模型实例的字段
+            item.title = title
+            item.introduction = introduction
+            item.content = content
+            item.publisher = publisher
+            item.published_date = published_date
+            item.expiry_date = expiry_date
+            item.status = status
+            item.updated_by_id = updated_by_id
+            item.is_save = is_save
+            item.save()
+            context = {
+                'ret': 1,
+                'msg': "修改成功"
+            }
+            return JsonResponse(context, safe=False)
+
+        context = {
+            'ret': 2,
+            'msg': "修改失败"
+        }
+        return JsonResponse(context, safe=False)
+
+    id = request.GET.get('id')
+    communityAnnouncement = CommunityEvent.objects.filter(id=id).first()
+    print(communityAnnouncement.is_save)
+    context = {
+        "event": communityAnnouncement,
+    }
+    return render(request, "manager/activity/activity_modify_basic.html", context)

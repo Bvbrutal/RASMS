@@ -92,11 +92,11 @@
                             <table class="table" id="table-old">
                                 <thead>
                                 <tr>
-                                    <th scope="col">公告id</th>
-                                    <th scope="col">公告标题</th>
-                                    <th scope="col">公告简介</th>
-                                    <th scope="col">发布时间</th>
-                                    <th scope="col">状态</th>
+                                    <th scope="col">活动id</th>
+                                    <th scope="col">活动名字</th>
+                                    <th scope="col">活动描述</th>
+                                    <th scope="col">开始时间</th>
+                                    <th scope="col">活动状态</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
@@ -108,34 +108,34 @@
                                 {% for item in page_obj %}
                                     <tr>
                                         <td>{{ item.id }}</td>
-                                        <td>{{ item.title }}</td>
+                                        <td>{{ item.name }}</td>
                                         <td>{{ item.introduction|truncatechars:10 }}</td>
-                                        <td>{{ item.published_date|date:'Y/m/d' }}</td>
+                                        <td>{{ item.start_time|date:'Y/m/d'|default:'暂无' }}</td>
                                         <td>{{ item.get_status_display }}</td>
                                         <td>
                                             <figure class="avatar avatar-sm">
-                                                {% if item.announcement_photo %}
-                                                    <a href="{% url 'announcement_info' %}?id={{ item.id }}">
-                                                        <img src="{{ item.announcement_photo.url }}">
+                                                {% if item.image %}
+                                                    <a href="{% url 'activity_info' %}?id={{ item.id }}">
+                                                        <img src="{{ item.image.url }}">
                                                     </a>
                                                 {% else %}
-                                                    <a href="{% url 'announcement_info' %}?id={{ item.id }}">
+                                                    <a href="{% url 'activity_info' %}?id={{ item.id }}">
                                                         <img src="{% static 'assets/media/image/image1.png' %}">
                                                     </a>
                                                 {% endif %}
                                             </figure>
                                         </td>
                                         <td>
-                                            <a href="/management/announcement_info?id={{ item.id }}">
+                                            <a href="{% url 'activity_info' %}?id={{ item.id }}">
                                                 <button type="button"
                                                         class="btn btn-outline-primary">详细信息
                                                 </button>
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="/management/announcement_modify_basic?id={{ item.id }}">
+                                            <a href="{% url 'activity_modify_basic' %}?id={{ item.id }}">
                                                 <button type="button"
-                                                        class="btn btn-outline-primary">修改公告信息
+                                                        class="btn btn-outline-primary">修改活动信息
                                                 </button>
                                             </a>
                                         </td>
@@ -228,6 +228,7 @@
             </div>
         </div>
     </div>
+
     <!-- modal -->
     <div class="modal fade" id="delete-verify" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -250,6 +251,7 @@
             </div>
         </div>
     </div>
+
     <!-- Error Modal -->
     <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
          aria-hidden="true">
@@ -270,7 +272,6 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block app-foot %}
@@ -318,7 +319,7 @@
             // 使用currentitemId变量，它现在包含被选中的老人的ID
             $.ajax({
                 type: "POST",
-                url: "{% url 'announcement_modify' %}",
+                url: "{% url 'activity_modify' %}",
                 headers: {"X-CSRFToken": csrftoken},
                 data: {
                     id: currentitemId,
@@ -330,11 +331,11 @@
                     } else {
                         sessionStorage.setItem('statusMessage', '删除失败！');
                     }
-                    window.location.reload("{% url 'announcement_modify' %}");
+                    window.location.reload("{% url 'activity_modify' %}");
                 },
                 error: function (xhr, status, error) {
                     sessionStorage.setItem('statusMessage', '删除失败！');
-                    window.location.reload("/management/modify_old/");
+                    window.location.reload("{% url 'activity_modify' %}");
                 }
             });
         }
@@ -347,7 +348,7 @@
     <script>
         function handleSearch() {
             var searchKey = document.getElementById('searchKey').value;
-            var url = "/management/announcement_modify?page=1&key=" + encodeURIComponent(searchKey);
+            var url = "/management/activity_modify?page=1&key=" + encodeURIComponent(searchKey);
             window.location.href = url;
         }
 

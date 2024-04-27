@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
-from app import account_views, user_views, staff_views, volunteer_views, elder_views
+from app import account_views, user_views, elder_views
 from app import manager_views
 from app.management_views import old_management_views, worker_management_views, volunteer_management_views, table_views, \
     api_views, activity_views, announcement_views, account_management_views, regional_views, medication_views, \
@@ -117,6 +117,8 @@ urlpatterns = [
                   path("management/activity_info/", activity_views.activity_info, name="activity_info"),
                   path("management/activity_add/", activity_views.activity_add, name="activity_add"),
                   path("management/activity_modify/", activity_views.activity_modify, name="activity_modify"),
+                  path("management/activity_modify_basic/", activity_views.activity_modify_basic,
+                       name="activity_modify_basic"),
 
                   # 账号信息管理
                   path("management/account_analyze/", account_management_views.account_analyze, name="account_analyze"),

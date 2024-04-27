@@ -81,19 +81,19 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">邮箱：</div>
-                                <div id="email-input" class="col-4">{{ email|default:"暂无" }}</div>
+                                <div id="email-input" class="col-4">{{ email|default:"" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">手机:</div>
-                                <div id="mobile_phone-input" class="col-4">{{ mobile_phone|default:"暂无" }}</div>
+                                <div id="mobile_phone-input" class="col-4">{{ mobile_phone|default:"" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">电话:</div>
-                                <div id="phone-input" class="col-4">{{ phone|default:"暂无" }}</div>
+                                <div id="phone-input" class="col-4">{{ phone|default:"" }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">创建时间：</div>
-                                <div id="creation_time-input" class="col-4">{{ creation_time|default:"暂无" }}</div>
+                                <div id="creation_time-input" class="col-4">{{ item.creation_time|date:'Y/m/d'|default:"" }}</div>
                             </div>
                         </div>
                     </div>
@@ -242,6 +242,7 @@
                 gender: document.getElementById('gender-input').textContent,
                 mobile_phone: document.getElementById('mobile_phone-input').textContent,
                 phone: document.getElementById('phone-input').textContent,
+                mobile_phone_old: '{{ mobile_phone }}'
             };
 
             // 使用 jQuery 的 $.ajax 方法发送数据
@@ -258,7 +259,7 @@
                 dataType: "json", // 预期服务器返回的数据类型
                 // 成功的回调函数
                 success: function (response) {
-                    if (response.re === 1) {
+                    if (response.ret === 1) {
                         $.notify({
                             message: '<strong>' + response.message + '</strong>'
                         }, {
@@ -273,8 +274,7 @@
                                 exit: 'animated zoomOut'
                             }
                         });
-                    }
-                    if (response.re === 2) {
+                    } else {
                         $.notify({
                             message: '<strong>' + response.message + '</strong>'
                         }, {
@@ -295,7 +295,20 @@
                 timeout: 20000,
                 // 失败的回调函数
                 error: function (xhr, status, error) {
-                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                    $.notify({
+                        message: '<strong>更新失败</strong>'
+                    }, {
+                        type: 'danger',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 1000,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
                 }
             });
 
@@ -309,7 +322,6 @@
         }
     </script>
     <script>
-
         function editInfo() {
             // 将自我介绍转换为<textarea>
             var bio = document.getElementById('bio-display').innerText;
@@ -328,6 +340,7 @@
             document.getElementById('bio-display').innerText = document.getElementById('bio-input').value;
             data = {
                 bio: document.getElementById('bio-display').textContent,
+                mobile_phone_old: '{{ mobile_phone }}'
             }
             // 使用 jQuery 的 $.ajax 方法发送数据
             $.ajax({
@@ -362,7 +375,20 @@
                 timeout: 20000,
                 // 失败的回调函数
                 error: function (xhr, status, error) {
-                    console.log('更新失败: ' + error); // 可以在这里处理一些更新失败的逻辑
+                    $.notify({
+                        message: '<strong>更新失败</strong>'
+                    }, {
+                        type: 'danger',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        timer: 1000,
+                        animate: {
+                            enter: 'animated zoomIn',
+                            exit: 'animated zoomOut'
+                        }
+                    });
                 }
             });
             // 获取编辑/保存按钮

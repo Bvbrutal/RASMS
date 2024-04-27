@@ -353,7 +353,7 @@
             datas.loggings.forEach(function (item) {
                 var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
                 var contentDiv = $("<div>").addClass("flex-grow-1");
-                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_content);
+                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_type);
                 var timeSpan = $("<span>").addClass("text-muted small").text(item.operation_time);
                 // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
                 contentDiv.append(messagePara).append(timeSpan);

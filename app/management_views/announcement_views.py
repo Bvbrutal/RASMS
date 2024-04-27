@@ -7,15 +7,16 @@ from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import CommunityAnnouncement, User
-
+from django.db.models import Q, Count
 from django.utils.timezone import now
 import re
 
 
 def announcement_list(request):
     communityAnnouncements = CommunityAnnouncement.objects.filter(is_active=True).order_by("-published_date")
+    page_obj = Pagination(request, communityAnnouncements,4)
     context = {
-        "items": communityAnnouncements
+        "page_obj": page_obj
     }
     template_name = Dynamic_inheritance(request)
     context['template_name'] = template_name
@@ -48,10 +49,9 @@ def announcement_add(request):
     published_date = request.POST.get('published_date') or None
     expiry_date = request.POST.get('expiry_date') or None
     status = request.POST.get('status') or None
-    author_id = request.session["info"]["user_id"]
-    author = User.objects.filter(user_id=author_id).first()
+    author = request.POST.get('author') or None
     content_text = re.sub('<[^<]+?>', '', content.strip())
-    is_save=request.POST.get('is_active') or True
+    is_save=request.POST.get('is_active') or False
     # 获取上传的文件
     uploaded_file = request.FILES.get('pic1') or None
     created_by_id=request.session["info"]["user_id"]
@@ -64,8 +64,8 @@ def announcement_add(request):
         uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
     if introduction is None:
         introduction=content_text[:20]
-    if is_save=='False':
-        is_save=False
+    if is_save=='True':
+        is_save=True
     CA = CommunityAnnouncement(
         title=title,
         content=content,
@@ -89,13 +89,52 @@ def announcement_add(request):
 
 
 def announcement_modify(request):
-    communityAnnouncements = CommunityAnnouncement.objects.all().order_by("-published_date")
-    page_obj = Pagination(request, communityAnnouncements, items_per_page)
-    context = {
-        "page_obj": page_obj,
-    }
-    return render(request, "manager/announcement/announcement_modify.html", context)
+    if request.method == "GET":
+        key = request.GET.get('key', '')
+        if key:
+            status_mapping = {v: k for k, v in CommunityAnnouncement.STATUS_CHOICES}
+            status_key = status_mapping.get(key.capitalize(), key)  # 假设用户输入的是“有效”
+            # 搜索 address, name, 或 email 字段包含关键词的用户
+            communityAnnouncements = CommunityAnnouncement.objects.filter(
+                (Q(title__icontains=key) |
+                 Q(introduction__icontains=key) |
+                 Q(published_date__icontains=key)|
+                 Q(status=status_key) |
+                 Q(id__icontains=key)) &
+                Q(is_active=True)
+            ).order_by("-published_date")
+        else:
+            # 如果没有提供关键词，则返回所有用户
+            communityAnnouncements = CommunityAnnouncement.objects.filter(is_active=True).order_by("-published_date")
 
+        page_obj = Pagination(request, communityAnnouncements, items_per_page)
+        context = {
+            "page_obj": page_obj,
+            "key": key
+        }
+        return render(request, "manager/announcement/announcement_modify.html", context)
+
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
+    id = request.POST.get("id")
+    op = request.POST.get("op")
+    CA = CommunityAnnouncement.objects.filter(id=id).first()
+    if op == 'delete':
+        CA.is_active = False
+        CA.updated_by = updated_by
+        CA.save()
+        context = {
+            'ret': 1,
+            'msg': "删除成功"
+        }
+
+        return JsonResponse(context, safe=False)
+
+    context = {
+        'ret': 2,
+        'msg': "删除失败"
+    }
+    return JsonResponse(context, safe=False)
 
 def announcement_modify_basic(request):
     if request.method == "POST":

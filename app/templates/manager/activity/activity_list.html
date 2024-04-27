@@ -29,14 +29,13 @@
         </div>
         <!-- end::page-header -->
         <div class="row">
-            <div class="col-md-12">
-                <div class="card card-body p-0 overflow-hidden">
-                    <div class="page-header page-header-cover p-t-b-40 mb-0"
-                         data-backround-image="{% static 'assets/media/image/image1.png' %}">
+            <div class="card col-12 col-sm-12 col-lg-12" data-backround-image="{% static 'assets/media/image/image1.png' %}">
+                <div class="card-body p-0 overflow-hidden" style="border-radius: 10px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.15), 0 2px 10px rgba(0,0,0,0.2);">
+                    <div class="page-header page-header-cover p-t-b-40 mb-0">
                         <div class="container">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-md-6">
-                                    <h2 class="mb-4 text-center">社区活动展示</h2>
+                                    <h1 class="mb-4 text-center">社区公告展示</h1>
                                 </div>
                             </div>
                         </div>
@@ -50,23 +49,23 @@
                     <div class="card-node" data-toggle="modal" data-target="#node-modal-120">
                         <div class="card-body" style="background-color: #FFFFFF;border-radius: 0.5rem;">
                             <ul class="list-unstyled user-details list-unstyled-border list-unstyled-noborder">
-                                <a href="{% url 'activity_info' %}?activity_id={{ item.id }}" methods="GET" class="media-link">
+                                <a href="{% url 'activity_info' %}?id={{ item.id }}" methods="GET" class="media-link">
                                 <li class="media">
                                     <img alt="image" class="mr-2 rounded-circle" style="width: 20%"
                                          src="{{ MEDIA_URL }}{{ item.image }}">
                                     <div class="media-body">
                                         <div class="media-title node-status node-is-online">{{ item.name }}
                                         </div>
-                                        <div class=" text-job text-muted">{{ item.description }}</div>
+                                        <div class=" text-job text-muted">{{ item.introduction }}</div>
                                     </div>
                                     <div class="media-items" style="width: 30%">
                                         <div class="media-item">
                                             <div class="media-value">开始时间</div>
-                                            <div class="media-label">{{ item.start_time|date:"Y-m-d" }}</div>
+                                            <div class="media-label">{{ item.start_time|date:"Y-m-d"|default:'暂无' }}</div>
                                         </div>
                                         <div class="media-item">
                                             <div class="media-value">结束时间</div>
-                                            <div class="media-label">{{ item.end_time|date:"Y-m-d" }}</div>
+                                            <div class="media-label">{{ item.end_time|date:"Y-m-d"|default:'暂无' }}</div>
                                         </div>
                                         <div class="media-item">
                                             <div class="media-value">状态</div>
