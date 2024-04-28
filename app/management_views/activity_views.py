@@ -1,10 +1,11 @@
 import os
 import re
 
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.timezone import now
-from django.db.models import Q, Count
+
 from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
@@ -12,7 +13,7 @@ from app.models import CommunityEvent, User
 
 
 def activity_list(request):
-    communityEvent = CommunityEvent.objects.all().order_by("-created")
+    communityEvent = CommunityEvent.objects.filter(is_active=True,is_save=False).order_by("-created")
     print(communityEvent)
     context = {
         'communityEvent': communityEvent
@@ -43,26 +44,28 @@ def activity_add(request):
     editorContent = request.POST.get('editorContent') or None
     introduction = request.POST.get('introduction') or None
     content = request.POST.get('content')
-    location = request.POST.get('location')
+    location = request.POST.get('location') or None
+    start_time = request.POST.get('start_time') or None
+    end_time = request.POST.get('end_time') or None
     organizer = request.POST.get('organizer') or None
     participant_limit = request.POST.get('participant_limit') or None
     status = request.POST.get('status') or None
     contact_info = request.POST.get('contact_info') or None
     cost = request.POST.get('cost') or None
     registration_link = request.POST.get('registration_link') or None
-    is_save=request.POST.get('is_active') or False
+    is_save = request.POST.get('is_active') or False
     author = request.POST.get('author') or None
     content_text = re.sub('<[^<]+?>', '', content.strip())
     # 获取上传的文件
     uploaded_file = request.FILES.get('pic1') or None
     created_by_id = request.session["info"]["user_id"]
     updated_by_id = created_by_id
-    print(updated_by_id, editorContent)
     if uploaded_file:
         _, ext = os.path.splitext(uploaded_file.name)
 
         # 使用用户的电话号码作为文件名，保留原始文件的扩展名
         uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
+    print(start_time,end_time,type(start_time),type(end_time))
     if introduction is None:
         introduction = content_text[:20]
     if is_save == 'True':
@@ -82,7 +85,9 @@ def activity_add(request):
         location=location,
         registration_link=registration_link,
         created_by_id=created_by_id,
-        updated_by_id=updated_by_id
+        updated_by_id=updated_by_id,
+        start_time=start_time,
+        end_time=end_time,
     )
     CE.save()
     context = {
@@ -144,22 +149,27 @@ def activity_modify_basic(request):
     if request.method == "POST":
         updated_by_id = request.session["info"]["user_id"]
         id = request.POST.get('id')
-        title = request.POST.get('title')
+        name = request.POST.get('name')
         introduction = request.POST.get('introduction') or None
         content = request.POST.get('content')
-        publisher = request.POST.get('publisher') or None
-        published_date = request.POST.get('published_date') or None
-        expiry_date = request.POST.get('expiry_date') or None
+        location = request.POST.get('location') or None
+        start_time = request.POST.get('start_time') or None
+        end_time = request.POST.get('end_time') or None
+        organizer = request.POST.get('organizer') or None
+        participant_limit = request.POST.get('participant_limit') or None
         status = request.POST.get('status') or None
+        contact_info = request.POST.get('contact_info') or None
+        cost = request.POST.get('cost') or None
+        registration_link = request.POST.get('registration_link') or None
+        is_save = request.POST.get('is_active') or False
+        author = request.POST.get('author') or None
         content_text = re.sub('<[^<]+?>', '', content.strip())
         # 获取上传的文件
         uploaded_file = request.FILES.get('pic1') or None
-
+        print(start_time, end_time, type(start_time), type(end_time))
         is_exists = CommunityEvent.objects.filter(id=id)
-        is_save = request.POST.get('is_active') or True
-        if is_save == 'False':
-            is_save = False
-        print(is_save)
+        if is_save == 'True':
+            is_save = True
         if is_exists.exists():
             item = is_exists.first()
             if uploaded_file:
@@ -167,19 +177,26 @@ def activity_modify_basic(request):
 
                 # 使用用户的电话号码作为文件名，保留原始文件的扩展名
                 uploaded_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
-                item.announcement_photo.save(uploaded_file.name, uploaded_file, save=True)
+                item.image.save(uploaded_file.name, uploaded_file, save=True)
             if introduction is None:
-                introduction = content_text[:30]
+                introduction = content_text[:20]
             # 更新模型实例的字段
-            item.title = title
+            item.name = name
             item.introduction = introduction
-            item.content = content
-            item.publisher = publisher
-            item.published_date = published_date
-            item.expiry_date = expiry_date
+            item.description = content
+            item.location = location
+            item.start_time = start_time
+            item.end_time = end_time
             item.status = status
-            item.updated_by_id = updated_by_id
+            item.organizer = organizer
+            item.participant_limit = participant_limit
+            item.contact_info = contact_info
+            item.cost = cost
+            item.registration_link = registration_link
+            item.author = author
+            item.cost = cost
             item.is_save = is_save
+            item.updated_by_id=updated_by_id
             item.save()
             context = {
                 'ret': 1,

@@ -397,10 +397,10 @@
                                         <div class="mb-3" style="display: flex;flex-direction: column;">
                                             <label for="status" class="form-label">发布状态</label>
                                             <select class="form-select" id="status" name="status">
-                                                <option value="active"
+                                                <option value="Flase"
                                                         {% if item.is_save %}selected{% endif %}>即时发布
                                                 </option>
-                                                <option value="inactive"
+                                                <option value="True"
                                                         {% if not item.is_save %}selected{% endif %}>
                                                     存为草稿
                                                 </option>

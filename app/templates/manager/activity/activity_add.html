@@ -156,16 +156,16 @@
                     <div class="row">
                         <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="published_date" class="form-label">开始时间</label>
-                                <input class="J_Item" id="published_date"
-                                       name="published_date" placeholder="选择开始时间">
+                                <label for="start_time" class="form-label">开始时间</label>
+                                <input class="J_Item" id="start_time"
+                                       name="start_time" placeholder="选择开始时间" type="text">
                                 <small class="form-text text-muted">请选择活动的开始日期和时间。</small>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-12 d-flex justify-content-center">
                             <div class="mb-3">
-                                <label for="expiry_date" class="form-label">结束时间</label>
-                                <input class="J_Item" id="expiry_date" name="expiry_date"
+                                <label for="end_time" class="form-label">结束时间</label>
+                                <input class="J_Item" id="end_time" name="end_time" type="text"
                                        placeholder="选择结束时间">
                                 <small class="form-text text-muted">请选择活动的结束日期和时间。</small>
                             </div>
@@ -282,7 +282,7 @@
                             confirmButtonText: '查看活动列表信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '{% url 'account_modify' %}';
+                                window.location.href = '{% url 'activity_modify' %}';
                             }
                         });
                     } else if (data.ret === 2) {
@@ -317,7 +317,7 @@
             var editorContent = tinymce.get("content").getContent();
             var form = $("#formId");
             var formData = new FormData(document.getElementById('formId'));
-            formData.append('is_save', 'False')
+            formData.append('is_save', 'True')
             formData.append('editorContent', editorContent)
             form.validate({
                 ignore: [],
@@ -385,7 +385,7 @@
                             confirmButtonText: '查看活动管理列表',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '{% url 'account_modify' %}';
+                                window.location.href = '{% url 'activity_modify' %}';
                             }
                         });
                     } else if (data.ret === 2) {
