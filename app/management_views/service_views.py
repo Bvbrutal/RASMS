@@ -1,7 +1,15 @@
 from django.shortcuts import render
 
+from app.components.Pagination import Pagination
+from app.models import ServiceOrder
+
 
 def modify_service(request):
+    oders=ServiceOrder.objects.filter(is_active=True).order_by('-date_scheduled')
+    page_obj = Pagination(request, oders)
+    context = {
+        "page_obj": page_obj,
+    }
     context = {
 
     }

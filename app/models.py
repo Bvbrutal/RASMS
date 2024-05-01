@@ -311,3 +311,42 @@ class DayNumber(models.Model):
 
     def __str__(self):
         return str(self.day)
+
+class Service(models.Model):
+    name = models.CharField(max_length=100, verbose_name="服务名称")
+    description = models.TextField(verbose_name="服务描述")
+    cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="服务费用")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "服务"
+        verbose_name_plural = "服务"
+
+
+
+class ServiceOrder(models.Model):
+    STATUS_CHOICES = (
+        ('pending', '待处理'),
+        ('in_progress', '进行中'),
+        ('completed', '已完成'),
+        ('cancelled', '已取消'),
+    )
+
+    elder = models.ForeignKey(Elder, on_delete=models.CASCADE, verbose_name="老人", related_name="service_orders")
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, verbose_name="服务", related_name="orders")
+    date_scheduled = models.DateTimeField(default=timezone.now, verbose_name="预定日期")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="订单状态")
+    rating = models.IntegerField(null=True, blank=True, choices=[(1, '1星'), (2, '2星'), (3, '3星'), (4, '4星'), (5, '5星')], verbose_name="评分")
+    feedback = models.TextField(null=True, blank=True, verbose_name="反馈")
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    def __str__(self):
+        return f"{self.elder.username} - {self.service.name} - {self.date_scheduled.strftime('%Y-%m-%d %H:%M')}"
+
+    class Meta:
+        verbose_name = "服务订单"
+        verbose_name_plural = "服务订单"
+
+
+
