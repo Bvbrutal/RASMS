@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.timezone import now
 
+from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Elder, User
@@ -22,7 +23,12 @@ GENDER_CHOICES = {
 
 def add_old(request):
     if request.method == "GET":
-        return render(request, "manager/elder_management/add_old.html")
+        context={
+
+        }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
+        return render(request, "manager/elder_management/add_old.html",context)
 
     # 获取表单数据
     created_by_id = request.session["info"]["user_id"]
@@ -111,7 +117,8 @@ def select_old(request):
         "page_obj": page_obj,
         "key": key
     }
-    print(key)
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/elder_management/select_old.html", context=context)
 
 
@@ -135,6 +142,8 @@ def modify_old(request):
             "page_obj": page_obj,
             "key": key
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/elder_management/modify_old.html", context=context)
 
     updated_by_id = request.session["info"]["user_id"]
@@ -246,7 +255,6 @@ def analyze_old(request):
     # 更新字典，使用查询结果覆盖默认的零计数
     all_months_counts1.update(checkin_counts_dict)
     all_months_counts2.update(checkout_counts_dict)
-    print(all_months_counts1, all_months_counts2)
     # 将查询结果转换为更易于处理的格式，例如字典列表
     checkin_data = [count for month, count in all_months_counts1.items()]
     checkout_data = [count for month, count in all_months_counts2.items()]
@@ -259,7 +267,8 @@ def analyze_old(request):
         'checkout_data': checkout_data,
         'check_year': last_year
     }
-    print(context)
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/elder_management/analyze_old.html", context)
 
 
@@ -276,9 +285,13 @@ def old_info(request):
             'item': elder,
             'age': age
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/elder_management/old_info.html", context=context)
-
-    return render(request, "manager/elder_management/elder_info_none.html")
+    context={}
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
+    return render(request, "manager/elder_management/elder_info_none.html",context)
 
 
 def list_old(request):
@@ -288,6 +301,8 @@ def list_old(request):
     context = {
         "page_obj": page_obj,
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/elder_management/list_old.html", context=context)
 
 
@@ -304,6 +319,8 @@ def modify_old_basic(request):
             'item': elder,
             'age': age
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/elder_management/modify_old_basic.html", context)
         # 获取表单数据
     updated_by_id = request.session["info"]["user_id"]
@@ -372,6 +389,8 @@ def modify_old_guardian(request):
             'item': elder,
             'age': age
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/elder_management/modify_old_guardian.html", context)
     id = request.POST.get('id')
     firstguardian_name = request.POST.get('input9') or None

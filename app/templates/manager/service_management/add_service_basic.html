@@ -1,0 +1,45 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <title>添加服务订单</title>
+{% endblock %}
+
+{% block app-content %}
+    <div class="container mt-4">
+        <h2 class="mb-4">添加服务订单</h2>
+        <div class="card">
+            <div class="card-header">
+                服务详情
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>服务名称：</strong>{{ service.name }}</li>
+                <li class="list-group-item"><strong>服务描述：</strong>{{ service.description }}</li>
+                <li class="list-group-item"><strong>服务费用：</strong>￥{{ service.cost }}</li>
+            </ul>
+        </div>
+
+        <form class="mt-4">
+            <h4>填写您的信息</h4>
+            <div class="form-group">
+                <label for="customerName">客户姓名</label>
+                <input type="text" class="form-control" id="customerName" placeholder="请输入您的姓名">
+            </div>
+            <div class="form-group">
+                <label for="customerContact">联系方式</label>
+                <input type="text" class="form-control" id="customerContact" placeholder="请输入您的联系方式">
+            </div>
+            <div class="form-group">
+                <label for="additionalNotes">附加备注</label>
+                <textarea class="form-control" id="additionalNotes" rows="3"
+                          placeholder="有任何特别需求或备注请填写此处"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">提交订单</button>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

@@ -316,7 +316,7 @@ class Service(models.Model):
     name = models.CharField(max_length=100, verbose_name="服务名称")
     description = models.TextField(verbose_name="服务描述")
     cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="服务费用")
-
+    service_photo = models.ImageField(upload_to='service_photo/', null=True, blank=True)
     def __str__(self):
         return self.name
 
@@ -350,3 +350,31 @@ class ServiceOrder(models.Model):
 
 
 
+class StaffAssignment(models.Model):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='assignments', verbose_name='工作人员')
+    assigned_area = models.CharField(max_length=255, verbose_name='分配区域')
+    shift_start = models.DateTimeField(verbose_name='班次开始时间')
+    shift_end = models.DateTimeField(verbose_name='班次结束时间')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+
+    class Meta:
+        verbose_name = '工作人员排班'
+        verbose_name_plural = '工作人员排班'
+
+    def __str__(self):
+        return f"{self.staff.username} - {self.assigned_area} ({self.shift_start.strftime('%Y-%m-%d %H:%M')} 至 {self.shift_end.strftime('%Y-%m-%d %H:%M')})"
+
+
+class VolunteerAssignment(models.Model):
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE, related_name='assignments', verbose_name='义工')
+    assigned_area = models.CharField(max_length=255, verbose_name='分配区域')
+    shift_start = models.DateTimeField(verbose_name='班次开始时间')
+    shift_end = models.DateTimeField(verbose_name='班次结束时间')
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+
+    class Meta:
+        verbose_name = '义工排班'
+        verbose_name_plural = '义工排班'
+
+    def __str__(self):
+        return f"{self.volunteer.username} - {self.assigned_area} ({self.shift_start.strftime('%Y-%m-%d %H:%M')} 至 {self.shift_end.strftime('%Y-%m-%d %H:%M')})"

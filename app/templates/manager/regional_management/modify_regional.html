@@ -1,14 +1,94 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
-
+<title>区域分布和排班管理</title>
 {% endblock %}
 
 {% block app-content %}
-<h1>暂未开发...</h1>
+<div class="container mt-4">
+    <h2>区域分布和排班管理</h2>
+    <div class="my-3">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="搜索姓名或区域..." class="form-control">
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>工作人员排班</h3>
+            <table class="table" id="staffTable">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>分配区域</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 假定数据通过后端Django模板填充 -->
+                    <!-- 示例：
+                    <tr>
+                        <td>张三</td>
+                        <td>南区</td>
+                        <td>2023-10-01 08:00</td>
+                        <td>2023-10-01 16:00</td>
+                        <td>活跃</td>
+                    </tr>
+                    -->
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h3>义工排班</h3>
+            <table class="table" id="volunteerTable">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>分配区域</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 同上，数据填充 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block app-foot %}
 
+<script>
+function filterTable() {
+    var input, filter, tables, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    tables = document.getElementsByTagName("table");
+    for (let t = 0; t < tables.length; t++) {
+        tr = tables[t].getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+            let isMatch = false;
+            for (let j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        isMatch = true;
+                        break;
+                    }
+                }
+            }
+            if (isMatch) {
+                tr[i].style.display = "";
+            } else {
+                if (i > 0) tr[i].style.display = "none"; // Keep the header
+            }
+        }
+    }
+}
+</script>
 {% endblock %}

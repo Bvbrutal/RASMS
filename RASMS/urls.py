@@ -127,6 +127,7 @@ urlpatterns = [
                   path("management/account_modify/", account_management_views.account_modify, name="account_modify"),
 
                   # 区域排班
+                  path("management/regional_list/", regional_views.regional_list, name="regional_list"),
                   path("management/modify_regional/", regional_views.modify_regional, name="modify_regional"),
                   path("management/add_regional/", regional_views.add_regional, name="add_regional"),
                   path("management/analyze_regional/", regional_views.analyze_regional, name="analyze_regional"),
@@ -140,6 +141,7 @@ urlpatterns = [
                   path("management/modify_service/", service_views.modify_service, name="modify_service"),
                   path("management/add_service/", service_views.add_service, name="add_service"),
                   path("management/analyze_service/", service_views.analyze_service, name="analyze_service"),
+                  path("management/service_info/", service_views.service_info, name="service_info"),
 
                   # 老人页面
                   path("elder/modify_regional/", elder_views.modify_regional, name="modify_regional_elder"),

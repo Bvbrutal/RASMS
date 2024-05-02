@@ -1,0 +1,33 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+
+{% endblock %}
+
+{% block app-content %}
+ <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                服务订单详情
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">订单信息</h5>
+                <p class="card-text"><strong>客户名:</strong> {{ item.elder.username }}</p>
+                <p class="card-text"><strong>服务名称:</strong> {{ item.service.name }}</p>
+                <p class="card-text"><strong>预定日期:</strong> {{ item.date_scheduled|date:"Y/m/d H:i:s" }}</p>
+                <p class="card-text"><strong>订单状态:</strong> {{ item.get_status_display }}</p>
+                <p class="card-text"><strong>订单评分:</strong> {{ item.rating|default:"未评分" }}</p>
+                <p class="card-text"><strong>客户反馈:</strong> {{ item.feedback|default:"无" }}</p>
+                <p class="card-text"><strong>订单备注:</strong> {{ item.notes|default:"无" }}</p>
+            </div>
+            <div class="card-footer text-muted">
+                <a href="#" class="btn btn-primary">返回</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

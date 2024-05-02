@@ -69,6 +69,8 @@ def select_event(request):
             "page_obj": page_obj,
             "filter": filter,
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/select_event.html", context=context)
 
     if key:
@@ -92,11 +94,18 @@ def select_event(request):
         "page_obj": page_obj,
         "key": key,
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/select_event.html", context=context)
 
 
 def library(request):
-    return render(request, "manager/library.html")
+    context={
+
+    }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
+    return render(request, "manager/library.html",context)
 
 
 def logging_record(request):

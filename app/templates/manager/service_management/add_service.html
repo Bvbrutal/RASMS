@@ -1,12 +1,40 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
+    <title>服务订单类型选择</title>
+    <style>
+        .service-card {
+            cursor: pointer;
+            transition: transform .2s; /* Animation */
+        }
 
+        .service-card:hover {
+            transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will cause the page to be wider than 100%.) */
+        }
+    </style>
 {% endblock %}
 
 {% block app-content %}
-<h1>暂未开发...</h1>
+    <div class="container mt-4">
+        <div class="row">
+            {% for service in services %}
+                <div class="col-md-4">
+                    <div class="card service-card" onclick="location.href='{% url 'service_info' %}?id={{ service.id }}';">
+                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Service Type 1">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ service.name }}</h5>
+                            <p class="card-text">{{ service.description }}</p>
+                            <div class="card-footer">
+                                <h5 class="d-inline-block">费用：￥{{ service.cost }}</h5>
+                                <a href="{% url 'add_service' %}?id={{ service.id }}" class="btn btn-primary float-right">立即下单</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block app-foot %}

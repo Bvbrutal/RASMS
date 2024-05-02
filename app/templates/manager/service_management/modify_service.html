@@ -1,4 +1,4 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
@@ -101,24 +101,25 @@
                                         <th scope="col">预定日期</th>
                                         <th scope="col">订单id</th>
                                         <th scope="col">老人id</th>
+                                        <th scope="col">老人姓名</th>
+                                        <th scope="col"></th>
                                         <th scope="col">服务内容</th>
                                         <th scope="col">订单状态</th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
+                                        <th scope="col">评分</th>
                                         <th scope="col"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for item in page_obj %}
                                         <tr>
-                                            <td>{{ item.date_scheduledid }}</td>
+                                            <td>{{ item.date_scheduled|date:"Y/m/d H:i:s" }}</td>
                                             <td>{{ item.id }}</td>
                                             <td>{{ item.elder.id }}</td>
-                                            <td>{{ item.status|default:"暂无" }}</td>
+                                            <td>{{ item.elder.username }}</td>
                                             <td>
                                                 <figure class="avatar avatar-sm">
-                                                    {% if item.elder_photo %}
-                                                        <img src="{{ item.elder_photo.url }}"
+                                                    {% if item.elder.elder_photo %}
+                                                        <img src="{{ item.elder.elder_photo.url }}"
                                                              class="rounded-circle" alt="image">
                                                     {% else %}
                                                         <img src="{% static "assets/media/image/user/13.jpg" %}"
@@ -126,31 +127,13 @@
                                                     {% endif %}
                                                 </figure>
                                             </td>
+                                        <td>{{ item.service.name|default:"暂无" }}</td>
+                                            <td>{{ item.get_status_display|default:"暂无" }}</td>
+                                            <td>{{ item.get_rating_display|default:"暂无" }}</td>
                                             <td>
-                                                <a href="{% url 'old_info' %}?id={{ item.mobile_phone }}">
+                                                <a href="{% url 'service_info' %}?id={{ item.id }}">
                                                     <button type="button"
                                                             class="btn btn-outline-primary">详细信息
-                                                    </button>
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a href="{% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
-                                                    <button type="button"
-                                                            class="btn btn-outline-light">绑定账号信息
-                                                    </button>
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a href="{% url 'modify_old_basic' %}?id={{ item.id }}">
-                                                    <button type="button"
-                                                            class="btn btn-outline-primary">修改老人基本信息
-                                                    </button>
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a href="{% url 'modify_old_guardian' %}?id={{ item.id }}">
-                                                    <button type="button"
-                                                            class="btn btn-outline-light">修改老人监护人信息
                                                     </button>
                                                 </a>
                                             </td>

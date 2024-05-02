@@ -1,0 +1,225 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <title>区域分布和排班管理</title>
+    <style>
+        .highlight {
+            background-color: #f0f0f0;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #eef1f5;
+        }
+
+        .schedule {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .day {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .day:hover {
+            transform: translateY(-10px);
+        }
+
+        h3 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #eef1f5;
+        }
+
+        .schedule {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .day {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .day:hover {
+            transform: translateY(-10px);
+        }
+
+        h3 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+    </style>
+{% endblock %}
+
+{% block app-content %}
+    <div class="container mt-4">
+        <h2 class="mb-4">区域分布和排班管理</h2>
+        <div class="search-bar mb-3">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="搜索姓名或区域..."
+                   class="form-control">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="schedule">
+                    <div class="day" id="monday">
+                        <h3>Monday</h3>
+                        <p>9:00 AM - Team Meeting</p>
+                        <p>11:00 AM - Project Work</p>
+                        <p>2:00 PM - Client Call</p>
+                        <p>4:00 PM - Documentation</p>
+                    </div>
+                    <div class="day" id="tuesday">
+                        <h3>Tuesday</h3>
+                        <p>10:00 AM - Marketing Review</p>
+                        <p>1:00 PM - Lunch Break</p>
+                        <p>2:00 PM - Design Session</p>
+                        <p>3:30 PM - Coffee Break</p>
+                        <p>4:00 PM - Coding</p>
+                    </div>
+                    <div class="day" id="wednesday">
+                        <h3>Wednesday</h3>
+                        <p>8:00 AM - Yoga Session</p>
+                        <p>9:00 AM - Code Review</p>
+                        <p>12:00 PM - Lunch Break</p>
+                        <p>1:00 PM - Workshop</p>
+                    </div>
+                    <div class="day" id="thursday">
+                        <h3>Thursday</h3>
+                        <p>9:00 AM - Client Presentation</p>
+                        <p>12:00 PM - Team Lunch</p>
+                        <p>1:30 PM - Project Development</p>
+                    </div>
+                    <div class="day" id="friday">
+                        <h3>Friday</h3>
+                        <p>10:00 AM - Brainstorming Session</p>
+                        <p>12:00 PM - Review Meeting</p>
+                        <p>3:00 PM - Sprint Planning</p>
+                    </div>
+                    <div class="day" id="saturday">
+                        <h3>Saturday</h3>
+                        <p>10:00 AM - Optional Coding Time</p>
+                        <p>1:00 PM - Team Outdoor Activity</p>
+                    </div>
+                    <div class="day" id="sunday">
+                        <h3>Sunday</h3>
+                        <p>Day Off</p>
+                    </div>
+                </div>
+            </div>
+            {#            <div class="col-md-6">#}
+            {#                <h3>工作人员排班</h3>#}
+            {#                <table class="table table-striped" id="staffTable">#}
+            {#                    <thead class="thead-dark">#}
+            {#                    <tr>#}
+            {#                        <th>员工id</th>#}
+            {#                        <th>姓名</th>#}
+            {#                        <th>分配区域</th>#}
+            {#                        <th>开始时间</th>#}
+            {#                        <th>结束时间</th>#}
+            {#                    </tr>#}
+            {#                    </thead>#}
+            {#                    <tbody>#}
+            {#                    {% for item in sa %}#}
+            {#                        <tr>#}
+            {#                            <td>{{ item.staff.id }}</td>#}
+            {#                            <td>{{ item.staff.username }}</td>#}
+            {#                            <td>{{ item.assigned_area }}</td>#}
+            {#                            <td>{{ item.shift_start }}</td>#}
+            {#                            <td>{{ item.shift_end }}</td>#}
+            {#                        </tr>#}
+            {#                    {% endfor %}#}
+            {#                    </tbody>#}
+            {#                </table>#}
+            {#            </div>#}
+            {#            <div class="col-md-6">#}
+            {#                <h3>义工排班</h3>#}
+            {#                <table class="table table-striped" id="volunteerTable">#}
+            {#                    <thead class="thead-dark">#}
+            {#                    <tr>#}
+            {#                        <th>义工id</th>#}
+            {#                        <th>姓名</th>#}
+            {#                        <th>分配区域</th>#}
+            {#                        <th>开始时间</th>#}
+            {#                        <th>结束时间</th>#}
+            {#                    </tr>#}
+            {#                    </thead>#}
+            {#                    <tbody>#}
+            {#                    {% for item in va %}#}
+            {#                        <tr>#}
+            {#                            <td>{{ item.volunteer.id }}</td>#}
+            {#                            <td>{{ item.volunteer.username }}</td>#}
+            {#                            <td>{{ item.assigned_area }}</td>#}
+            {#                            <td>{{ item.shift_start }}</td>#}
+            {#                            <td>{{ item.shift_end }}</td>#}
+            {#                        </tr>#}
+            {#                    {% endfor %}#}
+            {#                    </tbody>#}
+            {#                </table>#}
+            {#            </div>#}
+        </div>
+    </div>
+{% endblock %}
+
+{% block app-foot %}
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script>
+        function filterTable() {
+            var input, filter, tables, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            tables = document.getElementsByTagName("table");
+            for (let t = 0; t < tables.length; t++) {
+                tr = tables[t].getElementsByTagName("tr");
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td");
+                    let isMatch = false;
+                    for (let j = 0; j < td.length; j++) {
+                        if (td[j]) {
+                            txtValue = td[j].textContent || td[j].innerText;
+                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                isMatch = true;
+                                break;
+                            }
+                        }
+                    }
+                    tr[i].style.display = isMatch ? "" : "none";
+                }
+            }
+        }
+    </script>
+{% endblock %}

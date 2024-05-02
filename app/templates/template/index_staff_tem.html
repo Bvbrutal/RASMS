@@ -113,35 +113,7 @@
                     <li><a href="/management/analyze_old">老人统计分析</a></li>
                 </ul>
             </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="user"></i>
-                    <span>工作人员信息管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/modify_worker">工作人员信息列表</a></li>
-                    {#                    <li><a href="/management/list_worker">工作人员数据列表</a></li>#}
-                    {#                    <li><a href="/management/select_worker">工作人员信息查询</a></li>#}
-                    <li><a href="/management/add_worker">工作人员信息录入</a></li>
-                    {#                    <li><a href="/management/modify_worker">工作人员信息控制</a></li>#}
-                    <li><a href="/management/analyze_worker">工作人员统计分析</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="users"></i>
-                    <span>义工信息管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/modify_volunteer">义工信息列表</a></li>
-                    {#                    <li><a href="/management/list_volunteer">义工数据列表</a></li>#}
-                    {#                    <li><a href="/management/select_volunteer">义工信息查询</a></li>#}
-                    <li><a href="/management/add_volunteer">义工信息录入</a></li>
-                    {#                    <li><a href="/management/modify_volunteer">义工信息控制</a></li>#}
-                    <li><a href="/management/analyze_volunteer">义工统计分析</a></li>
-                </ul>
-            </li>
-            <li class="navigation-divider">功能管理</li>
+             <li class="navigation-divider">功能管理</li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="feather"></i>
@@ -150,40 +122,41 @@
                 <ul>
                     <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
                     <li><a href="{% url 'announcement_add' %}">公告信息发布</a></li>
+                    <li><a href="{% url 'announcement_modify' %}">公告信息管理列表</a></li>
                 </ul>
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
+                    <i class="nav-link-icon" data-feather="edit-2"></i>
                     <span>服务订单管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                    <li><a href="/management/modify_service">服务订单管理列表</a></li>
+                    <li><a href="/management/add_service">服务订单添加</a></li>
+                    <li><a href="/management/analyze_service">服务订单统计分析</a></li>
                 </ul>
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
-                    <span>区域分配管理</span>
+                    <i class="nav-link-icon" data-feather="figma"></i>
+                    <span>区域排班管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                    <li><a href="/management/regional_list">区域排班信息展示</a></li>
+                    <li><a href="/management/modify_regional">区域排班管理列表</a></li>
+                    <li><a href="/management/add_regional">区域排班信息编辑</a></li>
+                    <li><a href="/management/analyze_regional">区域排班信息可视化</a></li>
                 </ul>
             </li>
-            <li class="navigation-divider">社区管理</li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="database"></i>
+                    <i class="nav-link-icon" data-feather="trello"></i>
                     <span>社区活动管理</span>
                 </a>
                 <ul>
                     <li><a href="/management/activity_list">社区活动列表</a></li>
                     <li><a href="/management/activity_add">社区活动发布</a></li>
-                    <li><a href="/management/activity_modify">社区活动管理</a></li>
+                    <li><a href="/management/activity_modify">社区活动管理列表</a></li>
                 </ul>
             </li>
         </ul>
