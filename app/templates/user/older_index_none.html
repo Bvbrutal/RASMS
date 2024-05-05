@@ -1,0 +1,70 @@
+{% extends 'template/index_elder_tem.html' %}
+
+{% load static %}
+
+{% block app-head %}
+    <title>我的信息</title>
+
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="text-center">
+                                <h1>暂未绑定老人基本信息</h1>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <figure class="avatar avatar-lg m-b-20">
+                                {% if item.elder_photo %}
+                                    <img src="{{ item.elder_photo.url }}"
+                                         class="rounded-circle" alt="image">
+                                {% else %}
+                                    <img src="{% static "assets/media/image/user/13.jpg" %}"
+                                         class="rounded-circle" alt="image">
+                                {% endif %}
+                            </figure>
+                            <h5 class="mb-1">{{ item.username|default:"暂无" }}</h5>
+                            <p class="text-muted small">老年人</p>
+                             <p>提示：请求管理员录入老人信息...</p>
+                        </div>
+                        <hr class="m-0">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 text-info">
+                                    <h4 class="font-weight-bold">
+                                        {{ item.checkin_date|date:"Y-m-d"|default:"暂无" }}
+                                    </h4>
+                                    <span>入养老院日期</span>
+                                </div>
+                                <div class="col-6 text-success">
+                                    <h4 class="font-weight-bold">
+                                        {{ item.checkout_date|date:"Y-m-d"|default:"暂无" }}
+                                    </h4>
+                                    <span>离开养老院日期</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+
+{% endblock %}

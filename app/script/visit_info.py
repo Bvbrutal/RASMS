@@ -5,7 +5,7 @@ from .ip_convert_addr import ip_to_addr
 
 """
     # 访问信息服务
-    # change_info(request, '/index')
+    # change_info(request, '/index',user_id
     # city = UserIP.objects.all().last()
 """
 # 自定义的函数，不是视图
@@ -14,14 +14,6 @@ def change_info(request, end_point,user_id):
     # 修改网站访问量和访问 ip 等信息
     # 每一次访问，网站总访问次数加一
     """
-    count_nums = VisitNumber.objects.filter(id=1)
-    if count_nums:
-        count_nums = count_nums[0]
-        count_nums.count += 1
-    else:
-        count_nums = VisitNumber()
-        count_nums.count = 1
-    count_nums.save()
 
     # 记录访问 ip 和每个 ip 的次数
     if 'HTTP_X_FORWARDED_FOR' in request.META:  # 获取 ip
@@ -31,7 +23,7 @@ def change_info(request, end_point,user_id):
         client_ip = request.META['REMOTE_ADDR']  # 这里获得代理 ip
     # print(client_ip)
 
-    ip_exist = UserIP.objects.filter(ip=str(client_ip), end_point=end_point)
+    ip_exist = UserIP.objects.filter(ip=str(client_ip), end_point=end_point,user_by__user_id=user_id)
     if ip_exist:  # 判断是否存在该 ip
         uobj = ip_exist[0]
         uobj.count += 1

@@ -54,10 +54,15 @@
         <!-- begin::container -->
         <div class="container">
 
-            <div class="page-header">
-                <h4>事件记录</h4>
-            </div>
 
+            <div class="page-header d-flex justify-content-between">
+                <div><h4>事件记录</h4></div>
+                <div>
+                    <button class="btn btn-primary" onclick="window.location.href='{% url 'event_add' %}'">
+                        <i class="ti-plus m-r-5"></i>添加记录
+                    </button>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-12">
 
@@ -110,7 +115,7 @@
                                         <tr>
                                             <td>{{ item.id }}</td>
                                             <td>{{ item.get_event_type_display }}</td>
-                                            <td>{{ item.event_date|date:"Y/m/d H:i:s"  }}</td>
+                                            <td>{{ item.event_date|date:"Y/m/d H:i:s" }}</td>
                                             <td>{{ item.event_location }}</td>
                                             <td>{{ item.event_desc }}</td>
                                             <td>{{ item.oldperson_id }}</td>

@@ -1,0 +1,179 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <title>服务订单详情</title>
+    <style>
+        .status-tracker {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden; /* 确保任何超出容器的部分不会显示 */
+        }
+
+        .status-tracker .step {
+            flex-grow: 1;
+            position: relative;
+            padding-top: 0;
+        }
+
+        /* 连接线的左半部分 */
+        .status-tracker .step:before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 50%; /* 仅覆盖到本节点中心 */
+            height: 2px;
+            background-color: #bbb;
+            z-index: 1;
+        }
+
+
+        /* 连接线的右半部分 */
+        .status-tracker .step:after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%; /* 从节点中心开始 */
+            right: 0;
+            height: 2px;
+            background-color: #bbb;
+            z-index: 1;
+        }
+
+        /* 第一个节点不需要左半部分连线 */
+        .status-tracker .step:first-child:before {
+            content: none;
+        }
+
+        .status-tracker .step:last-child:after {
+            content: none;
+        }
+
+        /* 圆点 */
+        .status-tracker .step > span {
+            display: block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            margin: 0 auto;
+            background-color: #bbb;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 激活状态样式 */
+        .status-tracker .step.active > span,
+        .status-tracker .step.active:after {
+            background-color: #007bff;
+        }
+        .status-tracker .step.active:before {
+            background-color: #007bff;
+        }
+    </style>
+
+
+{% endblock %}
+
+{% block app-content %}
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                服务订单详情
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">订单进度</h5>
+                <div>
+                    <ul class="status-tracker">
+                        <li id="step1" class="step" data-toggle="tooltip"
+                            title="订单已提交 - {{ item.date_submitted|date:'Y/m/d H:i:s'|default:'暂无' }}">
+                            <span></span>待处理
+                        </li>
+                        <li id="step2" class="step" data-toggle="tooltip"
+                            title="工作人员已接单 - {{ item.date_accepted|date:'Y/m/d H:i:s'|default:'暂无' }}">
+                            <span></span>工作人员接单
+                        </li>
+                        <li id="step3" class="step" data-toggle="tooltip"
+                            title="服务进行中 - {{ item.date_started|date:'Y/m/d H:i:s'|default:'暂无' }}"><span></span>进行中
+                        </li>
+                        <li id="step4" class="step" data-toggle="tooltip"
+                            title="服务已完成 - {{ item.date_completed|date:'Y/m/d H:i:s'|default:'暂无' }}">
+                            <span></span>已完成
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">订单信息</h5>
+                <p class="card-text"><strong>客户名字:</strong> {{ item.customerName|default:"无" }}</p>
+                 <p class="card-text"><strong>客户联系方式:</strong> {{ item.customerContact|default:"无" }}</p>
+                <p class="card-text"><strong>员工名字:</strong> {{ item.aceeptName|default:"无" }}</p>
+                 <p class="card-text"><strong>员工联系方式:</strong> {{ item.aceeptContact|default:"无" }}</p>
+                <p class="card-text"><strong>服务名称:</strong> {{ item.service.name }}</p>
+                <p class="card-text"><strong>预定日期:</strong> {{ item.date_scheduled|date:"Y/m/d H:i:s" }}</p>
+                <p class="card-text"><strong>订单状态:</strong> {{ item.get_status_display }}</p>
+                <p class="card-text"><strong>订单评分:</strong> {{ item.get_rating_display|default:"未评分" }}</p>
+                <p class="card-text"><strong>客户反馈:</strong> {{ item.feedback|default:"无" }}</p>
+                <p class="card-text"><strong>订单备注:</strong> {{ item.notes|default:"无" }}</p>
+                <p class="card-text"><strong>备注:</strong> {{ item.remark|default:"无" }}</p>
+                <p class="card-text"><strong>创建时间:</strong> {{ item.created_at|date:"Y/m/d H:i:s" }}</p>
+                <p class="card-text"><strong>创建者:</strong> {{ item.created_by.username }}</p>
+                <p class="card-text"><strong>更新者:</strong> {{ item.updated_by.username }}</p>
+            </div>
+            <div class="card-footer text-muted">
+                <button onclick="window.history.back();" class="btn btn-primary">返回</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block app-foot %}
+    <script>
+        $(document).ready(function () {
+            fetchStatusAndUpdateSteps();
+
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip({
+                placement: 'top' // Adjust placement as necessary
+            });
+        });
+
+        function fetchStatusAndUpdateSteps() {
+            var itemId = '{{ item.id }}'; // Ensure you have the item ID available in your template
+
+            $.ajax({
+                url: '{% url 'service_status' %}?id=' + itemId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Assuming the response contains the status in the 'status' key
+                    if (response.status) {
+                        activateSteps(response.status);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch status:', error);
+                }
+            });
+        }
+
+        function activateSteps(currentStatus) {
+            var steps = {'pending': 1, 'accepted': 2, 'in_progress': 3, 'completed': 4};
+            var activeStep = steps[currentStatus] || 0;
+
+            $('.step').each(function (index) {
+                if (index < activeStep) {
+                    $(this).addClass('active');
+                }
+            });
+        }
+
+    </script>
+
+{% endblock %}

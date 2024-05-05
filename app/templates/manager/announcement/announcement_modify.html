@@ -1,4 +1,4 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
@@ -111,7 +111,11 @@
                                         <td>{{ item.title }}</td>
                                         <td>{{ item.introduction|truncatechars:10 }}</td>
                                         <td>{{ item.published_date|date:'Y/m/d' }}</td>
-                                        <td>{{ item.get_status_display }}</td>
+                                        <td>{% if item.is_save %}
+                                            草稿
+                                        {% else %}
+                                            已发布
+                                        {% endif %}</td>
                                         <td>
                                             <figure class="avatar avatar-sm">
                                                 {% if item.announcement_photo %}

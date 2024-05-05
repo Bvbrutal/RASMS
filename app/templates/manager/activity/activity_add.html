@@ -1,4 +1,4 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
@@ -77,7 +77,6 @@
 {% block app-content %}
     <div class="container mt-5">
         <div class="card">
-
             <div class="card-body">
                 <h2 class="mb-4">发布社区活动</h2>
                 <form id="formId" action="javascript:void(0);" method="POST" novalidate>

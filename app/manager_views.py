@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from app.components.Dynamic_inheritance import Dynamic_inheritance
@@ -10,9 +11,8 @@ USER_TYPES = {
     '0': '管理员',
     '1': '工作人员',
     '2': '老年用户',
-    '3': '子女用户',
-    '4': '义工用户',
-    '5': '其他',
+    '3': '义工用户',
+    '4': '其他',
 }
 
 GENDER_CHOICES = {
@@ -83,10 +83,10 @@ def select_event(request):
              Q(op_id__icontains=key) |
              Q(event_desc__icontains=key)) &
             Q(is_active=True)
-        ).order_by('id')
+        ).order_by('-event_date')
     else:
         # 如果没有提供关键词，则返回所有用户
-        events = Event.objects.filter(is_active=True).order_by('id')
+        events = Event.objects.filter(is_active=True).order_by('-event_date')
 
     page_obj = Pagination(request, events, items_per_page)
     context = {
@@ -100,12 +100,12 @@ def select_event(request):
 
 
 def library(request):
-    context={
+    context = {
 
     }
     template_name = Dynamic_inheritance(request)
     context['template_name'] = template_name
-    return render(request, "manager/library.html",context)
+    return render(request, "manager/library.html", context)
 
 
 def logging_record(request):
@@ -141,3 +141,31 @@ def logging_record(request):
         "key": key,
     }
     return render(request, "manager/logging_record.html", context=context)
+
+
+def event_add(request):
+    if request.method == "POST":
+        updated_by_id = request.session["info"]["user_id"]
+        event_type = request.POST.get('event_type')
+        event_date = request.POST.get('event_date')
+        event_location = request.POST.get('event_location', '')
+        event_desc = request.POST.get('event_desc', '')
+        oldperson_id = request.POST.get('oldperson_id')
+        SE = Event(event_type=event_type,
+                   event_date=event_date,
+                   event_location=event_location,
+                   event_desc=event_desc,
+                   oldperson_id=oldperson_id,
+                   op_id=updated_by_id)
+        SE.save()
+        context = {'ret': 1, 'msg': "添加成功"}
+        return JsonResponse(context, safe=False)
+
+    events = Event.objects.filter(is_active=True).first()
+    print(events)
+    context = {
+        'items': events
+    }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
+    return render(request, "manager/event_add.html", context=context)

@@ -1,0 +1,195 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <title>排班详细信息</title>
+    <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0 10px;
+        }
+
+        .title {
+            padding: 0;
+            margin: 10px 0;
+            font: 700 18px/1.5 \5fae\8f6f\96c5\9ed1;
+            text-align: center;
+        }
+
+        .title a {
+            font: 400 14px/1.5 Tahoma;
+            margin-left: 20px;
+        }
+
+        .example {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            margin-left: -275px;
+            font-size: 12px;
+        }
+
+        .example .item {
+            border: 1px solid #85BEE5;
+        }
+
+        .example input {
+            color: #404040;
+            padding: 3px;
+            width: 170px;
+            height: 18px;
+            line-height: 18px;
+            border: 1px solid #AFAFAF;
+            font: 12px/18px Arial;
+        }
+
+        .example button {
+            margin-right: 50px;
+        }
+
+        .checkie6 {
+            padding: 3px;
+            width: 178px;
+            border: 1px solid #AFAFAF;
+            font: 12px/1.5 Arial;
+        }
+    </style>
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
+    <script>
+        YUI({
+            modules: {
+                'trip-calendar': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.js' %}',
+                    type: 'js',
+                    requires: ['trip-calendar-css']
+                },
+                'trip-calendar-css': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.css' %}',
+                    type: 'css'
+                }
+            }
+        }).use('trip-calendar', function (Y) {
+
+            /**
+             * 弹出式日历实例
+             * 将日历与指定的触发元素绑定
+             * 日历可根据浏览器窗口大小，自动调整显示位置
+             */
+            var oCal = new Y.TripCalendar({
+                //绑定日历的节点，支持选择器模式，可批量设置（必选）
+                triggerNode: '.J_Item, #J_Item-1, #J_Item-2, .J_Link'
+            });
+
+            oCal.on('dateclick', function (e) {
+                this.getCurrentNode().setAttribute('data-date', e.date);
+            });
+
+            //显示日历时自定义事件
+            oCal.on('show', function () {
+                var v = this.getCurrentNode().getAttribute('data-date');
+                this.set('date', v || new Date);
+                this.set('selectedDate', v).render();
+            });
+
+            //解决chrome的foucs事件bug
+            Y.on('click', function (e) {
+                e.currentTarget.focus();
+            }, '.J_Item, button, .J_Link');
+        });
+    </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <!-- begin::container -->
+        <div class="container">
+
+            <!-- begin::page-header -->
+            <div class="page-header">
+                <h4>排班详细信息</h4>
+            </div>
+            <!-- end::page-header -->
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">排班id：</div>
+                                <div class="col-6">{{ item.id|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">星期：</div>
+                                <div class="col-6">{{ item.get_weekday_display|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">员工：</div>
+                                <div class="col-6">{{ item.staff_name|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">员工联系方式：</div>
+                                <div class="col-6">{{ item.staff_phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">义工：</div>
+                                <div class="col-6">{{ item.volunteer_name|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">义工联系方式：</div>
+                                <div class="col-6">{{ item.volunteer_phone|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">区域:</div>
+                                <div class="col-6">{{ item.area|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">班次:</div>
+                                <div class="col-6">{{ item.shift|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">班次时间段:</div>
+                                <div class="col-6">{{ item.get_shift_display|default:"暂无" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">更新人:</div>
+                                <div class="col-6">
+                                    {{ item.updated_by.username|default:"暂无" }}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">更新时间:</div>
+                                <div class="col-6">
+                                    {{ item.updated|default:"暂无" }}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">创建人:</div>
+                                <div class="col-6">
+                                    {{ item.created_by.username|default:"暂无" }}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">创建时间：</div>
+                                <div class="col-6">{{ item.created_at|default:"暂无" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- end::container -->
+
+    </div>
+    <!-- end::main-content -->
+{% endblock %}
+
+{% block app-foot %}
+{% endblock %}

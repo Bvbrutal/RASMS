@@ -14,11 +14,12 @@ from app.models import CommunityEvent, User
 
 def activity_list(request):
     communityEvent = CommunityEvent.objects.filter(is_active=True,is_save=False).order_by("-created")
-    print(communityEvent)
+    page_obj = Pagination(request, communityEvent, 4)
     context = {
-        'communityEvent': communityEvent
+        "page_obj": page_obj,
     }
-
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/activity/activity_list.html", context)
 
 
@@ -38,6 +39,8 @@ def activity_add(request):
         context = {
 
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/activity/activity_add.html", context)
     # 从请求数据中获取字段值
     name = request.POST.get('name')
@@ -121,6 +124,8 @@ def activity_modify(request):
             "page_obj": page_obj,
             "key": key
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/activity/activity_modify.html", context)
     updated_by_id = request.session["info"]["user_id"]
     updated_by = User.objects.filter(user_id=updated_by_id).first()
@@ -216,4 +221,6 @@ def activity_modify_basic(request):
     context = {
         "event": communityAnnouncement,
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/activity/activity_modify_basic.html", context)

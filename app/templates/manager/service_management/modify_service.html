@@ -63,15 +63,17 @@
 
             <!-- begin::page-header -->
             <div class="page-header">
-                <h4>服务订单管理列表</h4>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="#">服务订单管理</a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">服务订单管理列表</li>
-                    </ol>
-                </nav>
+                <div>
+                    <h4>服务订单管理列表</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">服务订单管理</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">服务订单管理列表</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
             <!-- end::page-header -->
 
@@ -100,13 +102,20 @@
                                     <tr>
                                         <th scope="col">预定日期</th>
                                         <th scope="col">订单id</th>
-                                        <th scope="col">老人id</th>
-                                        <th scope="col">老人姓名</th>
-                                        <th scope="col"></th>
+                                        <th scope="col">客户名字</th>
+                                        <th scope="col">联系方式</th>
+                                        <th scope="col">服务分类</th>
                                         <th scope="col">服务内容</th>
                                         <th scope="col">订单状态</th>
-                                        <th scope="col">评分</th>
                                         <th scope="col"></th>
+                                        <th scope="col">
+                                            <div>
+                                                <button type="button" class="btn btn-primary btn-square btn-uppercase"
+                                                        onclick="window.location.href='{% url 'add_service' %}'"><i
+                                                        class="ti-plus mr-2"></i> 增加订单
+                                                </button>
+                                            </div>
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -114,24 +123,13 @@
                                         <tr>
                                             <td>{{ item.date_scheduled|date:"Y/m/d H:i:s" }}</td>
                                             <td>{{ item.id }}</td>
-                                            <td>{{ item.elder.id }}</td>
-                                            <td>{{ item.elder.username }}</td>
-                                            <td>
-                                                <figure class="avatar avatar-sm">
-                                                    {% if item.elder.elder_photo %}
-                                                        <img src="{{ item.elder.elder_photo.url }}"
-                                                             class="rounded-circle" alt="image">
-                                                    {% else %}
-                                                        <img src="{% static "assets/media/image/user/13.jpg" %}"
-                                                             class="rounded-circle" alt="image">
-                                                    {% endif %}
-                                                </figure>
-                                            </td>
-                                        <td>{{ item.service.name|default:"暂无" }}</td>
+                                            <td>{{ item.customerName }}</td>
+                                            <td>{{ item.customerContact }}</td>
+                                            <td>{{ item.service.get_type_display|default:"暂无" }}</td>
+                                            <td>{{ item.service.name|default:"暂无" }}</td>
                                             <td>{{ item.get_status_display|default:"暂无" }}</td>
-                                            <td>{{ item.get_rating_display|default:"暂无" }}</td>
                                             <td>
-                                                <a href="{% url 'service_info' %}?id={{ item.id }}">
+                                                <a href="{% url 'serviceorder_info' %}?id={{ item.id }}">
                                                     <button type="button"
                                                             class="btn btn-outline-primary">详细信息
                                                     </button>
@@ -142,7 +140,7 @@
                                                         class="btn btn-danger btn-square btn-uppercase"
                                                         data-toggle="modal" data-target="#delete-verify"
                                                         data-whatever="@fat" data-id="{{ item.id }}">
-                                                    <i class="ti-trash mr-2"></i> 删除
+                                                    <i class="ti-trash mr-2"></i> 删除订单
                                                 </button>
                                             </td>
                                         </tr>
@@ -255,28 +253,6 @@
         </div>
     </div>
 
-    <!-- modal——2 -->
-    <div class="modal fade" id="reset-verify" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">重置密码验证</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i class="ti-close"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center">
-                        <p>是否确定重置该用户密码？</p>
-                        <div class="modal-footer modal-footer-centered">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" onclick="reset_password()">确定</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Error Modal -->
     <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
@@ -348,11 +324,11 @@
             // 使用currentitemId变量，它现在包含被选中的老人的ID
             $.ajax({
                 type: "POST",
-                url: "/management/modify_old/",
+                url: "/management/modify_service/",
                 headers: {"X-CSRFToken": csrftoken},
                 data: {
                     id: currentitemId,
-                    op: "delete_elder"
+                    op: "delete_service"
                 },
                 success: function (data) {
                     if (data.ret === 1) {
@@ -360,38 +336,11 @@
                     } else {
                         sessionStorage.setItem('statusMessage', '删除失败！');
                     }
-                    window.location.reload("/management/modify_old/");
+                    window.location.reload("/management/modify_service/");
                 },
                 error: function (xhr, status, error) {
                     sessionStorage.setItem('statusMessage', '删除失败！');
-                    window.location.reload("/management/modify_old/");
-                }
-            });
-        }
-
-        function reset_password() {
-            // 使用currentitemId变量，它现在包含被选中的老人的ID
-            $.ajax({
-                type: "POST",
-                url: "/management/modify_old/",
-                headers: {"X-CSRFToken": csrftoken},
-                data: {
-                    id: currentitemId,
-                    op: "reset_password",
-                },
-                success: function (data) {
-                    if (data.ret === 1) {
-                        sessionStorage.setItem('statusMessage', '重置成功！');
-                    } else if (data.ret === 2) {
-                        sessionStorage.setItem('statusMessage', '该用户未注册!');
-                    } else {
-                        sessionStorage.setItem('statusMessage', '重置失败！');
-                    }
-                    window.location.reload("{% url 'modify_old' %}");
-                },
-                error: function (xhr, status, error) {
-                    sessionStorage.setItem('statusMessage', '重置失败！');
-                    window.location.reload("{% url 'modify_old' %}");
+                    window.location.reload("/management/modify_service/");
                 }
             });
         }
@@ -405,7 +354,7 @@
     <script>
         function handleSearch() {
             var searchKey = document.getElementById('searchKey').value;
-            var url = "/management/modify_old?page=1&key=" + encodeURIComponent(searchKey);
+            var url = "/management/modify_service?page=1&key=" + encodeURIComponent(searchKey);
             window.location.href = url;
         }
 

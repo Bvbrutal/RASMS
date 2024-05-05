@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static "assets/media/image/logo.png" %}"/>
     <!-- Plugin styles -->
     <link rel="stylesheet" href="{% static "vendors/css/bundle.css" %}" type="text/css">
 
@@ -85,6 +86,13 @@
                 </a>
             </li>
             <li>
+                <a href="{% url 'volunteer_information' %}">
+                    <i class="nav-link-icon" data-feather="user"></i>
+                    <span>我的信息</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
                 <a href="/management/select_event">
                     <i class="nav-link-icon" data-feather="clipboard"></i>
                     <span>事件记录</span>
@@ -98,50 +106,22 @@
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
-            <li class="navigation-divider">信息管理</li>
             <li>
-                <a href="#">
+                <a href="/management/modify_old">
                     <i class="nav-link-icon" data-feather="tag"></i>
-                    <span>老年人信息管理</span>
+                    <span>老人信息列表</span>
+                    <span class="badge badge-success">2</span>
                 </a>
-                <ul>
-                    {#                    <li><a href="/management/list_old">老人数据列表</a></li>#}
-                    {#                    <li><a href="/management/select_old">老人信息查询</a></li>#}
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
-                    {#                    <li><a href="/management/modify_old">老人信息控制</a></li>#}
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
-                </ul>
             </li>
             <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="user"></i>
-                    <span>工作人员信息管理</span>
+                <a href="/management/regional_list">
+                    <i class="nav-link-icon" data-feather="figma"></i>
+                    <span>区域排班管理</span>
+                    <span class="badge badge-success">2</span>
                 </a>
-                <ul>
-                    <li><a href="/management/modify_worker">工作人员信息列表</a></li>
-                    {#                    <li><a href="/management/list_worker">工作人员数据列表</a></li>#}
-                    {#                    <li><a href="/management/select_worker">工作人员信息查询</a></li>#}
-                    <li><a href="/management/add_worker">工作人员信息录入</a></li>
-                    {#                    <li><a href="/management/modify_worker">工作人员信息控制</a></li>#}
-                    <li><a href="/management/analyze_worker">工作人员统计分析</a></li>
-                </ul>
             </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="users"></i>
-                    <span>义工信息管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/modify_volunteer">义工信息列表</a></li>
-                    {#                    <li><a href="/management/list_volunteer">义工数据列表</a></li>#}
-                    {#                    <li><a href="/management/select_volunteer">义工信息查询</a></li>#}
-                    <li><a href="/management/add_volunteer">义工信息录入</a></li>
-                    {#                    <li><a href="/management/modify_volunteer">义工信息控制</a></li>#}
-                    <li><a href="/management/analyze_volunteer">义工统计分析</a></li>
-                </ul>
-            </li>
-            <li class="navigation-divider">功能管理</li>
+
+            <li class="navigation-divider">社区管理</li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="feather"></i>
@@ -150,6 +130,7 @@
                 <ul>
                     <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
                     <li><a href="{% url 'announcement_add' %}">公告信息发布</a></li>
+                    <li><a href="{% url 'announcement_modify' %}">公告信息管理</a></li>
                 </ul>
             </li>
             <li>
@@ -165,18 +146,6 @@
             </li>
             <li>
                 <a href="#">
-                    <i class="nav-link-icon" data-feather="feather"></i>
-                    <span>区域分配管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
-                </ul>
-            </li>
-            <li class="navigation-divider">社区管理</li>
-            <li>
-                <a href="#">
                     <i class="nav-link-icon" data-feather="database"></i>
                     <span>社区活动管理</span>
                 </a>
@@ -186,6 +155,7 @@
                     <li><a href="/management/activity_modify">社区活动管理</a></li>
                 </ul>
             </li>
+
         </ul>
     </div>
     <!-- end::navigation menu -->

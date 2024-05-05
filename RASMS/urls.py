@@ -32,6 +32,9 @@ urlpatterns = [
                   # 主页
                   path("", user_views.index, name="index_1"),
                   path("index/", user_views.index, name="index_2"),
+                  path("older/index/", user_views.older_index, name="index_3"),
+                  path("volunteer_information/", user_views.volunteer_information, name="volunteer_information"),
+                  path("staff_information/", user_views.staff_information, name="staff_information"),
 
                   # 404页面
                   path('404/', TemplateView.as_view(template_name='account/404.html'), name='404'),
@@ -47,12 +50,17 @@ urlpatterns = [
                   path("api/update_profile/", api_views.update_profile, name="update_profile"),
                   path("api/logging/", api_views.logging, name="logging"),
                   path('api/image_upload/', api_views.image_upload, name='image_upload'),
+                  path('api/service_status/', api_views.service_status, name='service_status'),
+                  path('api/services/data/', api_views.service_type_distribution, name='service_type_data'),
+                  path('api/orders/data/', api_views.order_status_distribution, name='order_status_data'),
+                  path('api/daily_orders_stats/', api_views.daily_orders_stats, name='daily_orders_stats'),
 
                   # 单项功能
                   path("management/select_event/", manager_views.select_event, name="select_event"),
                   path("management/profile/", manager_views.profile, name="profile_user"),
                   path("management/library/", manager_views.library, name="library"),
                   path("management/logging_record/", manager_views.logging_record, name="logging_record"),
+                  path("management/event_add/", manager_views.event_add, name="event_add"),
 
                   # 老年人信息管理
                   path("management/list_old/", old_management_views.list_old, name="list_old"),
@@ -130,7 +138,8 @@ urlpatterns = [
                   path("management/regional_list/", regional_views.regional_list, name="regional_list"),
                   path("management/modify_regional/", regional_views.modify_regional, name="modify_regional"),
                   path("management/add_regional/", regional_views.add_regional, name="add_regional"),
-                  path("management/analyze_regional/", regional_views.analyze_regional, name="analyze_regional"),
+                  path("management/modify_shift/", regional_views.modify_shift, name="modify_shift"),
+                  path("management/shift_info/", regional_views.shift_info, name="shift_info"),
 
                   # 用药信息
                   path("management/medication_list/", medication_views.medication_list, name="medication_list"),
@@ -142,6 +151,16 @@ urlpatterns = [
                   path("management/add_service/", service_views.add_service, name="add_service"),
                   path("management/analyze_service/", service_views.analyze_service, name="analyze_service"),
                   path("management/service_info/", service_views.service_info, name="service_info"),
+                  path("management/serviceorder_info/", service_views.serviceorder_info, name="serviceorder_info"),
+                  path("management/add_service_type/", service_views.add_service_type, name="add_service_type"),
+                  path("management/modify_service_type/", service_views.modify_service_type,
+                       name="modify_service_type"),
+                  path("management/service_list/", service_views.service_list,
+                       name="service_list"),
+                  path("management/cancel_service/", service_views.cancel_service,
+                       name="cancel_service"),
+                  path("management/submit_feedback/", service_views.submit_feedback,
+                       name="submit_feedback"),
 
                   # 老人页面
                   path("elder/modify_regional/", elder_views.modify_regional, name="modify_regional_elder"),

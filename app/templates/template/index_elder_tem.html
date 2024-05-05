@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static "assets/media/image/logo.png" %}"/>
     <!-- Plugin styles -->
     <link rel="stylesheet" href="{% static "vendors/css/bundle.css" %}" type="text/css">
 
@@ -79,8 +80,8 @@
         <ul>
             <li>
                 <a href="{% url 'index_2' %}">
-                    <i class="nav-link-icon" data-feather="airplay"></i>
-                    <span>首页</span>
+                    <i class="nav-link-icon" data-feather="user"></i>
+                    <span>我的信息</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
@@ -92,7 +93,7 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'modify_regional_elder' %}">
+                <a href="{% url 'regional_list' %}">
                     <i class="nav-link-icon" data-feather="clipboard"></i>
                     <span>排班展示</span>
                     <span class="badge badge-success">2</span>
@@ -100,14 +101,14 @@
             </li>
 
             <li>
-                <a href="{% url 'modify_service_elder' %}">
+                <a href="{% url 'add_service' %}">
                     <i class="nav-link-icon" data-feather="coffee"></i>
                     <span>养老服务</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
            <li>
-                <a href="{% url 'activity_list_elder' %}">
+                <a href="{% url 'activity_list' %}">
                     <i class="nav-link-icon" data-feather="sun"></i>
                     <span>社区活动</span>
                     <span class="badge badge-success">2</span>
@@ -238,7 +239,7 @@
         }
         if (data.user_photo && userImage)
             userImage.src = data.user_photo;
-            console.log(userImage.src);
+        console.log(userImage.src);
     }
 
     function show_log(datas) {
@@ -251,7 +252,7 @@
             datas.loggings.forEach(function (item) {
                 var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
                 var contentDiv = $("<div>").addClass("flex-grow-1");
-                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_content);
+                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_type);
                 var timeSpan = $("<span>").addClass("text-muted small").text(item.operation_time);
                 // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
                 contentDiv.append(messagePara).append(timeSpan);

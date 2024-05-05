@@ -17,7 +17,7 @@ class User(models.Model):
     creation_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
     phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='电话')
     email = models.EmailField(verbose_name='邮箱', null=True, blank=True)
-    grade = models.CharField(max_length=1,choices=GRADE_CHOICES, default='3', verbose_name='类别')
+    grade = models.CharField(max_length=1, choices=GRADE_CHOICES, default='3', verbose_name='类别')
     bio = models.TextField(verbose_name='自我介绍', blank=True, null=True)
     user_photo = models.ImageField(upload_to='user_photo/', null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
@@ -153,6 +153,13 @@ class Volunteer(models.Model):
 
 # 事件
 class Event(models.Model):
+    EVENT_TYPES = (
+        (0, '情感纠纷'),
+        (1, '意外事件'),
+        (2, '特殊事件'),
+        (3, '服务求助'),
+        (4, '日常协助'),
+    )
     event_type = models.IntegerField(default=0, choices=EVENT_TYPES, verbose_name='事件类型')
     event_date = models.DateTimeField(verbose_name='事件发生时间')
     event_location = models.CharField(max_length=200, blank=True, default='', verbose_name='事件发生地点')
@@ -279,7 +286,7 @@ class UserIP(models.Model):
     ip_addr = models.CharField(verbose_name='IP 地理位置', max_length=30, blank=True, null=True)
     end_point = models.CharField(verbose_name='访问端点', default='/', max_length=30, blank=True, null=True)
     count = models.IntegerField(verbose_name='访问次数', default=0, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='登录时间', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now=True, verbose_name='登录时间', blank=True, null=True)
     user_by = models.ForeignKey(User, related_name='%(class)s_user_by', on_delete=models.SET_NULL, blank=True,
                                 null=True, verbose_name='账户')
 
@@ -291,6 +298,7 @@ class UserIP(models.Model):
 # 网站总访问次数
 class VisitNumber(models.Model):
     count = models.IntegerField(verbose_name='网站访问总次数', default=0)  # 网站访问总次数
+    type = models.CharField(max_length=20, verbose_name="计数类型", null=True, blank=True)
 
     class Meta:
         verbose_name = '网站访问总次数'
@@ -312,11 +320,38 @@ class DayNumber(models.Model):
     def __str__(self):
         return str(self.day)
 
+
 class Service(models.Model):
-    name = models.CharField(max_length=100, verbose_name="服务名称")
-    description = models.TextField(verbose_name="服务描述")
+    SERVICE_TYPES = (
+        ('daily_care', '日常护理'),
+        ('medical_care', '医疗护理'),
+        ('rehabilitation', '康复护理'),
+        ('leisure', '休闲活动'),
+        ('education', '教育活动'),
+        ('mental_health', '精神健康')
+    )
+
+    name = models.CharField(max_length=100, verbose_name="服务名称", null=True, blank=True)
+    content = models.TextField(verbose_name="服务内容", null=True, blank=True)
+    description = models.TextField(verbose_name="服务描述", null=True, blank=True)
+    type = models.CharField(max_length=20, choices=SERVICE_TYPES, verbose_name="服务类型", null=True, blank=True)
+    target_group = models.CharField(max_length=100, verbose_name="服务对象", null=True, blank=True)
+    service_hours = models.CharField(max_length=50, verbose_name="服务时间", null=True, blank=True)
+    service_area = models.CharField(max_length=100, verbose_name="服务区域", null=True, blank=True)
+    qualifications = models.TextField(verbose_name="服务人员资质", null=True, blank=True)
+    customer_reviews = models.TextField(verbose_name="客户评价", null=True, blank=True)
+    additional_costs = models.TextField(verbose_name="附加费用", null=True, blank=True)
     cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="服务费用")
     service_photo = models.ImageField(upload_to='service_photo/', null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    created_by = models.ForeignKey(User, related_name='%(class)s_Service_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_Service_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
+    count = models.IntegerField(verbose_name='下单次数', default=0, blank=True, null=True)
+
     def __str__(self):
         return self.name
 
@@ -325,56 +360,85 @@ class Service(models.Model):
         verbose_name_plural = "服务"
 
 
-
 class ServiceOrder(models.Model):
     STATUS_CHOICES = (
         ('pending', '待处理'),
+        ('accepted', '已接单'),
         ('in_progress', '进行中'),
         ('completed', '已完成'),
         ('cancelled', '已取消'),
     )
 
-    elder = models.ForeignKey(Elder, on_delete=models.CASCADE, verbose_name="老人", related_name="service_orders")
+    customerName = models.CharField(max_length=20, verbose_name="客户姓名", null=True, blank=True)
+    customerContact = models.CharField(max_length=50, verbose_name="联系方式", null=True, blank=True)
+    aceeptName = models.CharField(max_length=20, verbose_name="服务接受者", null=True, blank=True)
+    aceeptContact = models.CharField(max_length=50, verbose_name="服务接受者联系方式", null=True, blank=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, verbose_name="服务", related_name="orders")
-    date_scheduled = models.DateTimeField(default=timezone.now, verbose_name="预定日期")
+    date_scheduled = models.DateTimeField(verbose_name="预定日期", null=True, blank=True)
+    date_accepted = models.DateTimeField(verbose_name="接受日期", null=True, blank=True)
+    date_started = models.DateTimeField(verbose_name="开始日期", null=True, blank=True)
+    date_completed = models.DateTimeField(verbose_name="完成日期", null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="订单状态")
-    rating = models.IntegerField(null=True, blank=True, choices=[(1, '1星'), (2, '2星'), (3, '3星'), (4, '4星'), (5, '5星')], verbose_name="评分")
+    rating = models.IntegerField(null=True, blank=True,
+                                 choices=[(1, '1星'), (2, '2星'), (3, '3星'), (4, '4星'), (5, '5星')],
+                                 verbose_name="评分")
     feedback = models.TextField(null=True, blank=True, verbose_name="反馈")
+    remark = models.TextField(null=True, blank=True, verbose_name="备注")
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    created_by = models.ForeignKey(User, related_name='%(class)s_ServiceOrder_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_ServiceOrder_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
+
     def __str__(self):
-        return f"{self.elder.username} - {self.service.name} - {self.date_scheduled.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.customerName} - {self.service.name} - {self.date_scheduled.strftime('%Y-%m-%d %H:%M')}"
 
     class Meta:
         verbose_name = "服务订单"
         verbose_name_plural = "服务订单"
 
 
+from django.utils.translation import gettext_lazy as _
 
-class StaffAssignment(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='assignments', verbose_name='工作人员')
-    assigned_area = models.CharField(max_length=255, verbose_name='分配区域')
-    shift_start = models.DateTimeField(verbose_name='班次开始时间')
-    shift_end = models.DateTimeField(verbose_name='班次结束时间')
+
+class ShiftAssignment(models.Model):
+    staff_name = models.CharField(max_length=25, verbose_name="工作人员", null=True, blank=True)
+    staff_phone = models.CharField(max_length=20, verbose_name="工作人员联系方式", null=True, blank=True)
+    volunteer_name = models.CharField(max_length=25, verbose_name="义工", null=True, blank=True)
+    volunteer_phone = models.CharField(max_length=20, verbose_name="义工联系方式", null=True, blank=True)
+    area = models.CharField(max_length=100, verbose_name="工作区域", null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name="是否有效")
+    created_by = models.ForeignKey(User, related_name='%(class)s_ShiftAssignment_created',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='创建人')
+    updated_by = models.ForeignKey(User, related_name='%(class)s_ShiftAssignment_updated',
+                                   on_delete=models.SET_NULL, blank=True, null=True, verbose_name='更新人')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
 
-    class Meta:
-        verbose_name = '工作人员排班'
-        verbose_name_plural = '工作人员排班'
+    WEEKDAYS = [
+        (1, _('星期一')),
+        (2, _('星期二')),
+        (3, _('星期三')),
+        (4, _('星期四')),
+        (5, _('星期五')),
+        (6, _('星期六')),
+        (7, _('星期天')),
+    ]
+    weekday = models.IntegerField(choices=WEEKDAYS, verbose_name="星期", null=True, blank=True)
+
+    SHIFTS = [
+        (1, _('时间段 1: 08:00-10:20')),
+        (2, _('时间段 2: 10:20-12:40')),
+        (3, _('时间段 3: 12:40-15:00')),
+        (4, _('时间段 4: 15:00-17:20')),
+        (5, _('时间段 5: 17:20-19:40')),
+        (6, _('时间段 6: 19:40-22:00')),
+    ]
+    shift = models.IntegerField(choices=SHIFTS, verbose_name="班次", null=True, blank=True)
 
     def __str__(self):
-        return f"{self.staff.username} - {self.assigned_area} ({self.shift_start.strftime('%Y-%m-%d %H:%M')} 至 {self.shift_end.strftime('%Y-%m-%d %H:%M')})"
-
-
-class VolunteerAssignment(models.Model):
-    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE, related_name='assignments', verbose_name='义工')
-    assigned_area = models.CharField(max_length=255, verbose_name='分配区域')
-    shift_start = models.DateTimeField(verbose_name='班次开始时间')
-    shift_end = models.DateTimeField(verbose_name='班次结束时间')
-    is_active = models.BooleanField(default=True, verbose_name="是否有效")
-
-    class Meta:
-        verbose_name = '义工排班'
-        verbose_name_plural = '义工排班'
-
-    def __str__(self):
-        return f"{self.volunteer.username} - {self.assigned_area} ({self.shift_start.strftime('%Y-%m-%d %H:%M')} 至 {self.shift_end.strftime('%Y-%m-%d %H:%M')})"
+        weekday_str = dict(self.WEEKDAYS).get(self.weekday, '')
+        shift_str = dict(self.SHIFTS).get(self.shift, '')
+        return f"{self.staff_name}&{self.volunteer_name} - {self.area} - {weekday_str} - {shift_str}"

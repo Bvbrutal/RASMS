@@ -99,6 +99,16 @@
 
 {% block app-content %}
     <div class="container">
+        <div class="page-header m-b-5">
+            <h4>社区公告详情</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/management/announcement_list/"> < 返回社区公告列表</a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
         {% if item.announcement_photo %}
             <div class="announcement-header"
                  style="background-image: url('{{ item.announcement_photo.url }}');">
@@ -162,9 +172,9 @@
                 <div class="row mb-2">
                     <div class="col-6 text-muted">发布状态：</div>
                     <div class="col-6">{% if item.is_save %}
-                        已发布
-                    {% else %}
                         草稿
+                    {% else %}
+                        已发布
                     {% endif %}
                     </div>
                 </div>

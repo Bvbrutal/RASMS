@@ -117,9 +117,6 @@
                         <li class="breadcrumb-item">
                             <a href="#">老年人信息管理</a>
                         </li>
-                        <li class="breadcrumb-item">
-                            <a href="{% url "modify_old" %}">老人信息列表</a>
-                        </li>
                         <li class="breadcrumb-item active" aria-current="page">老年人基本信息编辑</li>
                     </ol>
                 </nav>
@@ -438,7 +435,7 @@
                             confirmButtonText: '查看详细信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '{% url 'old_info' %}?id={{ item.id }}';
+                                window.location.href = '{% url 'old_info' %}?id={{ item.mobile_phone }}';
                             }
                         });
                     } else if (data.ret === 2) {

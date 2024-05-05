@@ -2,93 +2,277 @@
 {% load static %}
 
 {% block app-head %}
-<title>区域分布和排班管理</title>
+    <title>区域分布和排班管理</title>
 {% endblock %}
 
 {% block app-content %}
-<div class="container mt-4">
-    <h2>区域分布和排班管理</h2>
-    <div class="my-3">
-        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="搜索姓名或区域..." class="form-control">
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>工作人员排班</h3>
-            <table class="table" id="staffTable">
-                <thead>
-                    <tr>
-                        <th>姓名</th>
-                        <th>分配区域</th>
-                        <th>开始时间</th>
-                        <th>结束时间</th>
-                        <th>状态</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 假定数据通过后端Django模板填充 -->
-                    <!-- 示例：
-                    <tr>
-                        <td>张三</td>
-                        <td>南区</td>
-                        <td>2023-10-01 08:00</td>
-                        <td>2023-10-01 16:00</td>
-                        <td>活跃</td>
-                    </tr>
-                    -->
-                </tbody>
-            </table>
+    <div class="container mt-4">
+        <h2>区域分布和排班管理</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12 col-lg-12">
+                    <h5>区域与排班</h5>
+                    <table class="table" id="staffTable">
+                        <thead>
+                        <tr>
+                            <th>星期</th>
+                            <th>员工姓名</th>
+                            <th>员工联系方式</th>
+                            <th>义工姓名</th>
+                            <th>义工联系方式</th>
+                            <th>分配区域</th>
+                            <th>班次</th>
+                            <th>时间段</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in page_obj %}
+                            <tr>
+                                <td>{{ item.get_weekday_display }}</td>
+                                <td>{{ item.staff_name }}</td>
+                                <td>{{ item.staff_phone }}</td>
+                                <td>{{ item.volunteer_name }}</td>
+                                <td>{{ item.volunteer_phone }}</td>
+
+                                <td>{{ item.area }}</td>
+                                <td>{{ item.shift }}</td>
+                                <td>{{ item.get_shift_display }}</td>
+                                <td>
+                                    <a href="{% url 'shift_info' %}?id={{ item.id }}">
+                                        <button type="button"
+                                                class="btn btn-outline-primary">详细信息
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'modify_shift' %}?id={{ item.id }}">
+                                        <button type="button"
+                                                class="btn btn-outline-primary">更改排班
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <button type="button" onclick="setCurrentitemId(this)"
+                                            class="btn btn-danger btn-square btn-uppercase"
+                                            data-toggle="modal" data-target="#delete-verify"
+                                            data-whatever="@fat" data-id="{{ item.id }}">
+                                        <i class="ti-trash mr-2"></i> 删除
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-auto">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item">
+                                            <a class="page-link" href="?key={{ key }}&page=1">首页</a>
+                                        </li>
+                                        {% if page_obj.number > 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="?key={{ key }}&page={{ page_obj.previous_page_number }}">&laquo;
+                                                    上一页</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="?key={{ key }}&page=1">&laquo;
+                                                    上一页</a>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for num in page_obj.paginator.page_range %}
+                                            {% if page_obj.number == num %}
+                                                <li class="page-item active"><a class="page-link"
+                                                                                href="?key={{ key }}&page={{ num }}">{{ num }}</a>
+                                                </li>
+                                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="?key={{ key }}&page={{ num }}">{{ num }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if page_obj.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="?key={{ key }}&page={{ page_obj.next_page_number }}">下一页
+                                                    &raquo;</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="?key={{ key }}&page={{ page_obj.number }}">下一页
+                                                    &raquo;</a>
+                                            </li>
+                                        {% endif %}
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="?key={{ key }}&page={{ page_obj.paginator.num_pages }}">尾页</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+
+                            <div class="col-auto">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <label for="page-number">跳转到页码:</label>
+                                        <input type="number" class="form-control mx-2" id="page-number"
+                                               min="1" max="{{ page_obj.paginator.num_pages }}"
+                                               value="{{ page_obj.number }}">
+                                        <button type="submit" class="btn btn-primary"
+                                                onclick="event.preventDefault(); window.location.href='?key={{ key }}&page=' + document.getElementById('page-number').value;">
+                                            跳转
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <h3>义工排班</h3>
-            <table class="table" id="volunteerTable">
-                <thead>
-                    <tr>
-                        <th>姓名</th>
-                        <th>分配区域</th>
-                        <th>开始时间</th>
-                        <th>结束时间</th>
-                        <th>状态</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 同上，数据填充 -->
-                </tbody>
-            </table>
+    </div>
+    <!-- modal -->
+    <div class="modal fade" id="delete-verify" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">删除信息验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="ti-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <p>是否确定删除该信息？</p>
+                        <div class="modal-footer modal-footer-centered">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="delete_elder()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 错误信息将在这里显示 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}
 
 {% block app-foot %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var statusMessage = sessionStorage.getItem('statusMessage');
+            if (statusMessage) {
+                // 设置模态框中的消息
+                $('#errorModal .modal-body').text(statusMessage);
+                // 显示模态框
+                $('#errorModal').modal('show');
+                // 从sessionStorage中移除消息
+                sessionStorage.removeItem('statusMessage');
+            }
+        });
 
-<script>
-function filterTable() {
-    var input, filter, tables, tr, td, i, txtValue;
-    input = document.getElementById("searchInput");
-    filter = input.value.toUpperCase();
-    tables = document.getElementsByTagName("table");
-    for (let t = 0; t < tables.length; t++) {
-        tr = tables[t].getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td");
-            let isMatch = false;
-            for (let j = 0; j < td.length; j++) {
-                if (td[j]) {
-                    txtValue = td[j].textContent || td[j].innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        isMatch = true;
+    </script>
+    <script>
+        var currentitemId;
+
+        function setCurrentitemId(element) {
+            // 从被点击的按钮中获取数据属性data-id的值
+            currentitemId = $(element).data('id');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
                     }
                 }
             }
-            if (isMatch) {
-                tr[i].style.display = "";
-            } else {
-                if (i > 0) tr[i].style.display = "none"; // Keep the header
-            }
+            return cookieValue;
         }
-    }
-}
-</script>
+
+        const csrftoken = getCookie('csrftoken');
+
+        function delete_elder() {
+            // 使用currentitemId变量，它现在包含被选中的老人的ID
+            $.ajax({
+                type: "POST",
+                url: "{% url 'modify_regional' %}",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    id: currentitemId,
+                    op: 'delete_service'
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '删除成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '删除失败！');
+                    }
+                    window.location.reload("/management/modify_regional/");
+                },
+                error: function (xhr, status, error) {
+                    sessionStorage.setItem('statusMessage', '删除失败！');
+                    window.location.reload("/management/modify_regional/");
+                }
+            });
+        }
+
+
+        function getCsrfToken() {
+            return $('input[name="csrfmiddlewaretoken"]').val();
+        }
+
+    </script>
+    <script>
+        function handleSearch() {
+            var searchKey = document.getElementById('searchKey').value;
+            var url = "/management/modify_regional?page=1&key=" + encodeURIComponent(searchKey);
+            window.location.href = url;
+        }
+
+        document.getElementById('sub-button').addEventListener('click', function (e) {
+            // 阻止表单的默认提交行为
+            e.preventDefault();
+            handleSearch();           // 调用处理搜索的函数
+        });
+
+    </script>
 {% endblock %}

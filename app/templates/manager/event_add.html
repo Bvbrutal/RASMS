@@ -1,0 +1,243 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <title>服务订单类型选择</title>
+    <style>
+        .service-card {
+            cursor: pointer;
+            transition: transform .2s; /* Animation */
+        }
+
+        .service-card:hover {
+            transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will cause the page to be wider than 100%.) */
+        }
+    </style>
+    <style>
+        .card-img-top {
+            height: 200px; /* 设置所有图片高度一致 */
+            object-fit: cover; /* 裁剪图片以填充整个内容框，不会变形 */
+            width: 100%; /* 图片宽度自动适应容器宽度 */
+        }
+
+        .card-body {
+            min-height: 150px; /* 保持所有卡片的内容区域高度一致 */
+        }
+
+    </style>
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
+    <script>
+        YUI({
+            modules: {
+                'trip-calendar': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.js' %}',
+                    type: 'js',
+                    requires: ['trip-calendar-css']
+                },
+                'trip-calendar-css': {
+                    fullpath: '{% static 'vendors/datepicker/trip-calendar.css' %}',
+                    type: 'css'
+                }
+            }
+        }).use('trip-calendar', function (Y) {
+
+            /**
+             * 弹出式日历实例
+             * 将日历与指定的触发元素绑定
+             * 日历可根据浏览器窗口大小，自动调整显示位置
+             */
+            var oCal = new Y.TripCalendar({
+                //绑定日历的节点，支持选择器模式，可批量设置（必选）
+                triggerNode: '.J_Item, #J_Item-1, #J_Item-2, .J_Link'
+            });
+
+            oCal.on('dateclick', function (e) {
+                this.getCurrentNode().setAttribute('data-date', e.date);
+            });
+
+            //显示日历时自定义事件
+            oCal.on('show', function () {
+                var v = this.getCurrentNode().getAttribute('data-date');
+                this.set('date', v || new Date);
+                this.set('selectedDate', v).render();
+            });
+
+            //解决chrome的foucs事件bug
+            Y.on('click', function (e) {
+                e.currentTarget.focus();
+            }, '.J_Item, button, .J_Link');
+        });
+    </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
+{% endblock %}
+
+{% block app-content %}
+    <div class="container mt-4">
+        <!-- begin::page-header -->
+        <div class="page-header d-flex justify-content-between">
+            <div><h4>添加记录</h4></div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="formId" action="javascript:void(0);" method="POST"
+                              enctype="multipart/form-data" novalidate>
+                            <div class="form-group">
+                                <label for="event_type"><span
+                                                    style="color: red; font-weight: bold;">*</span>事件类型</label>
+                                <select id="event_type" name="event_type" class="form-control">
+                                    <option value="">选择类型
+                                    </option>
+                                    {% for item in items.EVENT_TYPES %}
+                                        <option value="{{ item.0 }}">{{ item.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group" style="display: flex;align-content: center;flex-direction: column;">
+                                <label for="event_date"><span
+                                                    style="color: red; font-weight: bold;">*</span>事件发生时间</label>
+                                <input id="event_date" name="event_date" class="form-control J_Item">
+                            </div>
+                            <div class="form-group">
+                                <label for="event_location">事件发生地点</label>
+                                <input type="text" id="event_location" name="event_location" class="form-control"
+                                       placeholder="请输入事件发生地点">
+                            </div>
+                            <div class="form-group">
+                                <label for="event_desc">事件描述</label>
+                                <textarea id="event_desc" name="event_desc" class="form-control"
+                                          placeholder="请输入事件描述" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="oldperson_id"><span
+                                                    style="color: red; font-weight: bold;">*</span>老人ID</label>
+                                <input type="number" id="oldperson_id" name="oldperson_id" class="form-control"
+                                       placeholder="请输入老人ID">
+                            </div>
+                            <button type="submit" class="btn btn-primary" onclick="saveInfo()">提交</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block app-foot %}
+ <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
+    <script>
+        function saveInfo() {
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            form.validate({
+                rules: {
+                    event_type: {
+                        required: true
+                    },
+                    event_date: {
+                        required: true
+                    },
+                    oldperson_id: {
+                        required: true,
+                    }
+                },
+                messages: {
+                    event_type: "请填写事件类型",
+                    event_date: {
+                        required: "请填写事件时间"
+                    },
+                    oldperson_id: {
+                        required: "请选择老人id",
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()) {
+                $.notify({
+                    message: '<strong>请完善信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#save-button").text('事件提交中');
+            $('#save-button').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'event_add' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '提交成功',
+                            confirmButtonText: '查看记录列表',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '{% url 'select_event' %}';
+                            }
+                        });
+                    } else {
+                        $("#save-button").text('提交');
+                        $('#save-button').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('提交失败: ' + error);
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "template/index_manager_tem.html" %}
+{% extends template_name %}
 {% load static %}
 
 {% block app-head %}
@@ -419,7 +419,7 @@
                     if (data.ret === 1) {
                         swal.fire({
                             type: 'success',
-                            title: '录入成功',
+                            title: '修改成功',
                             confirmButtonText: '查看详细信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {

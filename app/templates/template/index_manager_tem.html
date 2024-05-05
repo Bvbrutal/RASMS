@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static "assets/media/image/logo.png" %}"/>
 
     <!-- Plugin styles -->
     <link rel="stylesheet" href="{% static "vendors/css/bundle.css" %}" type="text/css">
@@ -159,7 +161,7 @@
                     <li><a href="/management/analyze_volunteer">义工统计分析</a></li>
                 </ul>
             </li>
-            <li class="navigation-divider">功能管理</li>
+            <li class="navigation-divider">社区管理</li>
             <li>
                 <a href="#">
                     <i class="nav-link-icon" data-feather="feather"></i>
@@ -168,30 +170,7 @@
                 <ul>
                     <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
                     <li><a href="{% url 'announcement_add' %}">公告信息发布</a></li>
-                    <li><a href="{% url 'announcement_modify' %}">公告信息管理列表</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="edit-2"></i>
-                    <span>服务订单管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/modify_service">服务订单管理列表</a></li>
-                    <li><a href="/management/add_service">服务订单添加</a></li>
-                    <li><a href="/management/analyze_service">服务订单统计分析</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="nav-link-icon" data-feather="figma"></i>
-                    <span>区域排班管理</span>
-                </a>
-                <ul>
-                    <li><a href="/management/regional_list">区域排班信息展示</a></li>
-                    <li><a href="/management/modify_regional">区域排班管理列表</a></li>
-                    <li><a href="/management/add_regional">区域排班信息编辑</a></li>
-                    <li><a href="/management/analyze_regional">区域排班信息可视化</a></li>
+                    <li><a href="{% url 'announcement_modify' %}">公告信息管理</a></li>
                 </ul>
             </li>
             <li>
@@ -202,7 +181,28 @@
                 <ul>
                     <li><a href="/management/activity_list">社区活动列表</a></li>
                     <li><a href="/management/activity_add">社区活动发布</a></li>
-                    <li><a href="/management/activity_modify">社区活动管理列表</a></li>
+                    <li><a href="/management/activity_modify">社区活动管理</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="edit-2"></i>
+                    <span>服务订单管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/modify_service">服务订单管理列表</a></li>
+                    <li><a href="/management/modify_service_type">服务订单类型管理</a></li>
+                    <li><a href="/management/analyze_service">服务订单统计分析</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="nav-link-icon" data-feather="figma"></i>
+                    <span>区域排班管理</span>
+                </a>
+                <ul>
+                    <li><a href="/management/regional_list">排班信息展示</a></li>
+                    <li><a href="/management/modify_regional">排班管理列表</a></li>
                 </ul>
             </li>
         </ul>

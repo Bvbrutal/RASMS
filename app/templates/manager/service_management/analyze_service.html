@@ -2,13 +2,165 @@
 {% load static %}
 
 {% block app-head %}
+    <title>服务订单可视化</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.2/echarts.min.js"></script>
 
 {% endblock %}
 
 {% block app-content %}
-<h1>暂未开发...</h1>
+    <div class="main-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container">
+                    <!-- Service Type Distribution -->
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Order Status Distribution -->
+                            <div id="dailyOrderChart" style="height:350px;"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="serviceTypeChart" style="height:350px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Order Status Distribution -->
+                            <div id="orderStatusChart" style="height:350px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 {% endblock %}
 
 {% block app-foot %}
 
+    <script type="text/javascript">
+        function fetchDataAndRenderCharts() {
+            // Fetch Service Types Data
+            $.get('/api/services/data/', function (serviceData) {
+                var serviceTypeData = prepareServiceTypeData(serviceData);
+                initServiceTypeChart(serviceTypeData);
+            });
+
+            // Fetch Order Status Data
+            $.get('/api/orders/data/', function (orderData) {
+                var orderStatusData = prepareOrderStatusData(orderData);
+                initOrderStatusChart(orderStatusData);
+            });
+
+            $.get('/api/daily_orders_stats/', function (orderData) {
+                var dailyOrderData = prepareDailyOrdersData(orderData);
+                initDailyOrdersChart(dailyOrderData);
+            });
+        }
+
+        function prepareServiceTypeData(serviceData) {
+            // Prepare data for ECharts
+            // This should parse the serviceData to match ECharts' expected input format
+            return serviceData; // This should be modified to match actual data structure
+        }
+
+        function prepareOrderStatusData(orderData) {
+            // Prepare data for ECharts
+            return orderData; // Modify as necessary
+        }
+
+        function initServiceTypeChart(data) {
+            var chartDom = document.getElementById('serviceTypeChart');
+            var myChart = echarts.init(chartDom);
+            var option = {
+                title: {
+                    text: '服务类型分布'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['服务类型']
+                },
+                xAxis: {
+                    data: data.categories // Categories should be the different service types
+                },
+                yAxis: {},
+                series: [{
+                    name: '服务类型',
+                    type: 'bar',
+                    data: data.values // Values should be the count of each type
+                }]
+            };
+            myChart.setOption(option);
+        }
+
+        function initOrderStatusChart(data) {
+            var chartDom = document.getElementById('orderStatusChart');
+            var myChart = echarts.init(chartDom);
+            var option = {
+                title: {
+                    text: '订单状态分布'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['订单状态']
+                },
+                xAxis: {
+                    data: data.categories // Categories should be the different statuses
+                },
+                yAxis: {},
+                series: [{
+                    name: '订单状态',
+                    type: 'bar',
+                    data: data.values // Values should be the count of each status
+                }]
+            };
+            myChart.setOption(option);
+        }
+
+        function prepareDailyOrdersData(orderData) {
+            // Prepare data for ECharts
+            // Parse the orderData to match ECharts' expected input format
+            return {
+                dates: orderData.dates,
+                counts: orderData.counts
+            };
+        }
+
+        function initDailyOrdersChart(data) {
+            var chartDom = document.getElementById('dailyOrderChart');
+            var myChart = echarts.init(chartDom);
+            var option = {
+                title: {
+                    text: '近90天每日订单统计'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data.dates
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    name: '订单数',
+                    type: 'line',
+                    smooth: true,
+                    data: data.counts
+                }]
+            };
+
+            myChart.setOption(option);
+        }
+
+        $(document).ready(function () {
+            fetchDataAndRenderCharts();
+            initOrdersChart();
+        });
+
+    </script>
 {% endblock %}

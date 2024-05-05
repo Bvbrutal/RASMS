@@ -13,23 +13,46 @@ USER_TYPES = {
     '0': '管理员',
     '1': '工作人员',
     '2': '老年用户',
-    '3': '子女用户',
-    '4': '义工用户',
-    '5': '其他',
+    '3': '义工用户',
+    '4': '其他',
 }
 
 GENDER_CHOICES = {
     'M': '男',
     'F': '女',
-    'U': '未知',}
-
+    'U': '未知', }
 
 
 def index(request):
-    template_name=Dynamic_inheritance(request)
-    context=community_information()
-    context['template_name']=template_name
-    return render(request, "user/index_user.html",context)
+    info_dic = request.session.get('info')
+    mobile_phone = info_dic['mobile_phone']
+    item = User.objects.filter(mobile_phone=mobile_phone).first()
+    if item.grade == '2':
+        return redirect('/older/index/')
+    template_name = Dynamic_inheritance(request)
+    context = community_information()
+    context['template_name'] = template_name
+    return render(request, "user/index_user.html", context)
+
+
+def older_index(request):
+    mobile_phone = request.session["info"]["mobile_phone"]
+    print(mobile_phone)
+    elder = Elder.objects.filter(mobile_phone=mobile_phone).first()
+    if elder:
+        if elder.birthday:
+            age = elder.calculate_age()
+        else:
+            age = None
+        elder.gender = GENDER_CHOICES[elder.gender]
+        context = {
+            'item': elder,
+            'age': age
+        }
+
+        return render(request, "user/older_index.html", context)
+    context = {}
+    return render(request, "user/older_index_none.html", context)
 
 
 def profile(request):
@@ -67,3 +90,37 @@ def community_activity(request):
     return render(request, "user/community_activity.html", context=context)
 
 
+def staff_information(request):
+    mobile_phone = request.session["info"]["mobile_phone"]
+    staff = Staff.objects.filter(mobile_phone=mobile_phone).first()
+    if staff:
+        if staff.birthday:
+            age = staff.calculate_age()
+        else:
+            age = None
+        staff.gender = GENDER_CHOICES[staff.gender]
+        context = {
+            'item': staff,
+            'age': age
+        }
+
+        return render(request, "user/staff_index.html", context)
+    context = {}
+    return render(request, "user/staff_index_none.html", context)
+
+def volunteer_information(request):
+    mobile_phone = request.session["info"]["mobile_phone"]
+    volunteer = Volunteer.objects.filter(mobile_phone=mobile_phone).first()
+    if volunteer:
+        if volunteer.birthday:
+            age = volunteer.calculate_age()
+        else:
+            age = None
+        volunteer.gender = GENDER_CHOICES[volunteer.gender]
+        context = {
+            'item': volunteer,
+            'age': age
+        }
+        return render(request, "user/volunteer_index.html", context)
+    context = {}
+    return render(request, "user/volunteer_index_none.html", context)

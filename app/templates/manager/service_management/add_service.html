@@ -13,21 +13,47 @@
             transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will cause the page to be wider than 100%.) */
         }
     </style>
+    <style>
+        .card-img-top {
+            height: 200px; /* 设置所有图片高度一致 */
+            object-fit: cover; /* 裁剪图片以填充整个内容框，不会变形 */
+            width: 100%; /* 图片宽度自动适应容器宽度 */
+        }
+
+        .card-body {
+            min-height: 150px; /* 保持所有卡片的内容区域高度一致 */
+        }
+
+    </style>
 {% endblock %}
 
 {% block app-content %}
     <div class="container mt-4">
+        <!-- begin::page-header -->
+        <div class="page-header d-flex justify-content-between">
+            <div><h4>养老服务</h4></div>
+            <div>
+                <button class="btn btn-primary" onclick="window.location.href='{% url 'service_list' %}'"><i class="ti-user m-r-5"></i>我的服务订单</button>
+            </div>
+        </div>
         <div class="row">
             {% for service in services %}
                 <div class="col-md-4">
-                    <div class="card service-card" onclick="location.href='{% url 'service_info' %}?id={{ service.id }}';">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Service Type 1">
+                    <div class="card service-card"
+                         onclick="location.href='{% url 'service_info' %}?id={{ service.id }}';">
+                        {% if service.service_photo %}
+                            <img src="{{ service.service_photo.url }}" class="card-img-top" alt="Service Image">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x200" class="card-img-top"
+                                 alt="Service Default Image">
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ service.name }}</h5>
                             <p class="card-text">{{ service.description }}</p>
-                            <div class="card-footer">
-                                <h5 class="d-inline-block">费用：￥{{ service.cost }}</h5>
-                                <a href="{% url 'add_service' %}?id={{ service.id }}" class="btn btn-primary float-right">立即下单</a>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">费用：￥{{ service.cost }}</h5>
+                                <a href="{% url 'add_service' %}?id={{ service.id }}"
+                                   class="btn btn-primary">立即下单</a>
                             </div>
                         </div>
                     </div>
@@ -35,6 +61,7 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}
 
 {% block app-foot %}

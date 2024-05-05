@@ -6,6 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 from django.db.models import Q, Count
 from django.db.models.functions import TruncYear, TruncMonth
+
+from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
 from app.models import Volunteer, User
@@ -18,7 +20,10 @@ GENDER_CHOICES = {
     'U': '未知',}
 def add_volunteer(request):
     if request.method == "GET":
-        return render(request, "manager/volunteer_management/add_volunteer.html")
+        context={}
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
+        return render(request, "manager/volunteer_management/add_volunteer.html",context)
 
     # 获取表单数据
     created_by_id = request.session["info"]["user_id"]
@@ -78,11 +83,16 @@ def list_volunteer(request):
     context = {
         "page_obj": page_obj,
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/volunteer_management/list_volunteer.html", context)
 
 
 def select_volunteer(request):
-    return render(request, "manager/volunteer_management/select_volunteer.html")
+    context={}
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
+    return render(request, "manager/volunteer_management/select_volunteer.html",context)
 
 
 def modify_volunteer(request):
@@ -106,6 +116,8 @@ def modify_volunteer(request):
             "page_obj": page_obj,
             "key": key
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/volunteer_management/modify_volunteer.html",context)
 
     updated_by_id=request.session["info"]["user_id"]
@@ -207,6 +219,8 @@ def analyze_volunteer(request):
         'check_year': last_year
     }
     print(context)
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/volunteer_management/analyze_volunteer.html",context=context)
 
 
@@ -223,9 +237,15 @@ def volunteer_info(request):
             'item': volunteer,
             'age': age
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/volunteer_management/volunteer_info.html", context)
+    context = {
 
-    return render(request, "manager/volunteer_management/volunteer_info_none.html")
+    }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
+    return render(request, "manager/volunteer_management/volunteer_info_none.html",context)
 
 
 def modify_volunteer_basic(request):
@@ -241,6 +261,8 @@ def modify_volunteer_basic(request):
             'item': volunteer,
             'age': age
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/volunteer_management/modify_volunteer_basic.html",context)
     updated_by_id = request.session["info"]["user_id"]
     updated_by=User.objects.filter(mobile_phone=updated_by_id).first()

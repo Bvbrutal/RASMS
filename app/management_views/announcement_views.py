@@ -6,17 +6,23 @@ from django.shortcuts import render
 from app.components.Dynamic_inheritance import Dynamic_inheritance
 from app.components.Pagination import Pagination
 from app.management_views.configuration import items_per_page
-from app.models import CommunityAnnouncement, User
+from app.models import CommunityAnnouncement, User, VisitNumber
 from django.db.models import Q, Count
 from django.utils.timezone import now
 import re
 
+from app.script.View_count import view_count
+from app.script.visit_info import change_info
+
 
 def announcement_list(request):
-    communityAnnouncements = CommunityAnnouncement.objects.filter(is_active=True).order_by("-published_date")
+    communityAnnouncements = CommunityAnnouncement.objects.filter(is_active=True,is_save=False).order_by("-published_date")
     page_obj = Pagination(request, communityAnnouncements,4)
+    visit_numbers = {vn.id: vn.count for vn in VisitNumber.objects.all()}
+    for announcement in page_obj.object_list:
+        announcement.visit_count = visit_numbers.get(announcement.id, 0)
     context = {
-        "page_obj": page_obj
+        "page_obj": page_obj,
     }
     template_name = Dynamic_inheritance(request)
     context['template_name'] = template_name
@@ -31,6 +37,7 @@ def announcement_info(request):
     }
     template_name = Dynamic_inheritance(request)
     context['template_name'] = template_name
+    view_count(id,'announcement_info')
     return render(request, "manager/announcement/announcement_info.html", context)
 
 
@@ -39,6 +46,8 @@ def announcement_add(request):
         context = {
 
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/announcement/announcement_add.html", context)
     # 从请求数据中获取字段值
     title = request.POST.get('title')
@@ -112,6 +121,8 @@ def announcement_modify(request):
             "page_obj": page_obj,
             "key": key
         }
+        template_name = Dynamic_inheritance(request)
+        context['template_name'] = template_name
         return render(request, "manager/announcement/announcement_modify.html", context)
 
     updated_by_id = request.session["info"]["user_id"]
@@ -147,6 +158,7 @@ def announcement_modify_basic(request):
         published_date = request.POST.get('published_date') or None
         expiry_date = request.POST.get('expiry_date') or None
         status = request.POST.get('status') or None
+        print(status)
         content_text = re.sub('<[^<]+?>', '', content.strip())
         # 获取上传的文件
         uploaded_file = request.FILES.get('pic1') or None
@@ -155,7 +167,6 @@ def announcement_modify_basic(request):
         is_save = request.POST.get('is_active') or True
         if is_save == 'False':
             is_save = False
-        print(is_save)
         if is_exists.exists():
             item = is_exists.first()
             if uploaded_file:
@@ -195,4 +206,6 @@ def announcement_modify_basic(request):
     context = {
         "item": communityAnnouncement,
     }
+    template_name = Dynamic_inheritance(request)
+    context['template_name'] = template_name
     return render(request, "manager/announcement/announcement_modify_basic.html", context)

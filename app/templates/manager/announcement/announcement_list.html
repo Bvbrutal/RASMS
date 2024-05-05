@@ -68,7 +68,7 @@
                                     <div class="a-meta">
                             <span class="float-left d-none d-md-block">
                             <span class="mr-2"><i class="kicon i-calendar"></i>{{ item.published_date }}</span>
-                            <span class="mr-2"><i class="kicon i-comments"></i>浏览量</span></span>
+                            <span class="mr-2"><i class="kicon i-comments"></i>浏览量 {{ item.visit_count }}</span></span>
                                         <span class="float-right"><a
                                                 href="{% url 'announcement_info' %}?id={{ item.id }}">阅读全文<i
                                                 class="kicon i-rightbutton"></i></a></span>

@@ -1,5 +1,7 @@
 import json
 import os
+
+from django.db.models import Count
 from django.http import JsonResponse
 import json
 import re
@@ -11,8 +13,24 @@ from django.utils.timezone import now
 
 from RASMS import settings
 from app.management_views.configuration import GENDER_CHOICES
-from app.models import User
+from app.models import User, ServiceOrder, Service
 from app.user_views import USER_TYPES
+
+STATUS_CHOICES = (
+    ('pending', '待处理'),
+    ('accepted', '已接单'),
+    ('in_progress', '进行中'),
+    ('completed', '已完成'),
+    ('cancelled', '已取消'),
+)
+SERVICE_TYPES = (
+    ('daily_care', '日常护理'),
+    ('medical_care', '医疗护理'),
+    ('rehabilitation', '康复护理'),
+    ('leisure', '休闲活动'),
+    ('education', '教育活动'),
+    ('mental_health', '精神健康')
+)
 
 
 def accont_api(request):
@@ -33,15 +51,12 @@ def accont_api(request):
     return JsonResponse(context)
 
 
-
-
 def update_profile(request):
     datas = json.loads(request.body)
     mobile_phone = datas.get('mobile_phone_old')
     new_phone = datas.get('phone')
     new_mobile_phone = datas.get('mobile_phone')
     email = datas.get('email')
-
 
     # 更新用户信息
     search_result = User.objects.filter(mobile_phone=mobile_phone)
@@ -69,7 +84,6 @@ def update_profile(request):
     if User.objects.exclude(mobile_phone=mobile_phone).filter(mobile_phone=new_mobile_phone).exists():
         return JsonResponse({'ret': 2, 'message': '该手机号已经注册'}, status=200)
 
-
     # 更详尽的信息更新
     gender = next((key for key, value in GENDER_CHOICES if value == datas['gender']), None)
     if search_result.exists():
@@ -87,7 +101,6 @@ def update_profile(request):
         return JsonResponse({'ret': 1, 'message': '修改成功'}, status=200)
 
     return JsonResponse({'ret': 0, 'message': '用户未找到'}, status=200)
-
 
 
 def logging(request):
@@ -123,7 +136,7 @@ def logging(request):
             "operation_time": fomat_time,
             "operator": log.operator_id,  # 假设是外键关联到操作员的 ID
             "operation_content": log.operation_content,
-            "operation_type":log.get_operation_type_display()
+            "operation_type": log.get_operation_type_display()
         })
         if len(updated_loggings) > 6:
             break
@@ -143,3 +156,61 @@ def image_upload(request):
         print(image_url)
         return JsonResponse({'location': image_url})
     return JsonResponse({'error': 'Failed to upload image'})
+
+
+def service_status(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        status = ServiceOrder.objects.filter(id=id).first().status
+        return JsonResponse({'status': status}, safe=False, status=200)
+    return JsonResponse({'error': '请求错误'}, safe=False, status=200)
+
+
+def service_type_distribution(request):
+    # Aggregate service types and count them
+    data = Service.objects.values('type').annotate(total=Count('type')).order_by('type')
+    service_types = dict(SERVICE_TYPES)
+    response_data = {
+        'categories': [service_types.get(item['type'], "未知服务") for item in data],
+        'values': [item['total'] for item in data]
+    }
+    return JsonResponse(response_data)
+
+
+def order_status_distribution(request):
+    # Aggregate order statuses and count them
+    data = ServiceOrder.objects.values('status').annotate(total=Count('status')).order_by('status')
+    status_descriptions = dict(STATUS_CHOICES)
+    response_data = {
+        'categories': [status_descriptions.get(item['status'], "未知状态") for item in data],
+        'values': [item['total'] for item in data]
+    }
+    return JsonResponse(response_data)
+
+
+from django.db.models.functions import TruncDay
+
+from django.utils import timezone
+from datetime import timedelta
+def daily_orders_stats(request):
+    # 获取今天的日期并计算30天前的日期
+    today = timezone.now().date()
+    start_date = today - timedelta(days=90)
+
+    # 过滤最近30天的订单，然后按天聚合
+    data = ServiceOrder.objects.filter(
+        date_scheduled__date__gte=start_date
+    ).annotate(
+        date=TruncDay('date_scheduled')  # 将 datetime 截断到天
+    ).values('date').annotate(
+        total=Count('id')  # 按天计算订单数量
+    ).order_by('date')  # 按日期排序
+
+    # 为前端准备数据
+    dates = [item['date'].strftime('%Y-%m-%d') if item['date'] else '未知日期' for item in data]
+    counts = [item['total'] for item in data]
+
+    return JsonResponse({
+        'dates': dates,  # 日期列表
+        'counts': counts  # 每天对应的订单数量
+    })

@@ -6,25 +6,70 @@
 {% endblock %}
 
 {% block app-content %}
- <div class="container mt-4">
-        <div class="card">
-            <div class="card-header">
-                服务订单详情
+    <div class="container mt-4">
+        {% if item.service_photo and item.service_photo.url %}
+            <div class="card"
+                 style="background: url('{{ item.service_photo.url }}') no-repeat center center; background-size: cover;">
+                <div class="card-header">详情信息
+                    <div>
+                        <div class="card-body bg-light opacity-95">
+                            <p class="card-text"><strong>服务名称:</strong> {{ item.customerName }}</p>
+                            <p class="card-text"><strong>服务内容:</strong> {{ item.content|safe }}</p>
+                            <p class="card-text"><strong>服务类型:</strong> {{ item.get_type_display }}</p>
+                            <p class="card-text"><strong>服务对象:</strong> {{ item.target_group|default:'暂无' }}</p>
+                            <p class="card-text"><strong>服务时间:</strong> {{ item.service_hours|default:'暂无' }}</p>
+                            <p class="card-text"><strong>服务区域:</strong> {{ item.service_area|default:'暂无' }}</p>
+                            <p class="card-text"><strong>资质认证:</strong> {{ item.qualifications|default:'暂无' }}</p>
+                            <p class="card-text">
+                                <strong>客户评价:</strong> {{ item.customer_reviews|default:"暂无评价" }}
+                            </p>
+                            <p class="card-text"><strong>附加费用:</strong> {{ item.additional_costs|default:"无" }}</p>
+                            <p class="card-text"><strong>服务费用:</strong> {{ item.cost|floatformat:2|default:'暂无' }}
+                                元
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent text-muted">
+                            <button onclick="history.back();" class="btn btn-primary">返回
+                            </button>
+                            <button onclick="window.location.href='{% url 'add_service' %}?id={{ item.id }}';"
+                                    class="btn btn-primary">立即下单
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">订单信息</h5>
-                <p class="card-text"><strong>客户名:</strong> {{ item.elder.username }}</p>
-                <p class="card-text"><strong>服务名称:</strong> {{ item.service.name }}</p>
-                <p class="card-text"><strong>预定日期:</strong> {{ item.date_scheduled|date:"Y/m/d H:i:s" }}</p>
-                <p class="card-text"><strong>订单状态:</strong> {{ item.get_status_display }}</p>
-                <p class="card-text"><strong>订单评分:</strong> {{ item.rating|default:"未评分" }}</p>
-                <p class="card-text"><strong>客户反馈:</strong> {{ item.feedback|default:"无" }}</p>
-                <p class="card-text"><strong>订单备注:</strong> {{ item.notes|default:"无" }}</p>
+        {% else %}
+            <div class="card"
+                 style="background: url('{% static 'assets/media/image/image1.png' %}') no-repeat center center; background-size: cover;">
+                <div class="card-header">详情信息
+                    <div>
+                        <div class="card-body bg-light opacity-95">
+                            <p class="card-text"><strong>服务名称:</strong> {{ item.name }}</p>
+                            <p class="card-text"><strong>服务内容:</strong> {{ item.content|safe }}</p>
+                            <p class="card-text"><strong>服务类型:</strong> {{ item.get_type_display }}</p>
+                            <p class="card-text"><strong>服务对象:</strong> {{ item.target_group|default:'暂无' }}</p>
+                            <p class="card-text"><strong>服务时间:</strong> {{ item.service_hours|default:'暂无' }}</p>
+                            <p class="card-text"><strong>服务区域:</strong> {{ item.service_area|default:'暂无' }}</p>
+                            <p class="card-text"><strong>资质认证:</strong> {{ item.qualifications|default:'暂无' }}</p>
+                            <p class="card-text">
+                                <strong>客户评价:</strong> {{ item.customer_reviews|default:"暂无评价" }}
+                            </p>
+                            <p class="card-text"><strong>附加费用:</strong> {{ item.additional_costs|default:"无" }}</p>
+                            <p class="card-text"><strong>服务费用:</strong> {{ item.cost|floatformat:2|default:'暂无' }}
+                                元
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent text-muted">
+                            <button onclick="history.back();" class="btn btn-primary">返回
+                            </button>
+                            <button onclick="window.location.href='{% url 'add_service' %}?id={{ item.id }}';"
+                                    class="btn btn-primary">立即下单
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-footer text-muted">
-                <a href="#" class="btn btn-primary">返回</a>
-            </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock %}
 

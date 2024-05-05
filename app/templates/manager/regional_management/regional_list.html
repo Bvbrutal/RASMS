@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block app-head %}
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <title>区域分布和排班管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .highlight {
             background-color: #f0f0f0;
@@ -84,119 +84,122 @@
         }
 
     </style>
+
 {% endblock %}
 
 {% block app-content %}
     <div class="container mt-4">
-        <h2 class="mb-4">区域分布和排班管理</h2>
-        <div class="search-bar mb-3">
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="搜索姓名或区域..."
-                   class="form-control">
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="schedule">
-                    <div class="day" id="monday">
-                        <h3>Monday</h3>
-                        <p>9:00 AM - Team Meeting</p>
-                        <p>11:00 AM - Project Work</p>
-                        <p>2:00 PM - Client Call</p>
-                        <p>4:00 PM - Documentation</p>
-                    </div>
-                    <div class="day" id="tuesday">
-                        <h3>Tuesday</h3>
-                        <p>10:00 AM - Marketing Review</p>
-                        <p>1:00 PM - Lunch Break</p>
-                        <p>2:00 PM - Design Session</p>
-                        <p>3:30 PM - Coffee Break</p>
-                        <p>4:00 PM - Coding</p>
-                    </div>
-                    <div class="day" id="wednesday">
-                        <h3>Wednesday</h3>
-                        <p>8:00 AM - Yoga Session</p>
-                        <p>9:00 AM - Code Review</p>
-                        <p>12:00 PM - Lunch Break</p>
-                        <p>1:00 PM - Workshop</p>
-                    </div>
-                    <div class="day" id="thursday">
-                        <h3>Thursday</h3>
-                        <p>9:00 AM - Client Presentation</p>
-                        <p>12:00 PM - Team Lunch</p>
-                        <p>1:30 PM - Project Development</p>
-                    </div>
-                    <div class="day" id="friday">
-                        <h3>Friday</h3>
-                        <p>10:00 AM - Brainstorming Session</p>
-                        <p>12:00 PM - Review Meeting</p>
-                        <p>3:00 PM - Sprint Planning</p>
-                    </div>
-                    <div class="day" id="saturday">
-                        <h3>Saturday</h3>
-                        <p>10:00 AM - Optional Coding Time</p>
-                        <p>1:00 PM - Team Outdoor Activity</p>
-                    </div>
-                    <div class="day" id="sunday">
-                        <h3>Sunday</h3>
-                        <p>Day Off</p>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-4">排班展示</h2>
+            </div>
+            <div class="card-body" style="background-color: #e5e7ea">
+                <div class="search-bar mb-3">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="schedule">
+                            <div class="day" id="time">
+                                <h3>时间段</h3>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            08:00-10:20
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            10:20-12:40
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            12:40-15:00
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            15:00-17:20
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            17:20-19:40
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            19:40-22:00
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            {% for week,shifts in shifts_by_weekday.items %}
+                                <div class="day" id="{{ week }}">
+                                    <h3>{{ week }}</h3>
+                                    <table>
+                                        {% for shift in shifts %}
+                                            <tr>
+                                                <td>
+                                                    {{ shift.staff_name }}、{{ shift.volunteer_name }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
-            {#            <div class="col-md-6">#}
-            {#                <h3>工作人员排班</h3>#}
-            {#                <table class="table table-striped" id="staffTable">#}
-            {#                    <thead class="thead-dark">#}
-            {#                    <tr>#}
-            {#                        <th>员工id</th>#}
-            {#                        <th>姓名</th>#}
-            {#                        <th>分配区域</th>#}
-            {#                        <th>开始时间</th>#}
-            {#                        <th>结束时间</th>#}
-            {#                    </tr>#}
-            {#                    </thead>#}
-            {#                    <tbody>#}
-            {#                    {% for item in sa %}#}
-            {#                        <tr>#}
-            {#                            <td>{{ item.staff.id }}</td>#}
-            {#                            <td>{{ item.staff.username }}</td>#}
-            {#                            <td>{{ item.assigned_area }}</td>#}
-            {#                            <td>{{ item.shift_start }}</td>#}
-            {#                            <td>{{ item.shift_end }}</td>#}
-            {#                        </tr>#}
-            {#                    {% endfor %}#}
-            {#                    </tbody>#}
-            {#                </table>#}
-            {#            </div>#}
-            {#            <div class="col-md-6">#}
-            {#                <h3>义工排班</h3>#}
-            {#                <table class="table table-striped" id="volunteerTable">#}
-            {#                    <thead class="thead-dark">#}
-            {#                    <tr>#}
-            {#                        <th>义工id</th>#}
-            {#                        <th>姓名</th>#}
-            {#                        <th>分配区域</th>#}
-            {#                        <th>开始时间</th>#}
-            {#                        <th>结束时间</th>#}
-            {#                    </tr>#}
-            {#                    </thead>#}
-            {#                    <tbody>#}
-            {#                    {% for item in va %}#}
-            {#                        <tr>#}
-            {#                            <td>{{ item.volunteer.id }}</td>#}
-            {#                            <td>{{ item.volunteer.username }}</td>#}
-            {#                            <td>{{ item.assigned_area }}</td>#}
-            {#                            <td>{{ item.shift_start }}</td>#}
-            {#                            <td>{{ item.shift_end }}</td>#}
-            {#                        </tr>#}
-            {#                    {% endfor %}#}
-            {#                    </tbody>#}
-            {#                </table>#}
-            {#            </div>#}
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-4">排班人员联系方式</h2>
+            </div>
+            <div class="card-body" style="background-color: #e5e7ea">
+                <div class="search-bar mb-3">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% for week, shifts in shifts_by_weekday.items %}
+                            <h2>{{ week }}</h2>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>员工姓名</th>
+                                    <th>员工电话</th>
+                                    <th>义工姓名</th>
+                                    <th>义工电话</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for shift in shifts %}
+                                    <tr>
+                                        <td>{{ shift.staff_name }}</td>
+                                        <td>{{ shift.staff_phone }}</td>
+                                        <td>{{ shift.volunteer_name }}</td>
+                                        <td>{{ shift.volunteer_phone }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block app-foot %}
-    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
     <script>
         function filterTable() {
             var input, filter, tables, tr, td, i, txtValue;

@@ -3,6 +3,52 @@
 
 {% block app-head %}
     <title>添加服务订单</title>
+    <link href="{% static "assets/css/bootstrap-fileinput.css" %}" rel="stylesheet">
+    <script src="{% static "plugin/yui3-3.18.1/yui3/build/yui/yui-min.js" %}"></script>
+    <script>
+        YUI({
+            modules: {
+                'trip-calendar': {
+                    fullpath: "{% static 'vendors/datepicker/trip-calendar.js' %}",
+                    type: 'js',
+                    requires: ['trip-calendar-css']
+                },
+                'trip-calendar-css': {
+                    fullpath: "{% static 'vendors/datepicker/trip-calendar.css' %}",
+                    type: 'css'
+                }
+            }
+        }).use('trip-calendar', function (Y) {
+
+            /**
+             * 弹出式日历实例
+             * 将日历与指定的触发元素绑定
+             * 日历可根据浏览器窗口大小，自动调整显示位置
+             */
+            var oCal = new Y.TripCalendar({
+                //绑定日历的节点，支持选择器模式，可批量设置（必选）
+                triggerNode: '.J_Item, #J_Item-1, #J_Item-2, .J_Link'
+            });
+
+            oCal.on('dateclick', function (e) {
+                this.getCurrentNode().setAttribute('data-date', e.date);
+            });
+
+            //显示日历时自定义事件
+            oCal.on('show', function () {
+                var v = this.getCurrentNode().getAttribute('data-date');
+                this.set('date', v || new Date);
+                this.set('selectedDate', v).render();
+            });
+
+            //解决chrome的foucs事件bug
+            Y.on('click', function (e) {
+                e.currentTarget.focus();
+            }, 'button, .J_Link');
+        });
+    </script>
+    <!-- sweetalert2 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block app-content %}
@@ -13,33 +59,162 @@
                 服务详情
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>服务名称：</strong>{{ service.name }}</li>
-                <li class="list-group-item"><strong>服务描述：</strong>{{ service.description }}</li>
-                <li class="list-group-item"><strong>服务费用：</strong>￥{{ service.cost }}</li>
+                <li class="list-group-item"><strong>服务名称:</strong> {{ item.name }}</li>
+                <li class="list-group-item"><strong>服务类型:</strong> {{ item.get_type_display }}</li>
+                <li class="list-group-item"><strong>服务对象:</strong> {{ item.target_group }}</li>
+                <li class="list-group-item"><strong>服务时间:</strong> {{ item.service_hours }}</li>
+                <li class="list-group-item"><strong>服务区域:</strong> {{ item.service_area }}</li>
+                <li class="list-group-item"><strong>资质认证:</strong> {{ item.qualifications }}</li>
+                <li class="list-group-item"><strong>客户评价:</strong> {{ item.customer_reviews|default:"暂无评价" }}
+                </li>
+                <li class="list-group-item"><strong>附加费用:</strong> {{ item.additional_costs|default:"无" }}</li>
+                <li class="list-group-item"><strong>服务费用:</strong> {{ item.cost | floatformat:2 }} 元</li>
             </ul>
         </div>
 
-        <form class="mt-4">
+        <form class="mt-4" id="formId">
             <h4>填写您的信息</h4>
             <div class="form-group">
-                <label for="customerName">客户姓名</label>
-                <input type="text" class="form-control" id="customerName" placeholder="请输入您的姓名">
+                <label for="customerName"><span
+                        style="color: red; font-weight: bold;">*</span>姓名</label>
+                <input name="customerName" type="text" class="form-control" id="customerName" placeholder="请输入您的姓名">
             </div>
             <div class="form-group">
-                <label for="customerContact">联系方式</label>
-                <input type="text" class="form-control" id="customerContact" placeholder="请输入您的联系方式">
+                <label for="customerContact"><span
+                        style="color: red; font-weight: bold;">*</span>联系方式</label>
+                <input type="text" name="customerContact" class="form-control" id="customerContact" placeholder="请输入您的手机号">
+            </div>
+            <div class="form-group" style="display: flex;align-content: center;flex-direction: column;">
+                <label for="date_scheduled"><span
+                        style="color: red; font-weight: bold;">*</span>预定时间</label>
+                <input name="date_scheduled" type="text" class="J_Item form-control" id="date_scheduled">
             </div>
             <div class="form-group">
                 <label for="additionalNotes">附加备注</label>
-                <textarea class="form-control" id="additionalNotes" rows="3"
+                <textarea name="additionalNotes" class="form-control" id="additionalNotes" rows="3"
                           placeholder="有任何特别需求或备注请填写此处"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">提交订单</button>
+            <button type="button" class="btn btn-primary" onclick="saveInfo()">提交订单</button>
         </form>
     </div>
 
 {% endblock %}
 
 {% block app-foot %}
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap-fileinput.js" %}"></script>
+    <script src="{% static 'js/jquery.validate.min.js' %}"></script>
+    <!-- sweetalert2 -->
+    <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+    <!-- notify -->
+    <script src="{% static 'js/notify.js' %}"></script>
+    <script>
+        function saveInfo() {
+            var form = $("#formId");
+            var formData = new FormData(document.getElementById('formId'));
+            formData.append('id', {{ item.id }})
+            form.validate({
+                rules: {
+                    customerName: {
+                        required: true
+                    },
+                    customerContact: {
+                        required: true,
+                        rangelength: [11, 11]
+                    },
 
+                    date_scheduled: {
+                        required: true
+                    }
+                },
+                messages: {
+                    customerName: "请填写名字",
+                    customerContact: {
+                        required: "请填写手机号",
+                        rangelength: "手机号不正确"
+                    },
+                    date_scheduled: {
+                        required: "请填写预定时间"
+                    },
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                    element.addClass('is-invalid');
+                    error.addClass('invalid-feedback');
+                }
+            });
+            if (!form.valid()) {
+                $.notify({
+                    message: '<strong>请完善订单信息</strong>'
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    timer: 1000,
+                    animate: {
+                        enter: 'animated zoomIn',
+                        exit: 'animated zoomOut'
+                    }
+                });
+                return;
+            }
+
+            // 获取CSRF token的函数
+            function getCsrfToken() {
+                return $('[name="csrfmiddlewaretoken"]').val();
+            }
+
+            $("#save-button").text('订单提交中');
+            $('#save-button').addClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', true);
+            // 使用 jQuery 的 $.ajax 方法发送数据
+            $.ajax({
+                type: "POST", // 请求方式
+                url: "{% url 'add_service' %}", // 请求的 URL
+                processData: false, // 告诉jQuery不要处理发送的数据
+                contentType: false, // 告诉jQuery不要设置内容类型头
+                data: formData, // 表单数据
+                beforeSend: function (xhr) {
+                    // 从cookie中获取CSRF令牌并设置到请求头中
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                },
+                success: function (data) {
+                    // 请求成功时的回调函数
+                    if (data.ret === 1) {
+                        swal.fire({
+                            type: 'success',
+                            title: '提交成功',
+                            confirmButtonText: '查看我的订单',
+                            confirmButtonClass: 'btn btn-info',
+                            onClose: () => {
+                                window.location.href = '{% url 'service_list' %}';
+                            }
+                        });
+                    } else {
+                        $("#save-button").text('提交订单');
+                        $('#save-button').removeClass('kt-spinner kt-spinner--right kt-spinner--sm kt-spinner--light').attr('disabled', false);
+                        $.notify({
+                            message: '<strong>' + data.msg + '</strong>'
+                        }, {
+                            type: 'danger',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            timer: 2000,
+                            animate: {
+                                enter: 'animated zoomIn',
+                                exit: 'animated zoomOut'
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // 请求失败时的回调函数
+                    console.log('提交订单失败: ' + error);
+                }
+            });
+        }
+    </script>
 {% endblock %}

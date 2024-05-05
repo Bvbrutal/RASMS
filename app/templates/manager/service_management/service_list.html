@@ -1,0 +1,383 @@
+{% extends template_name %}
+{% load static %}
+
+{% block app-head %}
+    <title>我的服务订单列表</title>
+    <style>
+        .modal-footer-centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/search.css" %}">
+    <style>
+
+        #searchForm {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #searchKey {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
+            width: 100%;
+            transition: box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #searchKey:focus {
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #sub-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #sub-button:hover {
+            background-color: #45a049;
+        }
+
+        .btn-feedback {
+            background-color: #34568B; /* 深蓝色 */
+            color: white; /* 文本颜色设置为白色 */
+            border: none; /* 移除边框 */
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .btn-feedback:hover {
+            background-color: #274472; /* 悬停时的颜色稍微深一点 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+    <style>
+        /* 星级评分基本样式 */
+        .star-rating .star {
+            cursor: pointer;
+            color: #ccc; /* 默认的灰色星星 */
+            transition: color 0.4s ease, transform 0.2s ease; /* 添加颜色变换和放大效果的过渡 */
+            display: inline-block; /* 确保星星水平排列 */
+        }
+
+        /* 鼠标悬停或选中状态下的样式 */
+        .star-rating .star.rated,
+        .star-rating .star:hover,
+        .star-rating .star.hover {
+            color: orange; /* 选中或悬浮时的颜色 */
+            transform: scale(1.3); /* 放大效果 */
+        }
+
+        /* 星星排列方向 */
+        .star-rating {
+            font-size: 24px;
+            unicode-bidi: bidi-override;
+        }
+
+    </style>
+{% endblock %}
+
+{% block app-content %}
+    <!-- begin::main-content -->
+    <div class="main-content">
+
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div><h2 class="mb-4">我的服务订单列表</h2></div>
+                        <div><small>提示：只会显示该账号绑定的手机号订单</small></div>
+                    </div>
+
+                    {% for order in orders %}
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                订单详情 - {{ order.service.name }}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ order.service.name }} - {{ order.get_status_display }}</h5>
+                                <p class="card-text">
+                                    <strong>预定时间：</strong> {{ order.date_scheduled|date:"Y-m-d H:i" }}</p>
+                                <p class="card-text">
+                                    <strong>评分：</strong> {{ order.get_rating_display|default:"尚未评分" }}</p>
+                                <p class="card-text"><strong>反馈：</strong> {{ order.feedback|default:"无反馈" }}</p>
+
+                                <!-- 附加操作按钮 -->
+                                <button class="btn btn-secondary btn-sm" type="button"
+                                        onclick="window.location.href='{% url 'serviceorder_info' %}?id={{ order.id }}'">
+                                    查看详情
+                                </button>
+                                {% if order.status == 'pending' %}
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="setCurrentitemId(this)"
+                                            data-id="{{ order.id }}" data-toggle="modal" data-target="#delete-verify"
+                                            data-whatever="@fat">取消订单
+                                    </button>
+                                {% elif order.status == 'completed' %}
+                                    {% if not order.rating %}
+                                        <button class="btn btn-sm btn-feedback"
+                                                onclick="$('#feedbackModal').modal('show');setorderId(this);"
+                                                data-id="{{ order.id }}"
+                                                style="border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s;">
+                                            订单反馈
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-center">您当前没有订单。</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- end::main-content -->
+        <!-- modal -->
+        <div class="modal fade" id="delete-verify" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">取消订单验证</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="ti-close"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <p>是否确定取消该订单？</p>
+                            <div class="modal-footer modal-footer-centered">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary" onclick="cancel_service()">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Error Modal -->
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">提示</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 错误信息将在这里显示 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="feedbackModalLabel">订单反馈</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 反馈表单 -->
+                        <form id="feedbackForm">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label for="rating">评分：</label>
+                                    <div class="star-rating" id="star-rating">
+                                        <span class="star" data-value="1">&#9733;</span>
+                                        <span class="star" data-value="2">&#9733;</span>
+                                        <span class="star" data-value="3">&#9733;</span>
+                                        <span class="star" data-value="4">&#9733;</span>
+                                        <span class="star" data-value="5">&#9733;</span>
+                                    </div>
+                                    <input type="hidden" id="rating" name="rating" value="0">  <!-- 隐藏的输入字段 -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback">反馈：</label>
+                                <textarea class="form-control" id="feedback" name="feedback" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="submitFeedback()">提交反馈</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block app-foot %}
+    <script>
+        var orderId;
+
+        function setorderId(element) {
+            // 从被点击的按钮中获取数据属性data-id的值
+            orderId = $(element).data('id');
+        }
+
+        function submitFeedback() {
+            var rating = $('#feedbackModal .star-rating').attr('data-rating');  // 从星级评分组件获取评分
+            var feedback = $('#feedback').val();  // 获取反馈文本框的值
+
+            // 这里发送AJAX请求到后端处理反馈
+            console.log('Order ID:', orderId, 'Rating:', rating, 'Feedback:', feedback);
+            $.ajax({
+                url: '{% url 'submit_feedback' %}',  // 后端接收评分的URL
+                type: 'POST',
+                data: {
+                    'order_id': orderId,
+                    'rating': rating,
+                    'feedback': feedback
+                },
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')  // 需要从cookies获取CSRF token
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '反馈提交成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '反馈提交失败，请重试！');
+                    }
+                    window.location.reload("/management/service_list/");
+                },
+                error: function (xhr, status, error) {
+                    sessionStorage.setItem('statusMessage', '反馈提交失败，请重试！');
+                    window.location.reload("/management/service_list/");
+                }
+            });
+        }
+
+        // 辅助函数：获取cookie中的值
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var statusMessage = sessionStorage.getItem('statusMessage');
+            if (statusMessage) {
+                // 设置模态框中的消息
+                $('#errorModal .modal-body').text(statusMessage);
+                // 显示模态框
+                $('#errorModal').modal('show');
+                // 从sessionStorage中移除消息
+                sessionStorage.removeItem('statusMessage');
+            }
+        });
+
+    </script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var currentitemId;
+
+        function setCurrentitemId(element) {
+            // 从被点击的按钮中获取数据属性data-id的值
+            currentitemId = $(element).data('id');
+        }
+
+        const csrftoken = getCookie('csrftoken')
+
+        function cancel_service() {
+            $.ajax({
+                url: '{% url 'cancel_service' %}',
+                type: 'POST',
+                data: {
+                    'id': currentitemId,
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '订单取消成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '订单取消失败！');
+                    }
+                    window.location.reload("/management/service_list/");
+                },
+                error: function (xhr, status, error) {
+                    sessionStorage.setItem('statusMessage', '订单取消失败！');
+                    window.location.reload("/management/service_list/");
+                }
+            });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.star').on('click', function () {
+                var rating = $(this).data('value');
+                $(this).parent().attr('data-rating', rating); // 存储当前评分到父容器
+                updateStars($(this).parent());
+            });
+
+            $('.star').on('mouseenter', function () {
+                updateStars($(this).parent(), $(this).data('value'));
+            });
+
+            $('.star').on('mouseleave', function () {
+                updateStars($(this).parent());
+            });
+
+            function updateStars(wrapper, hoverRating = wrapper.attr('data-rating')) {
+                wrapper.children('.star').each(function () {
+                    var rating = $(this).data('value');
+                    $(this).toggleClass('rated', rating <= hoverRating);
+                });
+            }
+        });
+
+    </script>
+
+{% endblock %}
