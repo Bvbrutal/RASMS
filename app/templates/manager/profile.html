@@ -5,6 +5,12 @@
     <title>账号信息</title>
     <!-- sweetalert2 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/sweetalert2.min.css' %}">
+    <style>
+        .avatar img {
+            cursor: pointer;
+        }
+
+    </style>
 {% endblock %}
 
 {% block app-content %}
@@ -25,20 +31,21 @@
 
                     <div class="card">
                         <div class="card-body text-center">
-                            <figure class="avatar avatar-lg m-b-20">
+                            <figure class="avatar avatar-lg m-b-10" style="cursor: pointer;">
                                 {% if item.user_photo %}
-                                    <img src="{{ item.user_photo.url }}" class="rounded-circle"
-                                         alt="...">
+                                    <img src="{{ item.user_photo.url }}" class="rounded-circle" alt="User Photo"
+                                         id="user-photo">
                                 {% else %}
-                                    <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle"
-                                         alt="...">
+                                    <img src="{% static 'assets/media/image/user/1.png' %}" class="rounded-circle"
+                                         alt="User Photo" id="user-photo">
                                 {% endif %}
                             </figure>
+                            <div><small>点击更换头像</small></div>
                             <h5 class="mb-1">{{ username|default:"匿名用户" }}</h5>
                             <p class="text-muted small">{{ grade }}</p>
                             <p id="bio-display">{{ bio|default:"这个人很懒什么都没留下" }}</p>
                             <a id="edit-info-btn" onclick="editInfo()" class="btn btn-outline-primary">
-                                <i data-feather="edit-2" class="mr-2"></i>编辑个人简介
+                                <i data-feather="edit-2" class="mr-2"></i>编辑个人信息
                             </a>
                         </div>
                         <hr class="m-0">
@@ -93,7 +100,8 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 text-muted">创建时间：</div>
-                                <div id="creation_time-input" class="col-4">{{ item.creation_time|date:'Y/m/d'|default:"" }}</div>
+                                <div id="creation_time-input"
+                                     class="col-4">{{ item.creation_time|date:'Y/m/d'|default:"" }}</div>
                             </div>
                         </div>
                     </div>
@@ -137,6 +145,26 @@
 
     </div>
     <!-- end::main-content -->
+
+
+    <!-- Modal for changing profile picture -->
+    <div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalLabel">更换头像</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" id="photo-input" accept="image/*">
+                    <button id="upload-photo" class="btn btn-primary">上传</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block app-foot %}
@@ -399,6 +427,36 @@
             editButton.setAttribute('onclick', 'editInfo()');
             feather.replace(); // 重新初始化feather icons
         }
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#user-photo').click(function () {
+                $('#photoModal').modal('show');  // 显示模态框
+            });
+
+            $('#upload-photo').click(function () {
+                var fileData = $('#photo-input').prop('files')[0];
+                var formData = new FormData();
+                formData.append('photo', fileData);
+
+                $.ajax({
+                    url: '{% url 'update_photo' %}',  // 替换为你的上传处理URL
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        alert('头像更新成功!');
+                        $('#photoModal').modal('hide'); // 隐藏模态框
+                        $('#user-photo').attr('src', URL.createObjectURL(fileData)); // 更新头像显示
+                    },
+                    error: function () {
+                        alert('上传失败，请重试。');
+                    }
+                });
+            });
+        });
     </script>
 
 {% endblock %}

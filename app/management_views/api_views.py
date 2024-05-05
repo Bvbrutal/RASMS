@@ -40,6 +40,7 @@ def accont_api(request):
     username = serch_result.username
     bio = serch_result.bio
     grade = USER_TYPES[str(serch_result.grade)]
+    print(serch_result.user_photo.url)
     context = {
         'username': username,
         'user_id': user_id,
@@ -214,3 +215,20 @@ def daily_orders_stats(request):
         'dates': dates,  # 日期列表
         'counts': counts  # 每天对应的订单数量
     })
+
+
+def update_photo(request):
+    if request.method == 'POST' and request.FILES.get('photo'):
+        mobile_phone=request.session["info"]["mobile_phone"]
+        user = User.objects.filter(mobile_phone=mobile_phone).first()
+        image_file = request.FILES.get('photo')
+        _, ext = os.path.splitext(image_file.name)
+        image_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
+        if image_file:
+            user.user_photo = image_file
+            user.save()
+            return JsonResponse({'message': '头像更新成功'}, status=200)
+        else:
+            return JsonResponse({'error': '没有接收到文件'}, status=400)
+    else:
+        return JsonResponse({'error': '未认证的用户'}, status=401)

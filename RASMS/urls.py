@@ -54,6 +54,7 @@ urlpatterns = [
                   path('api/services/data/', api_views.service_type_distribution, name='service_type_data'),
                   path('api/orders/data/', api_views.order_status_distribution, name='order_status_data'),
                   path('api/daily_orders_stats/', api_views.daily_orders_stats, name='daily_orders_stats'),
+                  path('api/update_photo/', api_views.update_photo, name='update_photo'),
 
                   # 单项功能
                   path("management/select_event/", manager_views.select_event, name="select_event"),

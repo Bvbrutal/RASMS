@@ -53,7 +53,7 @@
     <!-- begin::navigation header -->
     <header class="navigation-header">
         <figure class="avatar avatar-state-success">
-            <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image">
+            <img src="{% static "assets/media/image/user/1.png" %}" class="rounded-circle" alt="image" id="userImage">
         </figure>
         <div>
             <h5 id="user_name">匿名用户</h5>
@@ -150,7 +150,7 @@
                     <span>公告信息管理</span>
                 </a>
                 <ul>
-                     <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
+                    <li><a href="{% url 'announcement_list' %}">公告展示列表</a></li>
                     <li><a href="{% url 'announcement_add' %}">公告信息发布</a></li>
                     <li><a href="{% url 'announcement_modify' %}">公告信息管理</a></li>
                 </ul>
@@ -294,11 +294,15 @@
         const container1 = document.getElementById('user_name');
         const container2 = document.getElementById('user_grade');
         const container3 = document.getElementById('user_name_2');
+        const userImage = document.getElementById('userImage');
         container1.innerHTML = `<ul>${data.username}</ul>`;
         container2.innerHTML = `<ul>${data.grade}</ul>`;
         if (container3) {
             container3.innerHTML = `${data.username}`;
         }
+        if (data.user_photo && userImage)
+            userImage.src = data.user_photo;
+        console.log(userImage.src);
     }
 
     function show_log(datas) {
@@ -311,7 +315,7 @@
             datas.loggings.forEach(function (item) {
                 var listItem = $("<li>").addClass("list-group-item d-flex align-items-center hide-show-toggler");
                 var contentDiv = $("<div>").addClass("flex-grow-1");
-                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_content);
+                var messagePara = $("<p>").addClass("mb-0 line-height-20 d-flex justify-content-between").text(item.operation_type);
                 var timeSpan = $("<span>").addClass("text-muted small").text(item.operation_time);
                 // 将 P 和 SPAN 元素添加到 DIV 中，然后将 DIV 添加到 LI 中
                 contentDiv.append(messagePara).append(timeSpan);
