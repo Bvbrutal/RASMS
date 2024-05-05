@@ -40,7 +40,6 @@ def accont_api(request):
     username = serch_result.username
     bio = serch_result.bio
     grade = USER_TYPES[str(serch_result.grade)]
-    print(serch_result.user_photo.url)
     context = {
         'username': username,
         'user_id': user_id,
