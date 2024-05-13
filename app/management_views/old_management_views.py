@@ -274,7 +274,9 @@ def analyze_old(request):
 
 def old_info(request):
     id = request.GET.get('id')
-    elder = Elder.objects.filter(mobile_phone=id).first()
+    elder1 = Elder.objects.filter(mobile_phone=id).first()
+    elder2 = Elder.objects.filter(id=id).first()
+    elder=elder1 if elder1 else elder2
     if elder:
         if elder.birthday:
             age = elder.calculate_age()

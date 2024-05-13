@@ -270,7 +270,9 @@ def modify_worker_basic(request):
 
 def worker_info(request):
     old_id = request.GET.get('id')
-    staff = Staff.objects.filter(mobile_phone=old_id).first()
+    staff1 = Staff.objects.filter(mobile_phone=old_id).first()
+    staff2 = Staff.objects.filter(id=old_id).first()
+    staff=staff1 if staff1 else staff2
     if staff:
         if staff.birthday:
             age = staff.calculate_age()

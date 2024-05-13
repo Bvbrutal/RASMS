@@ -232,12 +232,6 @@ class CommunityEvent(models.Model):
         verbose_name_plural = "社区活动"
 
 
-# 社区活动报名人数统计
-class Registration(models.Model):
-    user = models.ForeignKey(Elder, on_delete=models.CASCADE, related_name="registrations")
-    event = models.ForeignKey(CommunityEvent, on_delete=models.CASCADE, related_name="registrations")
-    timestamp = models.DateTimeField(auto_now_add=True)
-
 
 # 社区公告管理
 class CommunityAnnouncement(models.Model):

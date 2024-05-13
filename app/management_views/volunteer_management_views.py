@@ -226,7 +226,9 @@ def analyze_volunteer(request):
 
 def volunteer_info(request):
     volunteer_id = request.GET.get('id')
-    volunteer = Volunteer.objects.filter(mobile_phone=volunteer_id).first()
+    volunteer1 = Volunteer.objects.filter(mobile_phone=volunteer_id).first()
+    volunteer2 = Volunteer.objects.filter(id=volunteer_id).first()
+    volunteer=volunteer1 if volunteer1 else volunteer2
     if volunteer:
         if volunteer.birthday:
             age = volunteer.calculate_age()

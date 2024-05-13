@@ -435,7 +435,7 @@
                             confirmButtonText: '查看详细信息',
                             confirmButtonClass: 'btn btn-info',
                             onClose: () => {
-                                window.location.href = '{% url 'old_info' %}?id={{ item.mobile_phone }}';
+                                window.location.href = '{% url 'old_info' %}?id={{ item.id }}';
                             }
                         });
                     } else if (data.ret === 2) {
