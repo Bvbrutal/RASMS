@@ -62,7 +62,7 @@
         <div class="container">
 
             <!-- begin::page-header -->
-            <div class="page-header">
+            <div class="page-header d-flex justify-content-between">
                 <div>
                     <h4>服务订单管理列表</h4>
                     <nav aria-label="breadcrumb">
@@ -73,6 +73,11 @@
                             <li class="breadcrumb-item active" aria-current="page">服务订单管理列表</li>
                         </ol>
                     </nav>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="window.location.href='{% url 'service_list' %}'"><i
+                            class="ti-user m-r-5"></i>我的服务订单
+                    </button>
                 </div>
             </div>
             <!-- end::page-header -->
@@ -136,12 +141,23 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <button type="button" onclick="setCurrentitemId(this)"
-                                                        class="btn btn-danger btn-square btn-uppercase"
-                                                        data-toggle="modal" data-target="#delete-verify"
-                                                        data-whatever="@fat" data-id="{{ item.id }}">
-                                                    <i class="ti-trash mr-2"></i> 删除订单
-                                                </button>
+                                                {% if template_name == "template/index_staff_tem.html" or template_name == "template/index_volunteer_tem.html" %}
+                                                    {% if not item.aceeptContact %}
+                                                        <button type="button" onclick="setCurrentitemId(this)"
+                                                                class="btn btn-success btn-square btn-uppercase"
+                                                                data-toggle="modal" data-target="#service-verify"
+                                                                data-whatever="@fat" data-id="{{ item.id }}">
+                                                            <i class="ti-check mr-2"></i>接取此单
+                                                        </button>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <button type="button" onclick="setCurrentitemId(this)"
+                                                            class="btn btn-danger btn-square btn-uppercase"
+                                                            data-toggle="modal" data-target="#delete-verify"
+                                                            data-whatever="@fat" data-id="{{ item.id }}">
+                                                        <i class="ti-trash mr-2"></i> 删除订单
+                                                    </button>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -253,7 +269,28 @@
         </div>
     </div>
 
-
+    <!-- modal -->
+    <div class="modal fade" id="service-verify" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">订单验证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="ti-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <p>是否接取该订单？</p>
+                        <div class="modal-footer modal-footer-centered">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="save_service()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Error Modal -->
     <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
          aria-hidden="true">
@@ -320,11 +357,34 @@
 
         const csrftoken = getCookie('csrftoken');
 
+        function save_service() {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'save_service' %}",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    id: currentitemId,
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '订单接取成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '订单接取失败！');
+                    }
+                    window.location.reload("/management/modify_service/");
+                },
+                error: function (xhr, status, error) {
+                    sessionStorage.setItem('statusMessage', '订单接取失败！');
+                    window.location.reload("/management/modify_service/");
+                }
+            });
+        }
+
         function delete_elder() {
             // 使用currentitemId变量，它现在包含被选中的老人的ID
             $.ajax({
                 type: "POST",
-                url: "/management/modify_service/",
+                url: "{% url 'modify_service' %}",
                 headers: {"X-CSRFToken": csrftoken},
                 data: {
                     id: currentitemId,

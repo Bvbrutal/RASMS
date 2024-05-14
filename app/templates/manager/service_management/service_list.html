@@ -129,6 +129,11 @@
                                             data-id="{{ order.id }}" data-toggle="modal" data-target="#delete-verify"
                                             data-whatever="@fat">取消订单
                                     </button>
+                                {% elif order.status == 'accepted' %}
+                                    <button type="button" class="btn btn-success btn-sm" onclick="setCurrentitemId(this)"
+                                            data-id="{{ order.id }}" data-toggle="modal" data-target="#accepted-verify"
+                                            data-whatever="@fat">开始订单
+                                    </button>
                                 {% elif order.status == 'completed' %}
                                     {% if not order.rating %}
                                         <button class="btn btn-sm btn-feedback"
@@ -164,6 +169,28 @@
                             <div class="modal-footer modal-footer-centered">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                                 <button type="button" class="btn btn-primary" onclick="cancel_service()">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="modal fade" id="accepted-verify" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">订单验证</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="ti-close"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <p>是否确定开始该订单？</p>
+                            <div class="modal-footer modal-footer-centered">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary" onclick="accepted_service()">确定</button>
                             </div>
                         </div>
                     </div>
@@ -243,13 +270,34 @@
             // 从被点击的按钮中获取数据属性data-id的值
             orderId = $(element).data('id');
         }
+        function accepted_service(){
+            $.ajax({
+                type: "POST",
+                url: "{% url 'accepted_service' %}",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    id: currentitemId,
+                    op: "delete_service"
+                },
+                success: function (data) {
+                    if (data.ret === 1) {
+                        sessionStorage.setItem('statusMessage', '订单状态更新成功！');
+                    } else {
+                        sessionStorage.setItem('statusMessage', '订单状态更新失败！');
+                    }
+                    window.location.reload("/management/service_list/");
+                },
+                error: function (xhr, status, error) {
+                    sessionStorage.setItem('statusMessage', '订单状态更新失败！');
+                    window.location.reload("/management/service_list/");
+                }
+            });
 
+        }
         function submitFeedback() {
             var rating = $('#feedbackModal .star-rating').attr('data-rating');  // 从星级评分组件获取评分
             var feedback = $('#feedback').val();  // 获取反馈文本框的值
 
-            // 这里发送AJAX请求到后端处理反馈
-            console.log('Order ID:', orderId, 'Rating:', rating, 'Feedback:', feedback);
             $.ajax({
                 url: '{% url 'submit_feedback' %}',  // 后端接收评分的URL
                 type: 'POST',

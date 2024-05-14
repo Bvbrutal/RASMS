@@ -142,7 +142,21 @@ def logging(request):
             break
     context = {'message': '处理成功', 'loggings': updated_loggings}
     return JsonResponse(context, safe=False, status=200)
-
+def update_photo(request):
+    if request.method == 'POST' and request.FILES.get('photo'):
+        mobile_phone=request.session["info"]["mobile_phone"]
+        user = User.objects.filter(mobile_phone=mobile_phone).first()
+        image_file = request.FILES.get('photo')
+        _, ext = os.path.splitext(image_file.name)
+        image_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
+        if image_file:
+            user.user_photo = image_file
+            user.save()
+            return JsonResponse({'message': '头像更新成功'}, status=200)
+        else:
+            return JsonResponse({'error': '没有接收到文件'}, status=400)
+    else:
+        return JsonResponse({'error': '未认证的用户'}, status=401)
 
 # 图片上传
 def image_upload(request):
@@ -216,18 +230,34 @@ def daily_orders_stats(request):
     })
 
 
-def update_photo(request):
-    if request.method == 'POST' and request.FILES.get('photo'):
-        mobile_phone=request.session["info"]["mobile_phone"]
-        user = User.objects.filter(mobile_phone=mobile_phone).first()
-        image_file = request.FILES.get('photo')
-        _, ext = os.path.splitext(image_file.name)
-        image_file.name = f"{now().strftime('%Y%m%d%H%M%S')}{ext}"
-        if image_file:
-            user.user_photo = image_file
-            user.save()
-            return JsonResponse({'message': '头像更新成功'}, status=200)
-        else:
-            return JsonResponse({'error': '没有接收到文件'}, status=400)
-    else:
-        return JsonResponse({'error': '未认证的用户'}, status=401)
+
+def save_service(request):
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
+    id = request.POST.get("id")
+    CA = ServiceOrder.objects.filter(id=id).first()
+    CA.aceeptContact = updated_by.mobile_phone
+    CA.status='accepted'
+    CA.aceeptName = updated_by.username
+    CA.updated_by_id = updated_by.user_id
+    CA.save()
+    context = {
+        'ret': 1,
+        'msg': "订单接取成功"
+    }
+    return JsonResponse(context, safe=False)
+
+
+def accepted_service(request):
+    updated_by_id = request.session["info"]["user_id"]
+    updated_by = User.objects.filter(user_id=updated_by_id).first()
+    id = request.POST.get("id")
+    CA = ServiceOrder.objects.filter(id=id).first()
+    CA.status = 'in_progress'
+    CA.updated_by_id = updated_by.user_id
+    CA.save()
+    context = {
+        'ret': 1,
+        'msg': "订单更新成功"
+    }
+    return JsonResponse(context, safe=False)

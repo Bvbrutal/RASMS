@@ -107,20 +107,19 @@
                 </a>
             </li>
             <li>
-                <a href="/management/modify_old">
+                <a href="/management/regional_list">
+                    <i class="nav-link-icon" data-feather="figma"></i>
+                    <span>区域排班</span>
+                    <span class="badge badge-success">2</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'modify_old' %}">
                     <i class="nav-link-icon" data-feather="tag"></i>
                     <span>老人信息列表</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
-            <li>
-                <a href="/management/regional_list">
-                    <i class="nav-link-icon" data-feather="figma"></i>
-                    <span>区域排班管理</span>
-                    <span class="badge badge-success">2</span>
-                </a>
-            </li>
-
             <li class="navigation-divider">社区管理</li>
             <li>
                 <a href="#">
@@ -139,9 +138,8 @@
                     <span>服务订单管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                    <li><a href="/management/modify_service">服务订单管理列表</a></li>
+                    <li><a href="/management/analyze_service">服务订单统计分析</a></li>
                 </ul>
             </li>
             <li>

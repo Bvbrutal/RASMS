@@ -55,6 +55,8 @@ urlpatterns = [
                   path('api/orders/data/', api_views.order_status_distribution, name='order_status_data'),
                   path('api/daily_orders_stats/', api_views.daily_orders_stats, name='daily_orders_stats'),
                   path('api/update_photo/', api_views.update_photo, name='update_photo'),
+                  path('api/save_service/', api_views.save_service, name='save_service'),
+                  path('api/accepted_service/', api_views.accepted_service, name='accepted_service'),
 
                   # 单项功能
                   path("management/select_event/", manager_views.select_event, name="select_event"),

@@ -142,7 +142,9 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
+                                                <a href="
+
+                                                        {% url 'account_info' %}{% if item.bind_user_id %}?id={{ item.bind_user_id }}{% endif %}">
                                                     <button type="button"
                                                             class="btn btn-outline-light">绑定账号信息
                                                     </button>
@@ -162,14 +164,16 @@
                                                     </button>
                                                 </a>
                                             </td>
-                                            <td>
-                                                <button type="button" onclick="setCurrentitemId(this)"
-                                                        class="btn btn-danger btn-square btn-uppercase"
-                                                        data-toggle="modal" data-target="#delete-verify"
-                                                        data-whatever="@fat" data-id="{{ item.id }}">
-                                                    <i class="ti-trash mr-2"></i> 删除
-                                                </button>
-                                            </td>
+                                            {% if template_name == "template/index_manager_tem.html"%}
+                                                <td>
+                                                    <button type="button" onclick="setCurrentitemId(this)"
+                                                            class="btn btn-danger btn-square btn-uppercase"
+                                                            data-toggle="modal" data-target="#delete-verify"
+                                                            data-whatever="@fat" data-id="{{ item.id }}">
+                                                        <i class="ti-trash mr-2"></i> 删除
+                                                    </button>
+                                                </td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                     </tbody>

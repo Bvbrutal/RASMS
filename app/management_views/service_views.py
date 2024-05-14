@@ -284,7 +284,9 @@ def add_service_type(request):
 
 def service_list(request):
     mobile_phone = request.session["info"]["mobile_phone"]
-    serviceorders = ServiceOrder.objects.filter(customerContact=mobile_phone).order_by('-date_scheduled')
+    serviceorders1 = ServiceOrder.objects.filter(customerContact=mobile_phone).order_by('-date_scheduled')
+    serviceorders2 = ServiceOrder.objects.filter(aceeptContact=mobile_phone).order_by('-date_scheduled')
+    serviceorders=serviceorders1 if serviceorders1 else serviceorders2
     context = {
         'orders': serviceorders
     }
