@@ -87,21 +87,21 @@
                 </a>
             </li>
             <li>
-                <a href="/management/select_event">
+                <a href="{% url 'select_event' %}">
                     <i class="nav-link-icon" data-feather="edit"></i>
                     <span>事件记录</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
             <li>
-                <a href="/management/logging_record">
+                <a href="{% url 'logging_record' %}">
                     <i class="nav-link-icon" data-feather="clipboard"></i>
                     <span>操作记录</span>
                     <span class="badge badge-success">2</span>
                 </a>
             </li>
             <li>
-                <a href="/management/library">
+                <a href="{% url 'library' %}">
                     <i class="nav-link-icon" data-feather="monitor"></i>
                     <span>监控管理</span>
                     <span class="badge badge-success">2</span>
@@ -114,9 +114,9 @@
                     <span>用户账号管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/account_modify">用户账号管理列表</a></li>
-                    <li><a href="/management/account_add">用户账号信息添加</a></li>
-                    <li><a href="/management/account_analyze">用户账号统计分析</a></li>
+                    <li><a href="{% url 'account_modify' %}">用户账号管理列表</a></li>
+                    <li><a href="{% url 'account_add' %}">用户账号信息添加</a></li>
+                    <li><a href="{% url 'account_analyze' %}">用户账号统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -127,10 +127,10 @@
                 <ul>
                     {#                    <li><a href="/management/list_old">老人数据列表</a></li>#}
                     {#                    <li><a href="/management/select_old">老人信息查询</a></li>#}
-                    <li><a href="/management/modify_old">老人信息列表</a></li>
-                    <li><a href="/management/add_old">老人信息录入</a></li>
+                    <li><a href="{% url 'modify_old' %}">老人信息列表</a></li>
+                    <li><a href="{% url 'add_old' %}">老人信息录入</a></li>
                     {#                    <li><a href="/management/modify_old">老人信息控制</a></li>#}
-                    <li><a href="/management/analyze_old">老人统计分析</a></li>
+                    <li><a href="{% url 'analyze_old' %}">老人统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -139,12 +139,12 @@
                     <span>员工信息管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_worker">员工信息列表</a></li>
+                    <li><a href="{% url 'modify_worker' %}">员工信息列表</a></li>
                     {#                    <li><a href="/management/list_worker">员工数据列表</a></li>#}
                     {#                    <li><a href="/management/select_worker">员工信息查询</a></li>#}
-                    <li><a href="/management/add_worker">员工信息录入</a></li>
+                    <li><a href="{% url 'add_worker' %}">员工信息录入</a></li>
                     {#                    <li><a href="/management/modify_worker">员工信息控制</a></li>#}
-                    <li><a href="/management/analyze_worker">员工统计分析</a></li>
+                    <li><a href="{% url 'analyze_worker' %}">员工统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -153,12 +153,12 @@
                     <span>义工信息管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_volunteer">义工信息列表</a></li>
+                    <li><a href="{% url 'modify_volunteer' %}">义工信息列表</a></li>
                     {#                    <li><a href="/management/list_volunteer">义工数据列表</a></li>#}
                     {#                    <li><a href="/management/select_volunteer">义工信息查询</a></li>#}
-                    <li><a href="/management/add_volunteer">义工信息录入</a></li>
+                    <li><a href="{% url 'add_volunteer' %}">义工信息录入</a></li>
                     {#                    <li><a href="/management/modify_volunteer">义工信息控制</a></li>#}
-                    <li><a href="/management/analyze_volunteer">义工统计分析</a></li>
+                    <li><a href="{% url 'analyze_volunteer' %}">义工统计分析</a></li>
                 </ul>
             </li>
             <li class="navigation-divider">社区管理</li>
@@ -179,9 +179,9 @@
                     <span>社区活动管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/activity_list">社区活动列表</a></li>
-                    <li><a href="/management/activity_add">社区活动发布</a></li>
-                    <li><a href="/management/activity_modify">社区活动管理</a></li>
+                    <li><a href="{% url 'activity_list' %}">社区活动列表</a></li>
+                    <li><a href="{% url 'activity_add' %}">社区活动发布</a></li>
+                    <li><a href="{% url 'activity_modify' %}">社区活动管理</a></li>
                 </ul>
             </li>
             <li>
@@ -190,9 +190,9 @@
                     <span>服务订单管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/modify_service">服务订单管理列表</a></li>
-                    <li><a href="/management/modify_service_type">服务订单类型管理</a></li>
-                    <li><a href="/management/analyze_service">服务订单统计分析</a></li>
+                    <li><a href="{% url 'modify_service' %}">服务订单管理列表</a></li>
+                    <li><a href="{% url 'modify_service_type' %}">服务订单类型管理</a></li>
+                    <li><a href="{% url 'analyze_service' %}">服务订单统计分析</a></li>
                 </ul>
             </li>
             <li>
@@ -201,8 +201,8 @@
                     <span>区域排班管理</span>
                 </a>
                 <ul>
-                    <li><a href="/management/regional_list">排班信息展示</a></li>
-                    <li><a href="/management/modify_regional">排班管理列表</a></li>
+                    <li><a href="{% url 'regional_list' %}">排班信息展示</a></li>
+                    <li><a href="{% url 'modify_regional' %}">排班管理列表</a></li>
                 </ul>
             </li>
         </ul>

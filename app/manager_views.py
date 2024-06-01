@@ -20,10 +20,6 @@ GENDER_CHOICES = {
     'F': '女',
     'U': '未知', }
 
-
-# pages
-
-
 def profile(request):
     mobile_phone = request.session["info"]["mobile_phone"]
     user_id = request.session["info"]["user_id"]
