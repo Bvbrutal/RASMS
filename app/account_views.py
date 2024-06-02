@@ -78,14 +78,17 @@ def register(request):
 
             if elder:
                 elder.bind_user = user_now
+                user_now.grade='2'
                 elder.save()
 
             if staff:
                 staff.bind_user = user_now
+                user_now.grade = '1'
                 staff.save()
 
             if volunteer:
                 volunteer.bind_user = user_now
+                user_now.grade = '3'
                 volunteer.save()
             # 将加密后的密码存储到数据库中
             context = {
